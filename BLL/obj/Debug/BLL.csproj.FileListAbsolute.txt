@@ -1,0 +1,11 @@
+C:\Ing de Software\EntregaUnoIS\BLL\bin\Debug\BLL.dll
+C:\Ing de Software\EntregaUnoIS\BLL\bin\Debug\BLL.pdb
+C:\Ing de Software\EntregaUnoIS\BLL\bin\Debug\BE.dll
+C:\Ing de Software\EntregaUnoIS\BLL\bin\Debug\DAL.dll
+C:\Ing de Software\EntregaUnoIS\BLL\bin\Debug\BE.pdb
+C:\Ing de Software\EntregaUnoIS\BLL\bin\Debug\DAL.pdb
+C:\Ing de Software\EntregaUnoIS\BLL\obj\Debug\BLL.csproj.AssemblyReference.cache
+C:\Ing de Software\EntregaUnoIS\BLL\obj\Debug\BLL.csproj.CoreCompileInputs.cache
+C:\Ing de Software\EntregaUnoIS\BLL\obj\Debug\BLL.csproj.Up2Date
+C:\Ing de Software\EntregaUnoIS\BLL\obj\Debug\BLL.dll
+C:\Ing de Software\EntregaUnoIS\BLL\obj\Debug\BLL.pdb

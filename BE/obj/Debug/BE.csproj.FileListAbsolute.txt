@@ -1,0 +1,6 @@
+C:\Ing de Software\EntregaUnoIS\BE\bin\Debug\BE.dll
+C:\Ing de Software\EntregaUnoIS\BE\bin\Debug\BE.pdb
+C:\Ing de Software\EntregaUnoIS\BE\obj\Debug\BE.csproj.AssemblyReference.cache
+C:\Ing de Software\EntregaUnoIS\BE\obj\Debug\BE.csproj.CoreCompileInputs.cache
+C:\Ing de Software\EntregaUnoIS\BE\obj\Debug\BE.dll
+C:\Ing de Software\EntregaUnoIS\BE\obj\Debug\BE.pdb

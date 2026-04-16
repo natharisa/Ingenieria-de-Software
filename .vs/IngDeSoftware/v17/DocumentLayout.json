@@ -1,0 +1,186 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Ing de Software\\EntregaUnoIS\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{20566EA3-526D-4209-BAFD-458EEACFD8E9}|BLL\\BLL.csproj|C:\\Ing de Software\\EntregaUnoIS\\bll\\usuariobll.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{20566EA3-526D-4209-BAFD-458EEACFD8E9}|BLL\\BLL.csproj|solutionrelative:bll\\usuariobll.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{327B2FF8-7D16-48AA-9670-7B3B33EBD4CD}|BE\\BE.csproj|C:\\Ing de Software\\EntregaUnoIS\\be\\usuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{327B2FF8-7D16-48AA-9670-7B3B33EBD4CD}|BE\\BE.csproj|solutionrelative:be\\usuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8F26C216-7FE6-4A2D-81E1-ECE2EF089EAB}|DAL\\DAL.csproj|c:\\ing de software\\entregaunois\\dal\\mpusuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8F26C216-7FE6-4A2D-81E1-ECE2EF089EAB}|DAL\\DAL.csproj|solutionrelative:dal\\mpusuario.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8F26C216-7FE6-4A2D-81E1-ECE2EF089EAB}|DAL\\DAL.csproj|c:\\ing de software\\entregaunois\\dal\\mapper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8F26C216-7FE6-4A2D-81E1-ECE2EF089EAB}|DAL\\DAL.csproj|solutionrelative:dal\\mapper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8F26C216-7FE6-4A2D-81E1-ECE2EF089EAB}|DAL\\DAL.csproj|C:\\Ing de Software\\EntregaUnoIS\\dal\\dao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8F26C216-7FE6-4A2D-81E1-ECE2EF089EAB}|DAL\\DAL.csproj|solutionrelative:dal\\dao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D2D2C42B-2AAF-44E6-8A53-0EF65237F7D7}|UI\\UI.csproj|c:\\ing de software\\entregaunois\\ui\\login.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D2D2C42B-2AAF-44E6-8A53-0EF65237F7D7}|UI\\UI.csproj|solutionrelative:ui\\login.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{327B2FF8-7D16-48AA-9670-7B3B33EBD4CD}|BE\\BE.csproj|C:\\Ing de Software\\EntregaUnoIS\\be\\sesion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{327B2FF8-7D16-48AA-9670-7B3B33EBD4CD}|BE\\BE.csproj|solutionrelative:be\\sesion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D2D2C42B-2AAF-44E6-8A53-0EF65237F7D7}|UI\\UI.csproj|C:\\Ing de Software\\EntregaUnoIS\\ui\\login.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{D2D2C42B-2AAF-44E6-8A53-0EF65237F7D7}|UI\\UI.csproj|solutionrelative:ui\\login.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{327B2FF8-7D16-48AA-9670-7B3B33EBD4CD}|BE\\BE.csproj|C:\\Ing de Software\\EntregaUnoIS\\be\\iobserver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{327B2FF8-7D16-48AA-9670-7B3B33EBD4CD}|BE\\BE.csproj|solutionrelative:be\\iobserver.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20566EA3-526D-4209-BAFD-458EEACFD8E9}|BLL\\BLL.csproj|C:\\Ing de Software\\EntregaUnoIS\\bll\\seguridad.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{20566EA3-526D-4209-BAFD-458EEACFD8E9}|BLL\\BLL.csproj|solutionrelative:bll\\seguridad.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 5,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Mapper.cs",
+              "DocumentMoniker": "C:\\Ing de Software\\EntregaUnoIS\\DAL\\Mapper.cs",
+              "RelativeDocumentMoniker": "DAL\\Mapper.cs",
+              "ToolTip": "C:\\Ing de Software\\EntregaUnoIS\\DAL\\Mapper.cs",
+              "RelativeToolTip": "DAL\\Mapper.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA8AAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-16T14:19:31.423Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MpUsuario.cs",
+              "DocumentMoniker": "C:\\Ing de Software\\EntregaUnoIS\\DAL\\MpUsuario.cs",
+              "RelativeDocumentMoniker": "DAL\\MpUsuario.cs",
+              "ToolTip": "C:\\Ing de Software\\EntregaUnoIS\\DAL\\MpUsuario.cs",
+              "RelativeToolTip": "DAL\\MpUsuario.cs",
+              "ViewState": "AQIAABsAAAAAAAAAAAAiwDMAAAAYAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-16T14:16:51.797Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Sesion.cs",
+              "DocumentMoniker": "C:\\Ing de Software\\EntregaUnoIS\\BE\\Sesion.cs",
+              "RelativeDocumentMoniker": "BE\\Sesion.cs",
+              "ToolTip": "C:\\Ing de Software\\EntregaUnoIS\\BE\\Sesion.cs",
+              "RelativeToolTip": "BE\\Sesion.cs",
+              "ViewState": "AQIAAAgAAAAAAAAAAAAxwCUAAAAXAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-23T20:19:09.739Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Login.cs [Dise\u00F1o]",
+              "DocumentMoniker": "C:\\Ing de Software\\EntregaUnoIS\\UI\\Login.cs",
+              "RelativeDocumentMoniker": "UI\\Login.cs",
+              "ToolTip": "C:\\Ing de Software\\EntregaUnoIS\\UI\\Login.cs [Dise\u00F1o]",
+              "RelativeToolTip": "UI\\Login.cs [Dise\u00F1o]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-23T20:12:26.179Z",
+              "EditorCaption": " [Dise\u00F1o]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Login.cs",
+              "DocumentMoniker": "C:\\Ing de Software\\EntregaUnoIS\\UI\\Login.cs",
+              "RelativeDocumentMoniker": "UI\\Login.cs",
+              "ToolTip": "C:\\Ing de Software\\EntregaUnoIS\\UI\\Login.cs",
+              "RelativeToolTip": "UI\\Login.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAACAAAABMAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-23T20:36:38.778Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "UsuarioBLL.cs",
+              "DocumentMoniker": "C:\\Ing de Software\\EntregaUnoIS\\BLL\\UsuarioBLL.cs",
+              "RelativeDocumentMoniker": "BLL\\UsuarioBLL.cs",
+              "ToolTip": "C:\\Ing de Software\\EntregaUnoIS\\BLL\\UsuarioBLL.cs",
+              "RelativeToolTip": "BLL\\UsuarioBLL.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAB8AAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-23T20:29:18.679Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Usuario.cs",
+              "DocumentMoniker": "C:\\Ing de Software\\EntregaUnoIS\\BE\\Usuario.cs",
+              "RelativeDocumentMoniker": "BE\\Usuario.cs",
+              "ToolTip": "C:\\Ing de Software\\EntregaUnoIS\\BE\\Usuario.cs",
+              "RelativeToolTip": "BE\\Usuario.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAsAAAAtAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-23T20:32:40.329Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "IObserver.cs",
+              "DocumentMoniker": "C:\\Ing de Software\\EntregaUnoIS\\BE\\IObserver.cs",
+              "RelativeDocumentMoniker": "BE\\IObserver.cs",
+              "ToolTip": "C:\\Ing de Software\\EntregaUnoIS\\BE\\IObserver.cs",
+              "RelativeToolTip": "BE\\IObserver.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-20T18:33:51.295Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Seguridad.cs",
+              "DocumentMoniker": "C:\\Ing de Software\\EntregaUnoIS\\BLL\\Seguridad.cs",
+              "RelativeDocumentMoniker": "BLL\\Seguridad.cs",
+              "ToolTip": "C:\\Ing de Software\\EntregaUnoIS\\BLL\\Seguridad.cs",
+              "RelativeToolTip": "BLL\\Seguridad.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAARAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-08T17:36:46.839Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "DAO.cs",
+              "DocumentMoniker": "C:\\Ing de Software\\EntregaUnoIS\\DAL\\DAO.cs",
+              "RelativeDocumentMoniker": "DAL\\DAO.cs",
+              "ToolTip": "C:\\Ing de Software\\EntregaUnoIS\\DAL\\DAO.cs",
+              "RelativeToolTip": "DAL\\DAO.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAIgAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-23T20:29:54.347Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
