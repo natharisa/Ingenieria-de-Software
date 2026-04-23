@@ -7,3 +7,12 @@ C:\Ing de Software\EntregaUnoIS\DAL\obj\Debug\DAL.csproj.CoreCompileInputs.cache
 C:\Ing de Software\EntregaUnoIS\DAL\obj\Debug\DAL.csproj.Up2Date
 C:\Ing de Software\EntregaUnoIS\DAL\obj\Debug\DAL.dll
 C:\Ing de Software\EntregaUnoIS\DAL\obj\Debug\DAL.pdb
+C:\Github\Ingenieria-de-Software\DAL\bin\Debug\DAL.dll
+C:\Github\Ingenieria-de-Software\DAL\bin\Debug\DAL.pdb
+C:\Github\Ingenieria-de-Software\DAL\bin\Debug\BE.dll
+C:\Github\Ingenieria-de-Software\DAL\bin\Debug\BE.pdb
+C:\Github\Ingenieria-de-Software\DAL\obj\Debug\DAL.csproj.AssemblyReference.cache
+C:\Github\Ingenieria-de-Software\DAL\obj\Debug\DAL.csproj.CoreCompileInputs.cache
+C:\Github\Ingenieria-de-Software\DAL\obj\Debug\DAL.csproj.Up2Date
+C:\Github\Ingenieria-de-Software\DAL\obj\Debug\DAL.dll
+C:\Github\Ingenieria-de-Software\DAL\obj\Debug\DAL.pdb
