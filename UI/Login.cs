@@ -14,73 +14,48 @@ namespace UI
 {
     public partial class Login : Form
     {
+        private readonly UsuarioBLL bllUsuario = new UsuarioBLL();
+
         public Login()
         {
             InitializeComponent();
         }
 
-        UsuarioBLL bllUsuario = new UsuarioBLL(); //revisar
         private void btnLogin_Click(object sender, EventArgs e)
         {
-
             var usuarioValildado = bllUsuario.Login(txtUser.Text, txtPass.Text);
 
-            if(usuarioValildado != null )
+            if (usuarioValildado != null)
             {
-                //Guardamos en el singleton
                 Sesion.GetInstance().Usuario = usuarioValildado;
-
                 MessageBox.Show($"¡Bienvenido {Sesion.GetInstance().Usuario.ToString()}!");
-
-                //Envia al formulario de login como terminó la operación
                 this.DialogResult = DialogResult.OK;
+                Close();
             }
             else
             {
-                if(bllUsuario.ExisteUsuario(txtUser.Text))
+                if (bllUsuario.ExisteUsuario(txtUser.Text))
                 {
-
-                 MessageBox.Show("La contraseña es incorrecta");
+                    MessageBox.Show("La contraseña es incorrecta");
                 }
                 else
                 {
-
-                MessageBox.Show("El usuario no se encuentra registrado.");
+                    MessageBox.Show("El usuario no se encuentra registrado.");
                 }
             }
-
-
-
-            //var usuarioValidado = bllUsuario.Login(txtUser.Text, txtPass.Text);
-
-            //if (usuarioValidado != null)
-            //{
-            //    // Seteamos el Singleton
-            //    Sesion.GetInstance().Usuario = usuarioValidado;
-            //    Sesion.GetInstance().FechaInicio = DateTime.Now;
-
-            //    this.DialogResult = DialogResult.OK; // Cerramos login y abrimos Main
-            //}
         }
 
         private void btnRegistrar_Click(object sender, EventArgs e)
         {
-            Usuario nuevo = new Usuario
+            using (var registro = new Registro())
             {
-                Username = txtUser.Text,
-                Password = txtPass.Text,
-                Nombre = Nombretxt.Text,
-                Apellido = Apellidotxt.Text
-            
-
-            };
-
-            if(bllUsuario.CrearUsuario(nuevo))
-            {
-                MessageBox.Show("¡Usuario registrado con éxito!");
-                
+                if (registro.ShowDialog(this) == DialogResult.OK)
+                {
+                    txtUser.Text = registro.UsuarioRegistrado;
+                    txtPass.Clear();
+                    txtPass.Focus();
+                }
             }
-            
         }
     }
 }
