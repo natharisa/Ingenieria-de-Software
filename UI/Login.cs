@@ -1,42 +1,44 @@
-﻿using BE;
-using BLL;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using Application;
+using Domain;
+using Services;
 
 namespace UI
 {
     public partial class Login : Form
     {
-        private readonly UsuarioBLL bllUsuario = new UsuarioBLL();
+        private readonly UsuarioApplicationService _usuarioService;
+        private readonly UiTextService _uiTextService;
 
         public Login()
+            : this(new UsuarioApplicationService(), new UiTextService())
         {
+        }
+
+        public Login(UsuarioApplicationService usuarioService, UiTextService uiTextService)
+        {
+            _usuarioService = usuarioService;
+            _uiTextService = uiTextService;
             InitializeComponent();
         }
 
         private void btnLogin_Click(object sender, EventArgs e)
         {
-            var usuarioValildado = bllUsuario.Login(txtUser.Text, txtPass.Text);
+            Usuario usuarioValidado = _usuarioService.Login(txtUser.Text, txtPass.Text);
 
-            if (usuarioValildado != null)
+            if (usuarioValidado != null)
             {
-                Sesion.GetInstance().Usuario = usuarioValildado;
-                MessageBox.Show($"¡Bienvenido {Sesion.GetInstance().Usuario.ToString()}!");
-                this.DialogResult = DialogResult.OK;
+                Sesion.GetInstance().Usuario = usuarioValidado;
+                MessageBox.Show(_uiTextService.BuildWelcomeMessage(Sesion.GetInstance().Usuario.ToString()));
+                DialogResult = DialogResult.OK;
                 Close();
             }
             else
             {
-                if (bllUsuario.ExisteUsuario(txtUser.Text))
+                if (_usuarioService.ExisteUsuario(txtUser.Text))
                 {
-                    MessageBox.Show("La contraseña es incorrecta");
+                    MessageBox.Show("La contrasena es incorrecta.");
                 }
                 else
                 {
@@ -47,7 +49,7 @@ namespace UI
 
         private void btnRegistrar_Click(object sender, EventArgs e)
         {
-            using (var registro = new Registro())
+            using (Registro registro = new Registro(_usuarioService))
             {
                 if (registro.ShowDialog(this) == DialogResult.OK)
                 {

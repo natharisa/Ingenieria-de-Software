@@ -16,11 +16,7 @@ C:\Ing de Software\EntregaUnoIS\UI\obj\Debug\UI.pdb
 C:\Github\Ingenieria-de-Software\UI\bin\Debug\UI.exe.config
 C:\Github\Ingenieria-de-Software\UI\bin\Debug\UI.exe
 C:\Github\Ingenieria-de-Software\UI\bin\Debug\UI.pdb
-C:\Github\Ingenieria-de-Software\UI\bin\Debug\BE.dll
-C:\Github\Ingenieria-de-Software\UI\bin\Debug\BLL.dll
 C:\Github\Ingenieria-de-Software\UI\bin\Debug\DAL.dll
-C:\Github\Ingenieria-de-Software\UI\bin\Debug\BE.pdb
-C:\Github\Ingenieria-de-Software\UI\bin\Debug\BLL.pdb
 C:\Github\Ingenieria-de-Software\UI\bin\Debug\DAL.pdb
 C:\Github\Ingenieria-de-Software\UI\obj\Debug\UI.csproj.AssemblyReference.cache
 C:\Github\Ingenieria-de-Software\UI\obj\Debug\UI.Login.resources
@@ -30,3 +26,13 @@ C:\Github\Ingenieria-de-Software\UI\obj\Debug\UI.csproj.CoreCompileInputs.cache
 C:\Github\Ingenieria-de-Software\UI\obj\Debug\UI.csproj.Up2Date
 C:\Github\Ingenieria-de-Software\UI\obj\Debug\UI.exe
 C:\Github\Ingenieria-de-Software\UI\obj\Debug\UI.pdb
+C:\Github\Ingenieria-de-Software\UI\bin\Debug\Abstractions.dll
+C:\Github\Ingenieria-de-Software\UI\bin\Debug\Application.dll
+C:\Github\Ingenieria-de-Software\UI\bin\Debug\Domain.dll
+C:\Github\Ingenieria-de-Software\UI\bin\Debug\Repository.dll
+C:\Github\Ingenieria-de-Software\UI\bin\Debug\Services.dll
+C:\Github\Ingenieria-de-Software\UI\bin\Debug\Abstractions.pdb
+C:\Github\Ingenieria-de-Software\UI\bin\Debug\Application.pdb
+C:\Github\Ingenieria-de-Software\UI\bin\Debug\Domain.pdb
+C:\Github\Ingenieria-de-Software\UI\bin\Debug\Repository.pdb
+C:\Github\Ingenieria-de-Software\UI\bin\Debug\Services.pdb
