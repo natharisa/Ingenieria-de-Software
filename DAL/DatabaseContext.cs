@@ -1,14 +1,16 @@
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
+using System.Xml.Linq;
 
 namespace DAL
 {
     public class DatabaseContext
     {
-        private static readonly string ConnectionString =
-            ConfigurationManager.ConnectionStrings["TecniSalud"]?.ConnectionString;
+        private static readonly string ConnectionString = ResolveConnectionString();
 
         public SqlConnection Conexion { get; private set; }
         public SqlTransaction Transaccion { get; private set; }
@@ -129,6 +131,49 @@ namespace DAL
             }
 
             return comando;
+        }
+
+        private static string ResolveConnectionString()
+        {
+            string localConnectionString = ReadLocalConnectionString();
+            if (!string.IsNullOrWhiteSpace(localConnectionString))
+            {
+                return localConnectionString;
+            }
+
+            return ConfigurationManager.ConnectionStrings["TecniSalud"]?.ConnectionString;
+        }
+
+        private static string ReadLocalConnectionString()
+        {
+            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            string[] candidatePaths =
+            {
+                Path.Combine(baseDirectory, "App.local.config"),
+                Path.GetFullPath(Path.Combine(baseDirectory, @"..\..\App.local.config")),
+                Path.GetFullPath(Path.Combine(baseDirectory, @"..\..\..\App.local.config"))
+            };
+
+            foreach (string localConfigPath in candidatePaths)
+            {
+                if (!File.Exists(localConfigPath))
+                {
+                    continue;
+                }
+
+                XDocument document = XDocument.Load(localConfigPath);
+                XElement connectionElement = document.Root?
+                    .Element("connectionStrings")?
+                    .Element("add");
+
+                string connectionString = connectionElement?.Attribute("connectionString")?.Value;
+                if (!string.IsNullOrWhiteSpace(connectionString))
+                {
+                    return connectionString;
+                }
+            }
+
+            return null;
         }
     }
 }
