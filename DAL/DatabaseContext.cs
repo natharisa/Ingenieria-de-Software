@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -6,7 +7,8 @@ namespace DAL
 {
     public class DatabaseContext
     {
-        private const string ConnectionString = "Aqui la base de datos";
+        private static readonly string ConnectionString =
+            ConfigurationManager.ConnectionStrings["TecniSalud"]?.ConnectionString;
 
         public SqlConnection Conexion { get; private set; }
         public SqlTransaction Transaccion { get; private set; }
@@ -98,11 +100,22 @@ namespace DAL
             }
         }
 
-        private SqlCommand CrearComando(string sql, List<SqlParameter> parametros = null)
+        public DataTable LeerTexto(string sql, List<SqlParameter> parametros = null)
+        {
+            using (SqlDataAdapter adaptador = new SqlDataAdapter())
+            {
+                DataTable tabla = new DataTable();
+                adaptador.SelectCommand = CrearComando(sql, parametros, CommandType.Text);
+                adaptador.Fill(tabla);
+                return tabla;
+            }
+        }
+
+        private SqlCommand CrearComando(string sql, List<SqlParameter> parametros = null, CommandType commandType = CommandType.StoredProcedure)
         {
             SqlCommand comando = new SqlCommand(sql, Conexion)
             {
-                CommandType = CommandType.StoredProcedure
+                CommandType = commandType
             };
 
             if (Transaccion != null)

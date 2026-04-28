@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -21,61 +22,121 @@ namespace DAL
 
         public int Insertar(Usuario usuario)
         {
-            _databaseContext.Abrir();
+            if (usuario == null)
+            {
+                return -1;
+            }
+
+            SqlParameter idUsuarioNuevo = new SqlParameter("@id_usuario_nuevo", SqlDbType.Int)
+            {
+                Direction = ParameterDirection.Output
+            };
+
             List<SqlParameter> parametros = new List<SqlParameter>
             {
-                _databaseContext.CrearParametro("@NOMBRE", usuario.Nombre)
+                _databaseContext.CrearParametro("@nombre_usuario", usuario.Username),
+                _databaseContext.CrearParametro("@email", usuario.Email),
+                _databaseContext.CrearParametro("@password_hash", usuario.Password),
+                idUsuarioNuevo
             };
-            int resultado = _databaseContext.Escribir("INSERTAR_CLIENTE", parametros);
-            _databaseContext.Cerrar();
-            return resultado;
+
+            try
+            {
+                _databaseContext.Abrir();
+                DataTable tabla = _databaseContext.Leer("sp_Usuario_Registrar", parametros);
+
+                if (tabla.Rows.Count == 0)
+                {
+                    return -1;
+                }
+
+                usuario.Id = Convert.ToInt32(tabla.Rows[0]["id_usuario"]);
+                return usuario.Id;
+            }
+            catch
+            {
+                return -1;
+            }
+            finally
+            {
+                _databaseContext.Cerrar();
+            }
+        }
+
+        public Usuario ObtenerPorCredenciales(string identificador, string passwordHash)
+        {
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                _databaseContext.CrearParametro("@identificador", identificador),
+                _databaseContext.CrearParametro("@password_hash", passwordHash)
+            };
+
+            try
+            {
+                _databaseContext.Abrir();
+                DataTable tabla = _databaseContext.Leer("sp_Usuario_Login", parametros);
+
+                if (tabla.Rows.Count == 0)
+                {
+                    return null;
+                }
+
+                return MapearUsuario(tabla.Rows[0]);
+            }
+            finally
+            {
+                _databaseContext.Cerrar();
+            }
+        }
+
+        public bool ExistePorNombreUsuario(string username)
+        {
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                _databaseContext.CrearParametro("@nombre_usuario", username)
+            };
+
+            const string sql = @"
+                SELECT TOP (1) id_usuario
+                FROM dbo.Usuario
+                WHERE nombre_usuario = @nombre_usuario";
+
+            try
+            {
+                _databaseContext.Abrir();
+                DataTable tabla = _databaseContext.LeerTexto(sql, parametros);
+                return tabla.Rows.Count > 0;
+            }
+            finally
+            {
+                _databaseContext.Cerrar();
+            }
         }
 
         public int Editar(Usuario usuario)
         {
-            _databaseContext.Abrir();
-            List<SqlParameter> parametros = new List<SqlParameter>
-            {
-                _databaseContext.CrearParametro("@ID", usuario.Id),
-                _databaseContext.CrearParametro("@NOMBRE", usuario.Nombre)
-            };
-            int resultado = _databaseContext.Escribir("EDITAR_CLIENTE", parametros);
-            _databaseContext.Cerrar();
-            return resultado;
+            return -1;
         }
 
         public int Borrar(Usuario usuario)
         {
-            _databaseContext.Abrir();
-            List<SqlParameter> parametros = new List<SqlParameter>
-            {
-                _databaseContext.CrearParametro("@ID", usuario.Id)
-            };
-            int resultado = _databaseContext.Escribir("BORRAR_CLIENTE", parametros);
-            _databaseContext.Cerrar();
-            return resultado;
+            return -1;
         }
 
         public List<Usuario> Listar()
         {
-            List<Usuario> usuarios = new List<Usuario>();
+            return new List<Usuario>();
+        }
 
-            _databaseContext.Abrir();
-            DataTable tabla = _databaseContext.Leer("LISTAR_CLIENTE");
-            _databaseContext.Cerrar();
-
-            foreach (DataRow registro in tabla.Rows)
+        private static Usuario MapearUsuario(DataRow registro)
+        {
+            return new Usuario
             {
-                Usuario usuario = new Usuario
-                {
-                    Id = int.Parse(registro["ID"].ToString()),
-                    Nombre = registro["NOMBRE"].ToString()
-                };
-
-                usuarios.Add(usuario);
-            }
-
-            return usuarios;
+                Id = Convert.ToInt32(registro["id_usuario"]),
+                Username = registro["nombre_usuario"].ToString(),
+                Email = registro["email"].ToString(),
+                Idioma = registro["id_idioma"].ToString()
+            };
         }
     }
 }

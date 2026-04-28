@@ -25,14 +25,10 @@ namespace Application
         {
             if (nuevoUsuario == null ||
                 string.IsNullOrWhiteSpace(nuevoUsuario.Username) ||
+                string.IsNullOrWhiteSpace(nuevoUsuario.Email) ||
                 string.IsNullOrWhiteSpace(nuevoUsuario.Password) ||
                 string.IsNullOrWhiteSpace(nuevoUsuario.Nombre) ||
                 string.IsNullOrWhiteSpace(nuevoUsuario.Apellido))
-            {
-                return false;
-            }
-
-            if (_usuarioRepository.Existe(nuevoUsuario.Username))
             {
                 return false;
             }
@@ -41,6 +37,7 @@ namespace Application
             {
                 Id = nuevoUsuario.Id,
                 Username = nuevoUsuario.Username.Trim(),
+                Email = nuevoUsuario.Email.Trim(),
                 Password = _passwordService.Protect(nuevoUsuario.Password),
                 Nombre = nuevoUsuario.Nombre.Trim(),
                 Apellido = nuevoUsuario.Apellido.Trim(),

@@ -20,6 +20,7 @@ namespace UI
         private void btnCrearCuenta_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtUser.Text) ||
+                string.IsNullOrWhiteSpace(txtEmail.Text) ||
                 string.IsNullOrWhiteSpace(txtPass.Text) ||
                 string.IsNullOrWhiteSpace(txtNombre.Text) ||
                 string.IsNullOrWhiteSpace(txtApellido.Text))
@@ -31,6 +32,7 @@ namespace UI
             Usuario nuevo = new Usuario
             {
                 Username = txtUser.Text.Trim(),
+                Email = txtEmail.Text.Trim(),
                 Password = txtPass.Text,
                 Nombre = txtNombre.Text.Trim(),
                 Apellido = txtApellido.Text.Trim()

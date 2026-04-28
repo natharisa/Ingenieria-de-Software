@@ -36,14 +36,7 @@ namespace UI
             }
             else
             {
-                if (_usuarioService.ExisteUsuario(txtUser.Text))
-                {
-                    MessageBox.Show("La contrasena es incorrecta.");
-                }
-                else
-                {
-                    MessageBox.Show("El usuario no se encuentra registrado.");
-                }
+                MessageBox.Show("Usuario, email o contrasena incorrectos.");
             }
         }
 

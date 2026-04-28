@@ -36,6 +36,8 @@ namespace UI
             this.txtApellido = new System.Windows.Forms.TextBox();
             this.labelUser = new System.Windows.Forms.Label();
             this.txtUser = new System.Windows.Forms.TextBox();
+            this.labelEmail = new System.Windows.Forms.Label();
+            this.txtEmail = new System.Windows.Forms.TextBox();
             this.labelPass = new System.Windows.Forms.Label();
             this.txtPass = new System.Windows.Forms.TextBox();
             this.btnCrearCuenta = new System.Windows.Forms.Button();
@@ -127,15 +129,36 @@ namespace UI
             this.txtUser.Size = new System.Drawing.Size(168, 25);
             this.txtUser.TabIndex = 2;
             // 
+            // labelEmail
+            // 
+            this.labelEmail.AutoSize = true;
+            this.labelEmail.Font = new System.Drawing.Font("Segoe UI Semibold", 9.5F, System.Drawing.FontStyle.Bold);
+            this.labelEmail.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(57)))), ((int)(((byte)(62)))), ((int)(((byte)(70)))));
+            this.labelEmail.Location = new System.Drawing.Point(233, 182);
+            this.labelEmail.Name = "labelEmail";
+            this.labelEmail.Size = new System.Drawing.Size(41, 17);
+            this.labelEmail.TabIndex = 8;
+            this.labelEmail.Text = "Email";
+            // 
+            // txtEmail
+            // 
+            this.txtEmail.BackColor = System.Drawing.Color.White;
+            this.txtEmail.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtEmail.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.txtEmail.Location = new System.Drawing.Point(236, 203);
+            this.txtEmail.Name = "txtEmail";
+            this.txtEmail.Size = new System.Drawing.Size(168, 25);
+            this.txtEmail.TabIndex = 3;
+            // 
             // labelPass
             // 
             this.labelPass.AutoSize = true;
             this.labelPass.Font = new System.Drawing.Font("Segoe UI Semibold", 9.5F, System.Drawing.FontStyle.Bold);
             this.labelPass.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(57)))), ((int)(((byte)(62)))), ((int)(((byte)(70)))));
-            this.labelPass.Location = new System.Drawing.Point(233, 182);
+            this.labelPass.Location = new System.Drawing.Point(39, 256);
             this.labelPass.Name = "labelPass";
             this.labelPass.Size = new System.Drawing.Size(74, 17);
-            this.labelPass.TabIndex = 8;
+            this.labelPass.TabIndex = 10;
             this.labelPass.Text = "Contrasena";
             // 
             // txtPass
@@ -143,11 +166,11 @@ namespace UI
             this.txtPass.BackColor = System.Drawing.Color.White;
             this.txtPass.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtPass.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtPass.Location = new System.Drawing.Point(236, 203);
+            this.txtPass.Location = new System.Drawing.Point(42, 277);
             this.txtPass.Name = "txtPass";
             this.txtPass.PasswordChar = '*';
-            this.txtPass.Size = new System.Drawing.Size(168, 25);
-            this.txtPass.TabIndex = 3;
+            this.txtPass.Size = new System.Drawing.Size(362, 25);
+            this.txtPass.TabIndex = 4;
             // 
             // btnCrearCuenta
             // 
@@ -157,10 +180,10 @@ namespace UI
             this.btnCrearCuenta.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCrearCuenta.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold);
             this.btnCrearCuenta.ForeColor = System.Drawing.Color.White;
-            this.btnCrearCuenta.Location = new System.Drawing.Point(236, 265);
+            this.btnCrearCuenta.Location = new System.Drawing.Point(236, 332);
             this.btnCrearCuenta.Name = "btnCrearCuenta";
             this.btnCrearCuenta.Size = new System.Drawing.Size(168, 36);
-            this.btnCrearCuenta.TabIndex = 5;
+            this.btnCrearCuenta.TabIndex = 6;
             this.btnCrearCuenta.Text = "Crear cuenta";
             this.btnCrearCuenta.UseVisualStyleBackColor = false;
             this.btnCrearCuenta.Click += new System.EventHandler(this.btnCrearCuenta_Click);
@@ -173,10 +196,10 @@ namespace UI
             this.btnCancelar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancelar.Font = new System.Drawing.Font("Segoe UI Semibold", 9.75F, System.Drawing.FontStyle.Bold);
             this.btnCancelar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(80)))), ((int)(((byte)(87)))));
-            this.btnCancelar.Location = new System.Drawing.Point(42, 265);
+            this.btnCancelar.Location = new System.Drawing.Point(42, 332);
             this.btnCancelar.Name = "btnCancelar";
             this.btnCancelar.Size = new System.Drawing.Size(168, 36);
-            this.btnCancelar.TabIndex = 4;
+            this.btnCancelar.TabIndex = 5;
             this.btnCancelar.Text = "Cancelar";
             this.btnCancelar.UseVisualStyleBackColor = false;
             this.btnCancelar.Click += new System.EventHandler(this.btnCancelar_Click);
@@ -188,11 +211,13 @@ namespace UI
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
             this.CancelButton = this.btnCancelar;
-            this.ClientSize = new System.Drawing.Size(448, 333);
+            this.ClientSize = new System.Drawing.Size(448, 402);
             this.Controls.Add(this.btnCancelar);
             this.Controls.Add(this.btnCrearCuenta);
             this.Controls.Add(this.txtPass);
             this.Controls.Add(this.labelPass);
+            this.Controls.Add(this.txtEmail);
+            this.Controls.Add(this.labelEmail);
             this.Controls.Add(this.txtUser);
             this.Controls.Add(this.labelUser);
             this.Controls.Add(this.txtApellido);
@@ -222,6 +247,8 @@ namespace UI
         private System.Windows.Forms.TextBox txtApellido;
         private System.Windows.Forms.Label labelUser;
         private System.Windows.Forms.TextBox txtUser;
+        private System.Windows.Forms.Label labelEmail;
+        private System.Windows.Forms.TextBox txtEmail;
         private System.Windows.Forms.Label labelPass;
         private System.Windows.Forms.TextBox txtPass;
         private System.Windows.Forms.Button btnCrearCuenta;

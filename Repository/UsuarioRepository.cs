@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using DAL;
 using Domain;
 
@@ -7,7 +6,6 @@ namespace Repository
 {
     public class UsuarioRepository
     {
-        private static readonly List<Usuario> UsuariosEnMemoria = new List<Usuario>();
         private readonly UsuarioDataMapper _usuarioDataMapper;
 
         public UsuarioRepository()
@@ -22,26 +20,22 @@ namespace Repository
 
         public bool Crear(Usuario usuario)
         {
-            if (usuario == null || Existe(usuario.Username))
+            if (usuario == null)
             {
                 return false;
             }
 
-            UsuariosEnMemoria.Add(Clonar(usuario));
-            return true;
+            return _usuarioDataMapper.Insertar(usuario) > 0;
         }
 
         public Usuario ObtenerPorCredenciales(string username, string password)
         {
-            Usuario usuario = UsuariosEnMemoria.FirstOrDefault(
-                u => u.Username == username && u.Password == password);
-
-            return Clonar(usuario);
+            return _usuarioDataMapper.ObtenerPorCredenciales(username, password);
         }
 
         public bool Existe(string username)
         {
-            return UsuariosEnMemoria.Any(u => u.Username == username);
+            return _usuarioDataMapper.ExistePorNombreUsuario(username);
         }
 
         public void Guardar(Usuario usuario)
@@ -74,24 +68,6 @@ namespace Repository
         public List<Usuario> Listar()
         {
             return _usuarioDataMapper.Listar();
-        }
-
-        private static Usuario Clonar(Usuario usuario)
-        {
-            if (usuario == null)
-            {
-                return null;
-            }
-
-            return new Usuario
-            {
-                Id = usuario.Id,
-                Username = usuario.Username,
-                Password = usuario.Password,
-                Nombre = usuario.Nombre,
-                Apellido = usuario.Apellido,
-                Idioma = usuario.Idioma
-            };
         }
     }
 }

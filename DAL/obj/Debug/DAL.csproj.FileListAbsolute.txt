@@ -1,7 +1,5 @@
 C:\Ing de Software\EntregaUnoIS\DAL\bin\Debug\DAL.dll
 C:\Ing de Software\EntregaUnoIS\DAL\bin\Debug\DAL.pdb
-C:\Ing de Software\EntregaUnoIS\DAL\bin\Debug\BE.dll
-C:\Ing de Software\EntregaUnoIS\DAL\bin\Debug\BE.pdb
 C:\Ing de Software\EntregaUnoIS\DAL\obj\Debug\DAL.csproj.AssemblyReference.cache
 C:\Ing de Software\EntregaUnoIS\DAL\obj\Debug\DAL.csproj.CoreCompileInputs.cache
 C:\Ing de Software\EntregaUnoIS\DAL\obj\Debug\DAL.csproj.Up2Date
@@ -20,3 +18,9 @@ C:\Github\Ingenieria-de-Software\DAL\bin\Debug\Services.dll
 C:\Github\Ingenieria-de-Software\DAL\bin\Debug\Abstractions.dll
 C:\Github\Ingenieria-de-Software\DAL\bin\Debug\Services.pdb
 C:\Github\Ingenieria-de-Software\DAL\bin\Debug\Abstractions.pdb
+C:\Ing de Software\EntregaUnoIS\DAL\bin\Debug\Domain.dll
+C:\Ing de Software\EntregaUnoIS\DAL\bin\Debug\Services.dll
+C:\Ing de Software\EntregaUnoIS\DAL\bin\Debug\Abstractions.dll
+C:\Ing de Software\EntregaUnoIS\DAL\bin\Debug\Domain.pdb
+C:\Ing de Software\EntregaUnoIS\DAL\bin\Debug\Services.pdb
+C:\Ing de Software\EntregaUnoIS\DAL\bin\Debug\Abstractions.pdb
