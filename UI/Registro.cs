@@ -1,18 +1,19 @@
-using BE;
-using BLL;
 using System;
 using System.Windows.Forms;
+using Application;
+using Domain;
 
 namespace UI
 {
     public partial class Registro : Form
     {
-        private readonly UsuarioBLL bllUsuario = new UsuarioBLL();
+        private readonly UsuarioApplicationService _usuarioService;
 
         public string UsuarioRegistrado { get; private set; }
 
-        public Registro()
+        public Registro(UsuarioApplicationService usuarioService)
         {
+            _usuarioService = usuarioService;
             InitializeComponent();
         }
 
@@ -35,7 +36,7 @@ namespace UI
                 Apellido = txtApellido.Text.Trim()
             };
 
-            if (bllUsuario.CrearUsuario(nuevo))
+            if (_usuarioService.CrearUsuario(nuevo))
             {
                 UsuarioRegistrado = nuevo.Username;
                 MessageBox.Show("Usuario registrado con exito.");
