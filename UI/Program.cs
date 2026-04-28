@@ -16,7 +16,14 @@ namespace UI
         {
             System.Windows.Forms.Application.EnableVisualStyles();
             System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
-            System.Windows.Forms.Application.Run(new Login());
+
+            using (Login login = new Login())
+            {
+                if (login.ShowDialog() == DialogResult.OK)
+                {
+                    System.Windows.Forms.Application.Run(new MainForm());
+                }
+            }
         }
     }
 }
