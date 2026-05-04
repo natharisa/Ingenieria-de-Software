@@ -2,6 +2,6 @@ namespace Abstractions
 {
     public interface IPasswordService
     {
-        string Protect(string plainTextPassword);
+        string Hash(string plainTextPassword);
     }
 }

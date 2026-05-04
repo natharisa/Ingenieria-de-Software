@@ -38,7 +38,7 @@ namespace Application
                 Id = nuevoUsuario.Id,
                 Username = nuevoUsuario.Username.Trim(),
                 Email = nuevoUsuario.Email.Trim(),
-                Password = _passwordService.Protect(nuevoUsuario.Password),
+                Password = _passwordService.Hash(nuevoUsuario.Password),
                 Nombre = nuevoUsuario.Nombre.Trim(),
                 Apellido = nuevoUsuario.Apellido.Trim(),
                 Idioma = nuevoUsuario.Idioma
@@ -54,7 +54,7 @@ namespace Application
                 return null;
             }
 
-            string passwordProtegida = _passwordService.Protect(password);
+            string passwordProtegida = _passwordService.Hash(password);
             return _usuarioRepository.ObtenerPorCredenciales(username.Trim(), passwordProtegida);
         }
 
