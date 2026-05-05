@@ -34,6 +34,9 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BitacoraAccion.cs" />
+    <Compile Include="BitacoraModulo.cs" />
+    <Compile Include="BitacoraNivel.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="IPasswordService.cs" />
   </ItemGroup>

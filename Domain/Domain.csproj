@@ -33,6 +33,12 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bitacora.cs" />
+    <Compile Include="BitacoraFactory.cs" />
+    <Compile Include="BitacoraRegistro.cs" />
+    <Compile Include="BitacoraRegistroMapper.cs" />
+    <Compile Include="IBitacoraEvento.cs" />
+    <Compile Include="LoginFallidoBitacoraFactory.cs" />
     <Compile Include="Sesion.cs" />
     <Compile Include="Usuario.cs" />
   </ItemGroup>

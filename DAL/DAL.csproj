@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BitacoraDataMapper.cs" />
     <Compile Include="DatabaseContext.cs" />
     <Compile Include="UsuarioDataMapper.cs" />
   </ItemGroup>
