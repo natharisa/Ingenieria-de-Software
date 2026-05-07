@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Abstractions;
 using Domain;
 using Repository;
 using Services;
@@ -11,14 +12,15 @@ namespace Application
         private readonly BitacoraRepository _bitacoraRepository;
         private readonly PlainTextPasswordService _passwordService;
         private readonly BitacoraFactory _loginFallidoFactory;
+        private readonly BitacoraFactory _registroFallidoFactory;
 
         public UsuarioApplicationService()
-            : this(new UsuarioRepository(), new BitacoraRepository(), new PlainTextPasswordService(), new LoginFallidoBitacoraFactory())
+            : this(new UsuarioRepository(), new BitacoraRepository(), new PlainTextPasswordService(), new LoginFallidoBitacoraFactory(), new RegistroFallidoBitacoraFactory())
         {
         }
 
         public UsuarioApplicationService(UsuarioRepository usuarioRepository, PlainTextPasswordService passwordService)
-            : this(usuarioRepository, new BitacoraRepository(), passwordService, new LoginFallidoBitacoraFactory())
+            : this(usuarioRepository, new BitacoraRepository(), passwordService, new LoginFallidoBitacoraFactory(), new RegistroFallidoBitacoraFactory())
         {
         }
 
@@ -26,15 +28,17 @@ namespace Application
             UsuarioRepository usuarioRepository,
             BitacoraRepository bitacoraRepository,
             PlainTextPasswordService passwordService,
-            BitacoraFactory loginFallidoFactory)
+            BitacoraFactory loginFallidoFactory,
+            BitacoraFactory registroFallidoFactory)
         {
             _usuarioRepository = usuarioRepository;
             _bitacoraRepository = bitacoraRepository;
             _passwordService = passwordService;
             _loginFallidoFactory = loginFallidoFactory;
+            _registroFallidoFactory = registroFallidoFactory;
         }
 
-        public bool CrearUsuario(Usuario nuevoUsuario)
+        public ResultadoOperacion<CodigoRegistroUsuario> CrearUsuario(Usuario nuevoUsuario)
         {
             if (nuevoUsuario == null ||
                 string.IsNullOrWhiteSpace(nuevoUsuario.Username) ||
@@ -43,7 +47,9 @@ namespace Application
                 string.IsNullOrWhiteSpace(nuevoUsuario.Nombre) ||
                 string.IsNullOrWhiteSpace(nuevoUsuario.Apellido))
             {
-                return false;
+                return ResultadoOperacion<CodigoRegistroUsuario>.FalloNegocio(
+                    CodigoRegistroUsuario.DatosInvalidos,
+                    "Completa todos los campos para registrarte.");
             }
 
             Usuario usuarioProtegido = new Usuario
@@ -57,7 +63,18 @@ namespace Application
                 Idioma = nuevoUsuario.Idioma
             };
 
-            return _usuarioRepository.Crear(usuarioProtegido);
+            ResultadoOperacion<CodigoRegistroUsuario> resultado = _usuarioRepository.Crear(usuarioProtegido);
+
+            if (resultado.Codigo == CodigoRegistroUsuario.UsuarioExistente)
+            {
+                RegistrarRegistroFallido(usuarioProtegido.Username, "Intento de registro con usuario existente.");
+            }
+            else if (resultado.Codigo == CodigoRegistroUsuario.EmailExistente)
+            {
+                RegistrarRegistroFallido(usuarioProtegido.Email, "Intento de registro con email existente.");
+            }
+
+            return resultado;
         }
 
         public Usuario Login(string username, string password)
@@ -102,6 +119,12 @@ namespace Application
         private void RegistrarLoginFallido(string username, string descripcion)
         {
             IBitacoraEvento evento = _loginFallidoFactory.Crear(NormalizarIdentificador(username), descripcion);
+            _bitacoraRepository.Registrar(evento);
+        }
+
+        private void RegistrarRegistroFallido(string identificador, string descripcion)
+        {
+            IBitacoraEvento evento = _registroFallidoFactory.Crear(NormalizarIdentificador(identificador), descripcion);
             _bitacoraRepository.Registrar(evento);
         }
 

@@ -48,45 +48,45 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BitacoraView.cs">
+    <Compile Include="Views\Bitacora\BitacoraView.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="BitacoraView.Designer.cs">
+    <Compile Include="Views\Bitacora\BitacoraView.Designer.cs">
       <DependentUpon>BitacoraView.cs</DependentUpon>
     </Compile>
-    <Compile Include="Login.cs">
+    <Compile Include="Forms\Auth\Login.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Login.Designer.cs">
+    <Compile Include="Forms\Auth\Login.Designer.cs">
       <DependentUpon>Login.cs</DependentUpon>
     </Compile>
-    <Compile Include="MainForm.cs">
+    <Compile Include="Forms\Main\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
+    <Compile Include="Forms\Main\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="PermisosView.cs">
+    <Compile Include="Views\Permisos\PermisosView.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PermisosView.Designer.cs">
+    <Compile Include="Views\Permisos\PermisosView.Designer.cs">
       <DependentUpon>PermisosView.cs</DependentUpon>
     </Compile>
-    <Compile Include="Registro.cs">
+    <Compile Include="Forms\Auth\Registro.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Registro.Designer.cs">
+    <Compile Include="Forms\Auth\Registro.Designer.cs">
       <DependentUpon>Registro.cs</DependentUpon>
     </Compile>
-    <Compile Include="RolesView.cs">
+    <Compile Include="Views\Roles\RolesView.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="RolesView.Designer.cs">
+    <Compile Include="Views\Roles\RolesView.Designer.cs">
       <DependentUpon>RolesView.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Login.resx">
+    <EmbeddedResource Include="Forms\Auth\Login.resx">
       <DependentUpon>Login.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -114,6 +114,10 @@
     <None Include="App.local.example.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Abstractions\Abstractions.csproj">
+      <Project>{ec2907e8-4417-4320-b769-767f15bbe62d}</Project>
+      <Name>Abstractions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Application\Application.csproj">
       <Project>{9013383f-f7de-4763-8327-910789e2f41a}</Project>
       <Name>Application</Name>

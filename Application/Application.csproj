@@ -34,9 +34,13 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="UsuarioApplicationService.cs" />
+    <Compile Include="Usuarios\UsuarioApplicationService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Abstractions\Abstractions.csproj">
+      <Project>{ec2907e8-4417-4320-b769-767f15bbe62d}</Project>
+      <Name>Abstractions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Domain\Domain.csproj">
       <Project>{be12b97c-d2b5-4dbb-89b5-7e3e72bba151}</Project>
       <Name>Domain</Name>

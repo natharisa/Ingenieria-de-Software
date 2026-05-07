@@ -34,11 +34,14 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BitacoraAccion.cs" />
-    <Compile Include="BitacoraModulo.cs" />
-    <Compile Include="BitacoraNivel.cs" />
-    <Compile Include="IEntity.cs" />
-    <Compile Include="IPasswordService.cs" />
+    <Compile Include="Bitacora\BitacoraAccion.cs" />
+    <Compile Include="Bitacora\BitacoraModulo.cs" />
+    <Compile Include="Bitacora\BitacoraNivel.cs" />
+    <Compile Include="Common\IEntity.cs" />
+    <Compile Include="Common\ResultadoEstado.cs" />
+    <Compile Include="Common\ResultadoOperacion.cs" />
+    <Compile Include="Seguridad\IHashService.cs" />
+    <Compile Include="Seguridad\IPasswordService.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

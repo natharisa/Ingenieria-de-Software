@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Abstractions;
 using DAL;
 using Domain;
 
@@ -18,14 +19,16 @@ namespace Repository
             _usuarioDataMapper = usuarioDataMapper;
         }
 
-        public bool Crear(Usuario usuario)
+        public ResultadoOperacion<CodigoRegistroUsuario> Crear(Usuario usuario)
         {
             if (usuario == null)
             {
-                return false;
+                return ResultadoOperacion<CodigoRegistroUsuario>.FalloNegocio(
+                    CodigoRegistroUsuario.DatosInvalidos,
+                    "Los datos del usuario son invalidos.");
             }
 
-            return _usuarioDataMapper.Insertar(usuario) > 0;
+            return _usuarioDataMapper.Insertar(usuario);
         }
 
         public Usuario ObtenerPorCredenciales(string username, string password)

@@ -42,11 +42,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BitacoraDataMapper.cs" />
-    <Compile Include="DatabaseContext.cs" />
-    <Compile Include="UsuarioDataMapper.cs" />
+    <Compile Include="Bitacora\BitacoraDataMapper.cs" />
+    <Compile Include="Infrastructure\DAO.cs" />
+    <Compile Include="Infrastructure\DatabaseContext.cs" />
+    <Compile Include="Infrastructure\Mapper.cs" />
+    <Compile Include="Usuarios\MpUsuario.cs" />
+    <Compile Include="Usuarios\UsuarioDataMapper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Abstractions\Abstractions.csproj">
+      <Project>{ec2907e8-4417-4320-b769-767f15bbe62d}</Project>
+      <Name>Abstractions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BE\BE.csproj">
+      <Project>{327b2ff8-7d16-48aa-9670-7b3b33ebd4cd}</Project>
+      <Name>BE</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Domain\Domain.csproj">
       <Project>{be12b97c-d2b5-4dbb-89b5-7e3e72bba151}</Project>
       <Name>Domain</Name>

@@ -33,8 +33,9 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PlainTextPasswordService.cs" />
-    <Compile Include="UiTextService.cs" />
+    <Compile Include="Seguridad\HashService.cs" />
+    <Compile Include="Seguridad\PlainTextPasswordService.cs" />
+    <Compile Include="UI\UiTextService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Abstractions\Abstractions.csproj">

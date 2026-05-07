@@ -33,14 +33,16 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bitacora.cs" />
-    <Compile Include="BitacoraFactory.cs" />
-    <Compile Include="BitacoraRegistro.cs" />
-    <Compile Include="BitacoraRegistroMapper.cs" />
-    <Compile Include="IBitacoraEvento.cs" />
-    <Compile Include="LoginFallidoBitacoraFactory.cs" />
-    <Compile Include="Sesion.cs" />
-    <Compile Include="Usuario.cs" />
+    <Compile Include="Bitacora\Bitacora.cs" />
+    <Compile Include="Bitacora\BitacoraFactory.cs" />
+    <Compile Include="Bitacora\BitacoraRegistro.cs" />
+    <Compile Include="Bitacora\BitacoraRegistroMapper.cs" />
+    <Compile Include="Bitacora\IBitacoraEvento.cs" />
+    <Compile Include="Bitacora\LoginFallidoBitacoraFactory.cs" />
+    <Compile Include="Bitacora\RegistroFallidoBitacoraFactory.cs" />
+    <Compile Include="Seguridad\Sesion.cs" />
+    <Compile Include="Usuarios\CodigoRegistroUsuario.cs" />
+    <Compile Include="Usuarios\Usuario.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Abstractions\Abstractions.csproj">

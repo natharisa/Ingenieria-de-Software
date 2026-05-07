@@ -41,8 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Seguridad.cs" />
-    <Compile Include="UsuarioBLL.cs" />
+    <Compile Include="Seguridad\Seguridad.cs" />
+    <Compile Include="Usuarios\UsuarioBLL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

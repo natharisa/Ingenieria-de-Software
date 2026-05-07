@@ -1,6 +1,30 @@
 USE [TecniSalud];
 GO
 
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE name = 'UX_Usuario_nombre_usuario'
+      AND object_id = OBJECT_ID('dbo.Usuario')
+)
+BEGIN
+    CREATE UNIQUE INDEX UX_Usuario_nombre_usuario
+        ON dbo.Usuario(nombre_usuario);
+END
+GO
+
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE name = 'UX_Usuario_email'
+      AND object_id = OBJECT_ID('dbo.Usuario')
+)
+BEGIN
+    CREATE UNIQUE INDEX UX_Usuario_email
+        ON dbo.Usuario(email);
+END
+GO
+
 IF OBJECT_ID('dbo.sp_Usuario_Registrar', 'P') IS NOT NULL
 BEGIN
     DROP PROCEDURE dbo.sp_Usuario_Registrar;
@@ -20,15 +44,17 @@ BEGIN
     DECLARE @id_idioma_default INT;
 
     BEGIN TRY
-        BEGIN TRANSACTION;
-
         IF EXISTS (
             SELECT 1
             FROM dbo.Usuario
             WHERE nombre_usuario = @nombre_usuario
         )
         BEGIN
-            RAISERROR('Ya existe un usuario con ese nombre de usuario.', 16, 1);
+            SELECT
+                'USUARIO_EXISTENTE' AS codigo_resultado,
+                'Ya existe un usuario con ese nombre de usuario.' AS mensaje,
+                CAST(NULL AS INT) AS id_usuario;
+            RETURN;
         END;
 
         IF EXISTS (
@@ -37,7 +63,11 @@ BEGIN
             WHERE email = @email
         )
         BEGIN
-            RAISERROR('Ya existe un usuario con ese email.', 16, 1);
+            SELECT
+                'EMAIL_EXISTENTE' AS codigo_resultado,
+                'Ya existe un usuario con ese email.' AS mensaje,
+                CAST(NULL AS INT) AS id_usuario;
+            RETURN;
         END;
 
         SELECT @id_idioma_default = id_idioma
@@ -47,8 +77,14 @@ BEGIN
 
         IF @id_idioma_default IS NULL
         BEGIN
-            RAISERROR('No existe un idioma activo con codigo es-AR.', 16, 1);
+            SELECT
+                'IDIOMA_DEFAULT_INEXISTENTE' AS codigo_resultado,
+                'No existe un idioma activo con codigo es-AR.' AS mensaje,
+                CAST(NULL AS INT) AS id_usuario;
+            RETURN;
         END;
+
+        BEGIN TRANSACTION;
 
         INSERT INTO dbo.Usuario
         (
@@ -74,6 +110,8 @@ BEGIN
         COMMIT TRANSACTION;
 
         SELECT
+            'OK' AS codigo_resultado,
+            'Usuario registrado con exito.' AS mensaje,
             u.id_usuario,
             u.id_idioma,
             u.nombre_usuario,
@@ -87,6 +125,24 @@ BEGIN
         IF @@TRANCOUNT > 0
         BEGIN
             ROLLBACK TRANSACTION;
+        END;
+
+        IF ERROR_NUMBER() IN (2601, 2627)
+        BEGIN
+            IF CHARINDEX('email', ERROR_MESSAGE()) > 0
+            BEGIN
+                SELECT
+                    'EMAIL_EXISTENTE' AS codigo_resultado,
+                    'Ya existe un usuario con ese email.' AS mensaje,
+                    CAST(NULL AS INT) AS id_usuario;
+                RETURN;
+            END;
+
+            SELECT
+                'USUARIO_EXISTENTE' AS codigo_resultado,
+                'Ya existe un usuario con ese nombre de usuario.' AS mensaje,
+                CAST(NULL AS INT) AS id_usuario;
+            RETURN;
         END;
 
         THROW;
