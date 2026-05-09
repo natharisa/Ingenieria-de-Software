@@ -1,6 +1,5 @@
 using System;
 using System.Windows.Forms;
-using Abstractions;
 using Application;
 using Domain;
 
@@ -39,9 +38,9 @@ namespace UI
                 Apellido = txtApellido.Text.Trim()
             };
 
-            ResultadoOperacion<CodigoRegistroUsuario> resultado = _usuarioService.CrearUsuario(nuevo);
+            CodigoRegistroUsuario resultado = _usuarioService.CrearUsuario(nuevo);
 
-            if (resultado.Exitoso)
+            if (resultado == CodigoRegistroUsuario.Creado)
             {
                 UsuarioRegistrado = nuevo.Username;
                 MessageBox.Show("Usuario registrado con exito.");
@@ -54,9 +53,9 @@ namespace UI
             }
         }
 
-        private static string ObtenerMensajeRegistro(ResultadoOperacion<CodigoRegistroUsuario> resultado)
+        private static string ObtenerMensajeRegistro(CodigoRegistroUsuario resultado)
         {
-            switch (resultado.Codigo)
+            switch (resultado)
             {
                 case CodigoRegistroUsuario.DatosInvalidos:
                     return "Completa todos los campos para registrarte.";
@@ -71,9 +70,7 @@ namespace UI
                     return "No se pudo registrar el usuario porque falta el idioma default.";
 
                 default:
-                    return resultado.Estado == ResultadoEstado.ErrorTecnico
-                        ? "Ocurrio un error tecnico al registrar el usuario."
-                        : "No se pudo registrar el usuario.";
+                    return "Ocurrio un error tecnico al registrar el usuario.";
             }
         }
 

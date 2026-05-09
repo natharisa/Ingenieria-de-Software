@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using Abstractions;
 using Domain;
 
 namespace DAL
@@ -21,13 +20,11 @@ namespace DAL
             _databaseContext = databaseContext;
         }
 
-        public ResultadoOperacion<CodigoRegistroUsuario> Insertar(Usuario usuario)
+        public CodigoRegistroUsuario Insertar(Usuario usuario)
         {
             if (usuario == null)
             {
-                return ResultadoOperacion<CodigoRegistroUsuario>.FalloNegocio(
-                    CodigoRegistroUsuario.DatosInvalidos,
-                    "Los datos del usuario son invalidos.");
+                return CodigoRegistroUsuario.DatosInvalidos;
             }
 
             SqlParameter idUsuarioNuevo = new SqlParameter("@id_usuario_nuevo", SqlDbType.Int)
@@ -50,9 +47,7 @@ namespace DAL
 
                 if (tabla.Rows.Count == 0)
                 {
-                    return ResultadoOperacion<CodigoRegistroUsuario>.ErrorTecnico(
-                        CodigoRegistroUsuario.ErrorBaseDatos,
-                        "El registro de usuario no devolvio resultado.");
+                    return CodigoRegistroUsuario.ErrorBaseDatos;
                 }
 
                 if (tabla.Columns.Contains("codigo_resultado"))
@@ -61,9 +56,7 @@ namespace DAL
                 }
 
                 usuario.Id = Convert.ToInt32(tabla.Rows[0]["id_usuario"]);
-                return ResultadoOperacion<CodigoRegistroUsuario>.Ok(
-                    CodigoRegistroUsuario.Creado,
-                    "Usuario registrado con exito.");
+                return CodigoRegistroUsuario.Creado;
             }
             catch (SqlException ex)
             {
@@ -71,9 +64,7 @@ namespace DAL
             }
             catch
             {
-                return ResultadoOperacion<CodigoRegistroUsuario>.ErrorTecnico(
-                    CodigoRegistroUsuario.ErrorBaseDatos,
-                    "No se pudo registrar el usuario.");
+                return CodigoRegistroUsuario.ErrorBaseDatos;
             }
             finally
             {
@@ -157,42 +148,31 @@ namespace DAL
             };
         }
 
-        private static ResultadoOperacion<CodigoRegistroUsuario> MapearResultadoRegistro(DataRow registro, Usuario usuario)
+        private static CodigoRegistroUsuario MapearResultadoRegistro(DataRow registro, Usuario usuario)
         {
             string codigoResultado = registro["codigo_resultado"].ToString();
-            string mensaje = registro.Table.Columns.Contains("mensaje") ? registro["mensaje"].ToString() : null;
 
             switch (codigoResultado)
             {
                 case "OK":
                     usuario.Id = Convert.ToInt32(registro["id_usuario"]);
-                    return ResultadoOperacion<CodigoRegistroUsuario>.Ok(
-                        CodigoRegistroUsuario.Creado,
-                        mensaje);
+                    return CodigoRegistroUsuario.Creado;
 
                 case "USUARIO_EXISTENTE":
-                    return ResultadoOperacion<CodigoRegistroUsuario>.FalloNegocio(
-                        CodigoRegistroUsuario.UsuarioExistente,
-                        mensaje);
+                    return CodigoRegistroUsuario.UsuarioExistente;
 
                 case "EMAIL_EXISTENTE":
-                    return ResultadoOperacion<CodigoRegistroUsuario>.FalloNegocio(
-                        CodigoRegistroUsuario.EmailExistente,
-                        mensaje);
+                    return CodigoRegistroUsuario.EmailExistente;
 
                 case "IDIOMA_DEFAULT_INEXISTENTE":
-                    return ResultadoOperacion<CodigoRegistroUsuario>.FalloNegocio(
-                        CodigoRegistroUsuario.IdiomaDefaultInexistente,
-                        mensaje);
+                    return CodigoRegistroUsuario.IdiomaDefaultInexistente;
 
                 default:
-                    return ResultadoOperacion<CodigoRegistroUsuario>.ErrorTecnico(
-                        CodigoRegistroUsuario.ErrorBaseDatos,
-                        mensaje);
+                    return CodigoRegistroUsuario.ErrorBaseDatos;
             }
         }
 
-        private static ResultadoOperacion<CodigoRegistroUsuario> MapearErrorSqlRegistro(SqlException ex)
+        private static CodigoRegistroUsuario MapearErrorSqlRegistro(SqlException ex)
         {
             if (ex.Number == 2601 || ex.Number == 2627)
             {
@@ -200,19 +180,13 @@ namespace DAL
 
                 if (mensaje.IndexOf("email", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
-                    return ResultadoOperacion<CodigoRegistroUsuario>.FalloNegocio(
-                        CodigoRegistroUsuario.EmailExistente,
-                        "Ya existe un usuario con ese email.");
+                    return CodigoRegistroUsuario.EmailExistente;
                 }
 
-                return ResultadoOperacion<CodigoRegistroUsuario>.FalloNegocio(
-                    CodigoRegistroUsuario.UsuarioExistente,
-                    "Ya existe un usuario con ese nombre de usuario.");
+                return CodigoRegistroUsuario.UsuarioExistente;
             }
 
-            return ResultadoOperacion<CodigoRegistroUsuario>.ErrorTecnico(
-                CodigoRegistroUsuario.ErrorBaseDatos,
-                "No se pudo registrar el usuario.");
+            return CodigoRegistroUsuario.ErrorBaseDatos;
         }
     }
 }

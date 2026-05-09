@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Abstractions;
 using Domain;
 using Repository;
 using Services;
@@ -38,7 +37,7 @@ namespace Application
             _registroFallidoFactory = registroFallidoFactory;
         }
 
-        public ResultadoOperacion<CodigoRegistroUsuario> CrearUsuario(Usuario nuevoUsuario)
+        public CodigoRegistroUsuario CrearUsuario(Usuario nuevoUsuario)
         {
             if (nuevoUsuario == null ||
                 string.IsNullOrWhiteSpace(nuevoUsuario.Username) ||
@@ -47,9 +46,7 @@ namespace Application
                 string.IsNullOrWhiteSpace(nuevoUsuario.Nombre) ||
                 string.IsNullOrWhiteSpace(nuevoUsuario.Apellido))
             {
-                return ResultadoOperacion<CodigoRegistroUsuario>.FalloNegocio(
-                    CodigoRegistroUsuario.DatosInvalidos,
-                    "Completa todos los campos para registrarte.");
+                return CodigoRegistroUsuario.DatosInvalidos;
             }
 
             Usuario usuarioProtegido = new Usuario
@@ -63,13 +60,13 @@ namespace Application
                 Idioma = nuevoUsuario.Idioma
             };
 
-            ResultadoOperacion<CodigoRegistroUsuario> resultado = _usuarioRepository.Crear(usuarioProtegido);
+            CodigoRegistroUsuario resultado = _usuarioRepository.Crear(usuarioProtegido);
 
-            if (resultado.Codigo == CodigoRegistroUsuario.UsuarioExistente)
+            if (resultado == CodigoRegistroUsuario.UsuarioExistente)
             {
                 RegistrarRegistroFallido(usuarioProtegido.Username, "Intento de registro con usuario existente.");
             }
-            else if (resultado.Codigo == CodigoRegistroUsuario.EmailExistente)
+            else if (resultado == CodigoRegistroUsuario.EmailExistente)
             {
                 RegistrarRegistroFallido(usuarioProtegido.Email, "Intento de registro con email existente.");
             }

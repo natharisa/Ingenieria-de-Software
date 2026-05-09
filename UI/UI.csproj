@@ -114,10 +114,6 @@
     <None Include="App.local.example.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Abstractions\Abstractions.csproj">
-      <Project>{ec2907e8-4417-4320-b769-767f15bbe62d}</Project>
-      <Name>Abstractions</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Application\Application.csproj">
       <Project>{9013383f-f7de-4763-8327-910789e2f41a}</Project>
       <Name>Application</Name>

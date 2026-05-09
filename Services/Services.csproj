@@ -33,7 +33,6 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Seguridad\HashService.cs" />
     <Compile Include="Seguridad\PlainTextPasswordService.cs" />
     <Compile Include="UI\UiTextService.cs" />
   </ItemGroup>
