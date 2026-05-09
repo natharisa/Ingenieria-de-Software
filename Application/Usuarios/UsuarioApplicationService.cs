@@ -10,31 +10,21 @@ namespace Application
         private readonly UsuarioRepository _usuarioRepository;
         private readonly BitacoraRepository _bitacoraRepository;
         private readonly PlainTextPasswordService _passwordService;
-        private readonly BitacoraFactory _loginFallidoFactory;
-        private readonly BitacoraFactory _registroFallidoFactory;
+        private BitacoraFactory _bitacoraFactory;
 
         public UsuarioApplicationService()
-            : this(new UsuarioRepository(), new BitacoraRepository(), new PlainTextPasswordService(), new LoginFallidoBitacoraFactory(), new RegistroFallidoBitacoraFactory())
-        {
-        }
-
-        public UsuarioApplicationService(UsuarioRepository usuarioRepository, PlainTextPasswordService passwordService)
-            : this(usuarioRepository, new BitacoraRepository(), passwordService, new LoginFallidoBitacoraFactory(), new RegistroFallidoBitacoraFactory())
+            : this(new UsuarioRepository(), new BitacoraRepository(), new PlainTextPasswordService())
         {
         }
 
         public UsuarioApplicationService(
             UsuarioRepository usuarioRepository,
             BitacoraRepository bitacoraRepository,
-            PlainTextPasswordService passwordService,
-            BitacoraFactory loginFallidoFactory,
-            BitacoraFactory registroFallidoFactory)
+            PlainTextPasswordService passwordService)
         {
             _usuarioRepository = usuarioRepository;
             _bitacoraRepository = bitacoraRepository;
             _passwordService = passwordService;
-            _loginFallidoFactory = loginFallidoFactory;
-            _registroFallidoFactory = registroFallidoFactory;
         }
 
         public CodigoRegistroUsuario CrearUsuario(Usuario nuevoUsuario)
@@ -49,6 +39,7 @@ namespace Application
                 return CodigoRegistroUsuario.DatosInvalidos;
             }
 
+
             Usuario usuarioProtegido = new Usuario
             {
                 Id = nuevoUsuario.Id,
@@ -61,6 +52,7 @@ namespace Application
             };
 
             CodigoRegistroUsuario resultado = _usuarioRepository.Crear(usuarioProtegido);
+            this._bitacoraFactory = new RegistroFallidoBitacoraFactory();
 
             if (resultado == CodigoRegistroUsuario.UsuarioExistente)
             {
@@ -76,6 +68,7 @@ namespace Application
 
         public Usuario Login(string username, string password)
         {
+            this._bitacoraFactory = new LoginFallidoBitacoraFactory();
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             {
                 RegistrarLoginFallido(username, "Intento de login con usuario o contrasena vacios.");
@@ -115,13 +108,13 @@ namespace Application
 
         private void RegistrarLoginFallido(string username, string descripcion)
         {
-            IBitacoraEvento evento = _loginFallidoFactory.Crear(NormalizarIdentificador(username), descripcion);
+            IBitacoraEvento evento = _bitacoraFactory.Crear(NormalizarIdentificador(username), descripcion);
             _bitacoraRepository.Registrar(evento);
         }
 
         private void RegistrarRegistroFallido(string identificador, string descripcion)
         {
-            IBitacoraEvento evento = _registroFallidoFactory.Crear(NormalizarIdentificador(identificador), descripcion);
+            IBitacoraEvento evento = _bitacoraFactory.Crear(NormalizarIdentificador(identificador), descripcion);
             _bitacoraRepository.Registrar(evento);
         }
 
