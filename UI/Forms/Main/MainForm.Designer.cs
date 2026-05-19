@@ -84,8 +84,8 @@ namespace UI
             this.salirToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.salirToolStripMenuItem.ForeColor = System.Drawing.Color.White;
             this.salirToolStripMenuItem.Name = "salirToolStripMenuItem";
-            this.salirToolStripMenuItem.Size = new System.Drawing.Size(51, 24);
-            this.salirToolStripMenuItem.Text = "Salir";
+            this.salirToolStripMenuItem.Size = new System.Drawing.Size(108, 24);
+            this.salirToolStripMenuItem.Text = "Cerrar sesión";
             this.salirToolStripMenuItem.Click += new System.EventHandler(this.salirToolStripMenuItem_Click);
             // 
             // topPanel

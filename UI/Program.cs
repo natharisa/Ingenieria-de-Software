@@ -17,11 +17,22 @@ namespace UI
             System.Windows.Forms.Application.EnableVisualStyles();
             System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
 
-            using (Login login = new Login())
+            bool mostrarLogin = true;
+
+            while (mostrarLogin)
             {
-                if (login.ShowDialog() == DialogResult.OK)
+                using (Login login = new Login())
                 {
-                    System.Windows.Forms.Application.Run(new MainForm());
+                    if (login.ShowDialog() != DialogResult.OK)
+                    {
+                        break;
+                    }
+                }
+
+                using (MainForm mainForm = new MainForm())
+                {
+                    System.Windows.Forms.Application.Run(mainForm);
+                    mostrarLogin = mainForm.DialogResult == DialogResult.Retry;
                 }
             }
         }

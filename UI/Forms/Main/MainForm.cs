@@ -38,6 +38,8 @@ namespace UI
 
         private void salirToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Sesion.GetInstance().Logout();
+            DialogResult = DialogResult.Retry;
             Close();
         }
 
