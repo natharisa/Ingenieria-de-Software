@@ -72,6 +72,12 @@
     <Compile Include="Views\Permisos\PermisosView.Designer.cs">
       <DependentUpon>PermisosView.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\Usuarios\UsuariosView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Usuarios\UsuariosView.Designer.cs">
+      <DependentUpon>UsuariosView.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Auth\Registro.cs">
       <SubType>Form</SubType>
     </Compile>

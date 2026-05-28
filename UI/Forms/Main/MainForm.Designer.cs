@@ -26,6 +26,7 @@ namespace UI
         {
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.bitacoraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.usuariosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.permisosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rolesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.salirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -41,6 +42,7 @@ namespace UI
             this.menuStrip1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(37)))), ((int)(((byte)(41)))));
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.bitacoraToolStripMenuItem,
+            this.usuariosToolStripMenuItem,
             this.permisosToolStripMenuItem,
             this.rolesToolStripMenuItem,
             this.salirToolStripMenuItem});
@@ -59,6 +61,15 @@ namespace UI
             this.bitacoraToolStripMenuItem.Size = new System.Drawing.Size(76, 24);
             this.bitacoraToolStripMenuItem.Text = "Bitacora";
             this.bitacoraToolStripMenuItem.Click += new System.EventHandler(this.bitacoraToolStripMenuItem_Click);
+            // 
+            // usuariosToolStripMenuItem
+            // 
+            this.usuariosToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.usuariosToolStripMenuItem.ForeColor = System.Drawing.Color.White;
+            this.usuariosToolStripMenuItem.Name = "usuariosToolStripMenuItem";
+            this.usuariosToolStripMenuItem.Size = new System.Drawing.Size(78, 24);
+            this.usuariosToolStripMenuItem.Text = "Usuarios";
+            this.usuariosToolStripMenuItem.Click += new System.EventHandler(this.usuariosToolStripMenuItem_Click);
             // 
             // permisosToolStripMenuItem
             // 
@@ -147,6 +158,7 @@ namespace UI
 
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem bitacoraToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem usuariosToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem permisosToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rolesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem salirToolStripMenuItem;

@@ -36,6 +36,11 @@ namespace UI
             ShowScreen(new RolesView());
         }
 
+        private void usuariosToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ShowScreen(new UsuariosView());
+        }
+
         private void salirToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Sesion.GetInstance().Logout();

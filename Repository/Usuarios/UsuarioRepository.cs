@@ -55,6 +55,16 @@ namespace Repository
             }
         }
 
+        public bool Modificar(Usuario usuario)
+        {
+            if (usuario == null || usuario.Id == 0)
+            {
+                return false;
+            }
+
+            return _usuarioDataMapper.Editar(usuario) > 0;
+        }
+
         public void Borrar(Usuario usuario)
         {
             if (usuario == null)
@@ -63,6 +73,16 @@ namespace Repository
             }
 
             _usuarioDataMapper.Borrar(usuario);
+        }
+
+        public bool Inhabilitar(Usuario usuario)
+        {
+            if (usuario == null || usuario.Id == 0)
+            {
+                return false;
+            }
+
+            return _usuarioDataMapper.Borrar(usuario) > 0;
         }
 
         public List<Usuario> Listar()

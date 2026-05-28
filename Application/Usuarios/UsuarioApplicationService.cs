@@ -32,9 +32,7 @@ namespace Application
             if (nuevoUsuario == null ||
                 string.IsNullOrWhiteSpace(nuevoUsuario.Username) ||
                 string.IsNullOrWhiteSpace(nuevoUsuario.Email) ||
-                string.IsNullOrWhiteSpace(nuevoUsuario.Password) ||
-                string.IsNullOrWhiteSpace(nuevoUsuario.Nombre) ||
-                string.IsNullOrWhiteSpace(nuevoUsuario.Apellido))
+                string.IsNullOrWhiteSpace(nuevoUsuario.Password))
             {
                 return CodigoRegistroUsuario.DatosInvalidos;
             }
@@ -46,9 +44,10 @@ namespace Application
                 Username = nuevoUsuario.Username.Trim(),
                 Email = nuevoUsuario.Email.Trim(),
                 Password = _passwordService.Hash(nuevoUsuario.Password),
-                Nombre = nuevoUsuario.Nombre.Trim(),
-                Apellido = nuevoUsuario.Apellido.Trim(),
-                Idioma = nuevoUsuario.Idioma
+                Nombre = string.IsNullOrWhiteSpace(nuevoUsuario.Nombre) ? null : nuevoUsuario.Nombre.Trim(),
+                Apellido = string.IsNullOrWhiteSpace(nuevoUsuario.Apellido) ? null : nuevoUsuario.Apellido.Trim(),
+                Idioma = nuevoUsuario.Idioma,
+                Estado = "ACTIVO"
             };
 
             CodigoRegistroUsuario resultado = _usuarioRepository.Crear(usuarioProtegido);
@@ -96,9 +95,44 @@ namespace Application
             _usuarioRepository.Guardar(usuario);
         }
 
+        public bool ModificarUsuario(Usuario usuario)
+        {
+            if (usuario == null ||
+                usuario.Id == 0 ||
+                string.IsNullOrWhiteSpace(usuario.Username) ||
+                string.IsNullOrWhiteSpace(usuario.Email))
+            {
+                return false;
+            }
+
+            Usuario usuarioNormalizado = new Usuario
+            {
+                Id = usuario.Id,
+                Username = usuario.Username.Trim(),
+                Email = usuario.Email.Trim(),
+                Password = string.IsNullOrWhiteSpace(usuario.Password) ? null : _passwordService.Hash(usuario.Password),
+                Nombre = string.IsNullOrWhiteSpace(usuario.Nombre) ? null : usuario.Nombre.Trim(),
+                Apellido = string.IsNullOrWhiteSpace(usuario.Apellido) ? null : usuario.Apellido.Trim(),
+                Idioma = usuario.Idioma,
+                Estado = string.IsNullOrWhiteSpace(usuario.Estado) ? "ACTIVO" : usuario.Estado.Trim()
+            };
+
+            return _usuarioRepository.Modificar(usuarioNormalizado);
+        }
+
         public void Borrar(Usuario usuario)
         {
             _usuarioRepository.Borrar(usuario);
+        }
+
+        public bool InhabilitarUsuario(Usuario usuario)
+        {
+            if (usuario == null || usuario.Id == 0)
+            {
+                return false;
+            }
+
+            return _usuarioRepository.Inhabilitar(usuario);
         }
 
         public List<Usuario> Listar()

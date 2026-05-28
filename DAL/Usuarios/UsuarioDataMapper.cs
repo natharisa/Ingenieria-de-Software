@@ -124,17 +124,96 @@ namespace DAL
 
         public int Editar(Usuario usuario)
         {
-            return -1;
+            if (usuario == null || usuario.Id == 0)
+            {
+                return -1;
+            }
+
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                _databaseContext.CrearParametro("@id_usuario", usuario.Id),
+                _databaseContext.CrearParametro("@nombre_usuario", usuario.Username),
+                _databaseContext.CrearParametro("@email", usuario.Email),
+                _databaseContext.CrearParametro("@estado_usuario", usuario.Estado),
+                _databaseContext.CrearParametro("@password_hash", string.IsNullOrWhiteSpace(usuario.Password) ? null : usuario.Password)
+            };
+
+            const string sql = @"
+                UPDATE dbo.Usuario
+                SET nombre_usuario = @nombre_usuario,
+                    email = @email,
+                    estado_usuario = @estado_usuario,
+                    password_hash = COALESCE(@password_hash, password_hash)
+                WHERE id_usuario = @id_usuario";
+
+            try
+            {
+                _databaseContext.Abrir();
+                return _databaseContext.Escribir(sql, parametros);
+            }
+            finally
+            {
+                _databaseContext.Cerrar();
+            }
         }
 
         public int Borrar(Usuario usuario)
         {
-            return -1;
+            if (usuario == null || usuario.Id == 0)
+            {
+                return -1;
+            }
+
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                _databaseContext.CrearParametro("@id_usuario", usuario.Id)
+            };
+
+            const string sql = @"
+                UPDATE dbo.Usuario
+                SET estado_usuario = 'INACTIVO'
+                WHERE id_usuario = @id_usuario";
+
+            try
+            {
+                _databaseContext.Abrir();
+                return _databaseContext.Escribir(sql, parametros);
+            }
+            finally
+            {
+                _databaseContext.Cerrar();
+            }
         }
 
         public List<Usuario> Listar()
         {
-            return new List<Usuario>();
+            const string sql = @"
+                SELECT
+                    u.id_usuario,
+                    u.id_idioma,
+                    u.nombre_usuario,
+                    u.email,
+                    u.estado_usuario
+                FROM dbo.Usuario u
+                ORDER BY u.nombre_usuario";
+
+            try
+            {
+                _databaseContext.Abrir();
+                DataTable tabla = _databaseContext.LeerTexto(sql);
+                List<Usuario> usuarios = new List<Usuario>();
+
+                foreach (DataRow registro in tabla.Rows)
+                {
+                    usuarios.Add(MapearUsuario(registro));
+                }
+
+                return usuarios;
+            }
+            finally
+            {
+                _databaseContext.Cerrar();
+            }
         }
 
         private static Usuario MapearUsuario(DataRow registro)
@@ -144,7 +223,10 @@ namespace DAL
                 Id = Convert.ToInt32(registro["id_usuario"]),
                 Username = registro["nombre_usuario"].ToString(),
                 Email = registro["email"].ToString(),
-                Idioma = registro["id_idioma"].ToString()
+                Idioma = registro["id_idioma"].ToString(),
+                Estado = registro.Table.Columns.Contains("estado_usuario")
+                    ? registro["estado_usuario"].ToString()
+                    : null
             };
         }
 

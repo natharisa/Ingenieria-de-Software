@@ -61,7 +61,7 @@ namespace DAL
             return new SqlParameter
             {
                 ParameterName = nombre,
-                Value = valor,
+                Value = string.IsNullOrWhiteSpace(valor) ? (object)DBNull.Value : valor,
                 DbType = DbType.String
             };
         }
