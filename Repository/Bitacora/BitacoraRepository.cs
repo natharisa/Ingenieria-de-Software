@@ -1,5 +1,6 @@
 using DAL;
 using Domain;
+using System.Collections.Generic;
 
 namespace Repository
 {
@@ -25,6 +26,11 @@ namespace Repository
             }
 
             return _bitacoraDataMapper.Insertar(BitacoraRegistroMapper.Mapear(bitacora)) > 0;
+        }
+
+        public List<BitacoraRegistro> Listar()
+        {
+            return _bitacoraDataMapper.Listar();
         }
     }
 }

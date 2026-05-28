@@ -62,6 +62,45 @@ namespace DAL
             }
         }
 
+        public List<BitacoraRegistro> Listar()
+        {
+            const string sql = @"
+                SELECT
+                    id_bitacora,
+                    id_usuario,
+                    identificador_usuario,
+                    modulo,
+                    accion,
+                    nivel,
+                    descripcion,
+                    equipo,
+                    fecha_evento
+                FROM dbo.Bitacora
+                ORDER BY fecha_evento DESC, id_bitacora DESC";
+
+            try
+            {
+                _databaseContext.Abrir();
+                DataTable tabla = _databaseContext.LeerTexto(sql);
+                List<BitacoraRegistro> registros = new List<BitacoraRegistro>();
+
+                foreach (DataRow fila in tabla.Rows)
+                {
+                    registros.Add(MapearBitacora(fila));
+                }
+
+                return registros;
+            }
+            catch
+            {
+                return new List<BitacoraRegistro>();
+            }
+            finally
+            {
+                _databaseContext.Cerrar();
+            }
+        }
+
         private static SqlParameter CrearParametro(string nombre, string valor)
         {
             return new SqlParameter
@@ -89,6 +128,22 @@ namespace DAL
                 ParameterName = nombre,
                 Value = valor,
                 DbType = DbType.DateTime
+            };
+        }
+
+        private static BitacoraRegistro MapearBitacora(DataRow fila)
+        {
+            return new BitacoraRegistro
+            {
+                Id = Convert.ToInt32(fila["id_bitacora"]),
+                IdUsuario = fila["id_usuario"] == DBNull.Value ? (int?)null : Convert.ToInt32(fila["id_usuario"]),
+                IdentificadorUsuario = fila["identificador_usuario"] == DBNull.Value ? null : fila["identificador_usuario"].ToString(),
+                Modulo = fila["modulo"].ToString(),
+                Accion = fila["accion"].ToString(),
+                Nivel = fila["nivel"].ToString(),
+                Descripcion = fila["descripcion"] == DBNull.Value ? null : fila["descripcion"].ToString(),
+                Equipo = fila["equipo"] == DBNull.Value ? null : fila["equipo"].ToString(),
+                Fecha = Convert.ToDateTime(fila["fecha_evento"])
             };
         }
     }
