@@ -101,6 +101,7 @@ namespace DAL
             }
         }
 
+        #region CreacParametros
         private static SqlParameter CrearParametro(string nombre, string valor)
         {
             return new SqlParameter
@@ -130,7 +131,7 @@ namespace DAL
                 DbType = DbType.DateTime
             };
         }
-
+        #endregion
         private static BitacoraRegistro MapearBitacora(DataRow fila)
         {
             return new BitacoraRegistro

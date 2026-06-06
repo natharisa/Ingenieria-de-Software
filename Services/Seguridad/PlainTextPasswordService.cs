@@ -6,7 +6,7 @@ namespace Services
 {
     public class PlainTextPasswordService : IPasswordService
     {
-
+        //Logica de hash
         public string Hash(string plainTextPassword)
         {
             if (string.IsNullOrEmpty(plainTextPassword))

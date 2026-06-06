@@ -30,6 +30,7 @@ namespace DAL
             }
         }
 
+        #region Transaccion
         public void IniciarTx()
         {
             if (Conexion != null)
@@ -55,7 +56,7 @@ namespace DAL
                 Transaccion = null;
             }
         }
-
+        #endregion
         public SqlParameter CrearParametro(string nombre, string valor)
         {
             return new SqlParameter

@@ -27,6 +27,7 @@ namespace Application
             _passwordService = passwordService;
         }
 
+        //Registrar el usuario
         public CodigoRegistroUsuario CrearUsuario(Usuario nuevoUsuario)
         {
             if (nuevoUsuario == null ||
@@ -37,7 +38,7 @@ namespace Application
                 return CodigoRegistroUsuario.DatosInvalidos;
             }
 
-
+            //Aplicacion del hash
             Usuario usuarioProtegido = new Usuario
             {
                 Id = nuevoUsuario.Id,
@@ -50,6 +51,7 @@ namespace Application
                 Estado = "ACTIVO"
             };
 
+            //Registro de la falla al ingresar REGISTRO
             CodigoRegistroUsuario resultado = _usuarioRepository.Crear(usuarioProtegido);
             this._bitacoraFactory = new RegistroFallidoBitacoraFactory();
 
@@ -65,6 +67,7 @@ namespace Application
             return resultado;
         }
 
+        //LOGIN registro de falla
         public Usuario Login(string username, string password)
         {
             this._bitacoraFactory = new LoginFallidoBitacoraFactory();

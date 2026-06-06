@@ -14,6 +14,7 @@ namespace Domain
         {
         }
 
+        
         public static Sesion GetInstance()
         {
             if (_instance == null)
