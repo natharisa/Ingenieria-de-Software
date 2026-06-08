@@ -43,10 +43,10 @@
         <mxCell id="Sesion" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=46;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#343a40;" value="&amp;lt;&amp;lt;singleton&amp;gt;&amp;gt;&lt;br/&gt;Sesion" vertex="1">
           <mxGeometry height="200" width="270" x="595" y="150" as="geometry" />
         </mxCell>
-        <mxCell id="Sesion-attr" parent="Sesion" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="- _instance: Sesion&lt;br/&gt;- _lock: object&lt;br/&gt;+ Usuario: Usuario&lt;br/&gt;+ FechaInicio: DateTime" vertex="1">
+        <mxCell id="Sesion-attr" parent="Sesion" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="- static _instance: Sesion&lt;br/&gt;- static _lock: object&lt;br/&gt;- _usuario: Usuario&lt;br/&gt;- _fechaInicio: DateTime" vertex="1">
           <mxGeometry height="94" width="270" y="46" as="geometry" />
         </mxCell>
-        <mxCell id="Sesion-op" parent="Sesion" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="+ GetInstance(): Sesion&lt;br/&gt;+ Logout(): void" vertex="1">
+        <mxCell id="Sesion-op" parent="Sesion" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="+ static ObtenerInstancia(): Sesion&lt;br/&gt;+ IniciarSesion(usuario): void&lt;br/&gt;+ ObtenerUsuario(): Usuario&lt;br/&gt;+ ObtenerFechaInicio(): DateTime&lt;br/&gt;+ HaySesionActiva(): bool&lt;br/&gt;+ Logout(): void" vertex="1">
           <mxGeometry height="60" width="270" y="140" as="geometry" />
         </mxCell>
         <mxCell id="Usuario" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#343a40;" value="Usuario" vertex="1">
@@ -58,11 +58,11 @@
         <mxCell id="Usuario-op" parent="Usuario" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="+ ToString(): string" vertex="1">
           <mxGeometry height="34" width="260" y="176" as="geometry" />
         </mxCell>
-        <mxCell id="note" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#fff2cc;strokeColor=#d6b656;" value="Logout real: MainForm no cierra la app directamente. Limpia Sesion.Usuario, devuelve DialogResult.Retry y Program vuelve a mostrar Login." vertex="1">
+        <mxCell id="note" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#fff2cc;strokeColor=#d6b656;" value="Logout real: MainForm no cierra la app directamente. Limpia Sesion mediante Logout(), devuelve DialogResult.Retry y Program vuelve a mostrar Login." vertex="1">
           <mxGeometry height="130" width="330" x="980" y="160" as="geometry" />
         </mxCell>
         <mxCell id="edge-program-main" edge="1" parent="1" source="Program" style="endArrow=open;endFill=0;html=1;rounded=0;dashed=1;" target="MainForm" value="&amp;lt;&amp;lt;create/run&amp;gt;&amp;gt;"><mxGeometry relative="1" as="geometry" /></mxCell>
-        <mxCell id="edge-main-sesion" edge="1" parent="1" source="MainForm" style="endArrow=open;endFill=0;html=1;rounded=0;" target="Sesion" value="GetInstance().Logout()"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="edge-main-sesion" edge="1" parent="1" source="MainForm" style="endArrow=open;endFill=0;html=1;rounded=0;" target="Sesion" value="Logout()"><mxGeometry relative="1" as="geometry" /></mxCell>
         <mxCell id="edge-sesion-usuario" edge="1" parent="1" source="Sesion" style="endArrow=open;endFill=0;html=1;rounded=0;" target="Usuario" value="+ Usuario"><mxGeometry relative="1" as="geometry" /></mxCell>
         <mxCell id="edge-main-program" edge="1" parent="1" source="MainForm" style="endArrow=open;endFill=0;html=1;rounded=0;dashed=1;" target="Program" value="DialogResult.Retry"><mxGeometry relative="1" as="geometry" /></mxCell>
         <mxCell id="edge-program-login" edge="1" parent="1" source="Program" style="endArrow=open;endFill=0;html=1;rounded=0;dashed=1;" target="Login" value="&amp;lt;&amp;lt;create&amp;gt;&amp;gt;"><mxGeometry relative="1" as="geometry" /></mxCell>

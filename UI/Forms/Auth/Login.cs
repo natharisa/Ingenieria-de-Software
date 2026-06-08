@@ -29,8 +29,10 @@ namespace UI
 
             if (usuarioValidado != null)
             {
-                Sesion.GetInstance().Usuario = usuarioValidado;
-                MessageBox.Show(_uiTextService.BuildWelcomeMessage(Sesion.GetInstance().Usuario.ToString()));
+                Sesion sesion = Sesion.ObtenerInstancia();
+
+                sesion.IniciarSesion(usuarioValidado);
+                MessageBox.Show(_uiTextService.BuildWelcomeMessage(sesion.ObtenerUsuario().ToString()));
                 DialogResult = DialogResult.OK;
                 Close();
             }

@@ -14,8 +14,10 @@ namespace UI
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            lblUsuario.Text = Sesion.GetInstance().Usuario != null
-                ? $"Usuario: {Sesion.GetInstance().Usuario}"
+            Usuario usuario = Sesion.ObtenerInstancia().ObtenerUsuario();
+
+            lblUsuario.Text = usuario != null
+                ? $"Usuario: {usuario}"
                 : "Usuario: sin sesion";
 
             ShowScreen(new BitacoraView());
@@ -43,7 +45,7 @@ namespace UI
 
         private void salirToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Sesion.GetInstance().Logout();
+            Sesion.ObtenerInstancia().Logout();
             DialogResult = DialogResult.Retry;
             Close();
         }

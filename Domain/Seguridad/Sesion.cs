@@ -4,36 +4,61 @@ namespace Domain
 {
     public sealed class Sesion
     {
-        private static Sesion _instance;
+        private static readonly Sesion _instance = new Sesion();
         private static readonly object _lock = new object();
 
-        public Usuario Usuario { get; set; }
-        public DateTime FechaInicio { get; set; }
+        private Usuario _usuario;
+        private DateTime _fechaInicio;
 
         private Sesion()
         {
         }
 
-        
-        public static Sesion GetInstance()
+        public static Sesion ObtenerInstancia()
         {
-            if (_instance == null)
-            {
-                lock (_lock)
-                {
-                    if (_instance == null)
-                    {
-                        _instance = new Sesion();
-                    }
-                }
-            }
-
             return _instance;
+        }
+
+        public void IniciarSesion(Usuario usuario)
+        {
+            lock (_lock)
+            {
+                _usuario = usuario;
+                _fechaInicio = DateTime.Now;
+            }
+        }
+
+        public Usuario ObtenerUsuario()
+        {
+            lock (_lock)
+            {
+                return _usuario;
+            }
+        }
+
+        public DateTime ObtenerFechaInicio()
+        {
+            lock (_lock)
+            {
+                return _fechaInicio;
+            }
+        }
+
+        public bool HaySesionActiva()
+        {
+            lock (_lock)
+            {
+                return _usuario != null;
+            }
         }
 
         public void Logout()
         {
-            Usuario = null;
+            lock (_lock)
+            {
+                _usuario = null;
+                _fechaInicio = DateTime.MinValue;
+            }
         }
     }
 }

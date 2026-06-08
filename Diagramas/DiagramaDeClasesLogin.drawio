@@ -118,10 +118,10 @@
         <mxCell id="Sesion" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=46;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#343a40;" value="&amp;lt;&amp;lt;singleton&amp;gt;&amp;gt;&lt;br/&gt;Sesion" vertex="1">
           <mxGeometry height="180" width="230" x="720" y="830" as="geometry" />
         </mxCell>
-        <mxCell id="Sesion-attr" parent="Sesion" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="- _instance: Sesion&lt;br/&gt;+ Usuario: Usuario&lt;br/&gt;+ FechaInicio: DateTime" vertex="1">
+        <mxCell id="Sesion-attr" parent="Sesion" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="- static _instance: Sesion&lt;br/&gt;- static _lock: object&lt;br/&gt;- _usuario: Usuario&lt;br/&gt;- _fechaInicio: DateTime" vertex="1">
           <mxGeometry height="74" width="230" y="46" as="geometry" />
         </mxCell>
-        <mxCell id="Sesion-op" parent="Sesion" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="+ GetInstance(): Sesion&lt;br/&gt;+ Logout(): void" vertex="1">
+        <mxCell id="Sesion-op" parent="Sesion" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="+ static ObtenerInstancia(): Sesion&lt;br/&gt;+ IniciarSesion(usuario): void&lt;br/&gt;+ ObtenerUsuario(): Usuario&lt;br/&gt;+ ObtenerFechaInicio(): DateTime&lt;br/&gt;+ HaySesionActiva(): bool&lt;br/&gt;+ Logout(): void" vertex="1">
           <mxGeometry height="60" width="230" y="120" as="geometry" />
         </mxCell>
         <mxCell id="PlainTextPasswordService" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#343a40;" value="PlainTextPasswordService" vertex="1">
