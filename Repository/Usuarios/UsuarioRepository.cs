@@ -38,6 +38,11 @@ namespace Repository
             return _usuarioDataMapper.ExistePorNombreUsuario(username);
         }
 
+        public bool ExisteActivoPorIdentificador(string identificador)
+        {
+            return _usuarioDataMapper.ExisteActivoPorIdentificador(identificador);
+        }
+
         public void Guardar(Usuario usuario)
         {
             if (usuario == null)

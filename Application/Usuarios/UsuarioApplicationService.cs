@@ -70,21 +70,28 @@ namespace Application
         //LOGIN registro de falla
         public Usuario Login(string username, string password)
         {
-            this._bitacoraFactory = new LoginFallidoBitacoraFactory();
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             {
-                RegistrarLoginFallido(username, "Intento de login con usuario o contrasena vacios.");
                 return null;
             }
 
+            string identificador = username.Trim();
             string passwordProtegida = _passwordService.Hash(password);
-            Usuario usuario = _usuarioRepository.ObtenerPorCredenciales(username.Trim(), passwordProtegida);
+            Usuario usuario = _usuarioRepository.ObtenerPorCredenciales(identificador, passwordProtegida);
 
             if (usuario == null)
             {
-                RegistrarLoginFallido(username, "Intento de login con credenciales invalidas.");
+                if (_usuarioRepository.ExisteActivoPorIdentificador(identificador))
+                {
+                    this._bitacoraFactory = new LoginFallidoBitacoraFactory();
+                    RegistrarLoginFallido(identificador, "Intento de login con contrasena incorrecta.");
+                }
+
+                return null;
             }
 
+            this._bitacoraFactory = new LoginExitosoBitacoraFactory();
+            RegistrarLoginExitoso(usuario, "Login exitoso.");
             return usuario;
         }
 
@@ -146,6 +153,18 @@ namespace Application
         private void RegistrarLoginFallido(string username, string descripcion)
         {
             IBitacoraEvento evento = _bitacoraFactory.Crear(NormalizarIdentificador(username), descripcion);
+            _bitacoraRepository.Registrar(evento);
+        }
+
+        private void RegistrarLoginExitoso(Usuario usuario, string descripcion)
+        {
+            if (usuario == null)
+            {
+                return;
+            }
+
+            IBitacoraEvento evento = _bitacoraFactory.Crear(NormalizarIdentificador(usuario.Username), descripcion);
+            evento.IdUsuario = usuario.Id;
             _bitacoraRepository.Registrar(evento);
         }
 

@@ -38,6 +38,7 @@
     <Compile Include="Bitacora\BitacoraRegistro.cs" />
     <Compile Include="Bitacora\BitacoraRegistroMapper.cs" />
     <Compile Include="Bitacora\IBitacoraEvento.cs" />
+    <Compile Include="Bitacora\LoginExitosoBitacoraFactory.cs" />
     <Compile Include="Bitacora\LoginFallidoBitacoraFactory.cs" />
     <Compile Include="Bitacora\RegistroFallidoBitacoraFactory.cs" />
     <Compile Include="Seguridad\Sesion.cs" />
