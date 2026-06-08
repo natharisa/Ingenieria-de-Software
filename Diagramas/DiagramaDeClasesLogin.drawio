@@ -1,0 +1,153 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="CDU-01 Login" id="cdu01-login-uml">
+    <mxGraphModel grid="1" page="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" pageScale="1" pageWidth="1800" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="pkg-ui" parent="1" style="shape=folder;fontStyle=1;tabWidth=80;tabHeight=28;tabPosition=left;html=1;whiteSpace=wrap;fillColor=#f8f9fa;strokeColor=#6c757d;" value="" vertex="1">
+          <mxGeometry height="660" width="340" x="40" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pkg-application" parent="1" style="shape=folder;fontStyle=1;tabWidth=120;tabHeight=28;tabPosition=left;html=1;whiteSpace=wrap;fillColor=#f8f9fa;strokeColor=#6c757d;" value="" vertex="1">
+          <mxGeometry height="660" width="340" x="430" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pkg-repository" parent="1" style="shape=folder;fontStyle=1;tabWidth=120;tabHeight=28;tabPosition=left;html=1;whiteSpace=wrap;fillColor=#f8f9fa;strokeColor=#6c757d;" value="" vertex="1">
+          <mxGeometry height="660" width="340" x="820" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pkg-dal" parent="1" style="shape=folder;fontStyle=1;tabWidth=80;tabHeight=28;tabPosition=left;html=1;whiteSpace=wrap;fillColor=#f8f9fa;strokeColor=#6c757d;" value="" vertex="1">
+          <mxGeometry height="660" width="340" x="1210" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pkg-domain" parent="1" style="shape=folder;fontStyle=1;tabWidth=100;tabHeight=28;tabPosition=left;html=1;whiteSpace=wrap;fillColor=#f8f9fa;strokeColor=#6c757d;" value="" vertex="1">
+          <mxGeometry height="330" width="540" x="430" y="760" as="geometry" />
+        </mxCell>
+        <mxCell id="pkg-services" parent="1" style="shape=folder;fontStyle=1;tabWidth=100;tabHeight=28;tabPosition=left;html=1;whiteSpace=wrap;fillColor=#f8f9fa;strokeColor=#6c757d;" value="" vertex="1">
+          <mxGeometry height="240" width="240" x="1010" y="760" as="geometry" />
+        </mxCell>
+        <mxCell id="lbl-ui" parent="1" style="text;whiteSpace=wrap;html=1;" value="UI" vertex="1">
+          <mxGeometry height="40" width="50" x="50" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="lbl-app" parent="1" style="text;whiteSpace=wrap;html=1;" value="Application" vertex="1">
+          <mxGeometry height="40" width="90" x="450" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="lbl-repo" parent="1" style="text;whiteSpace=wrap;html=1;" value="Repository" vertex="1">
+          <mxGeometry height="40" width="90" x="830" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="lbl-dal" parent="1" style="text;whiteSpace=wrap;html=1;" value="DAL" vertex="1">
+          <mxGeometry height="40" width="60" x="1220" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="lbl-domain" parent="1" style="text;whiteSpace=wrap;html=1;" value="Domain" vertex="1">
+          <mxGeometry height="40" width="70" x="440" y="760" as="geometry" />
+        </mxCell>
+        <mxCell id="lbl-services" parent="1" style="text;whiteSpace=wrap;html=1;" value="Services" vertex="1">
+          <mxGeometry height="40" width="80" x="1020" y="760" as="geometry" />
+        </mxCell>
+        <mxCell id="Program" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#343a40;" value="Program" vertex="1">
+          <mxGeometry height="118" width="270" x="75" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="Program-op" parent="Program" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="+ Main(): void&lt;br/&gt;- mostrarLogin: bool" vertex="1">
+          <mxGeometry height="88" width="270" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Login" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#343a40;" value="Login" vertex="1">
+          <mxGeometry height="240" width="270" x="75" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="Login-attr" parent="Login" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="- _usuarioService: UsuarioApplicationService&lt;br/&gt;- _uiTextService: UiTextService" vertex="1">
+          <mxGeometry height="64" width="270" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Login-op" parent="Login" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="+ Login()&lt;br/&gt;+ Login(usuarioService, uiTextService)&lt;br/&gt;- btnLogin_Click(sender, e): void&lt;br/&gt;- btnRegistrar_Click(sender, e): void" vertex="1">
+          <mxGeometry height="146" width="270" y="94" as="geometry" />
+        </mxCell>
+        <mxCell id="MainForm" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#343a40;" value="MainForm" vertex="1">
+          <mxGeometry height="106" width="270" x="75" y="585" as="geometry" />
+        </mxCell>
+        <mxCell id="MainForm-op" parent="MainForm" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="+ MainForm()&lt;br/&gt;- MainForm_Load(sender, e): void" vertex="1">
+          <mxGeometry height="76" width="270" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UsuarioApplicationService" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#343a40;" value="UsuarioApplicationService" vertex="1">
+          <mxGeometry height="280" width="270" x="465" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="UsuarioApplicationService-attr" parent="UsuarioApplicationService" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="- _usuarioRepository: UsuarioRepository&lt;br/&gt;- _bitacoraRepository: BitacoraRepository&lt;br/&gt;- _passwordService: PlainTextPasswordService&lt;br/&gt;- _bitacoraFactory: BitacoraFactory" vertex="1">
+          <mxGeometry height="92" width="270" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UsuarioApplicationService-op" parent="UsuarioApplicationService" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="+ Login(username: string, password: string): Usuario&lt;br/&gt;+ ExisteUsuario(username: string): bool&lt;br/&gt;- RegistrarLoginFallido(username, descripcion): void&lt;br/&gt;- NormalizarIdentificador(username): string" vertex="1">
+          <mxGeometry height="158" width="270" y="122" as="geometry" />
+        </mxCell>
+        <mxCell id="UsuarioRepository" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#343a40;" value="UsuarioRepository" vertex="1">
+          <mxGeometry height="185" width="270" x="855" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="UsuarioRepository-attr" parent="UsuarioRepository" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="- _usuarioDataMapper: UsuarioDataMapper" vertex="1">
+          <mxGeometry height="36" width="270" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UsuarioRepository-op" parent="UsuarioRepository" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="+ ObtenerPorCredenciales(username, password): Usuario&lt;br/&gt;+ Existe(username: string): bool" vertex="1">
+          <mxGeometry height="119" width="270" y="66" as="geometry" />
+        </mxCell>
+        <mxCell id="BitacoraRepository" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#343a40;" value="BitacoraRepository" vertex="1">
+          <mxGeometry height="170" width="270" x="855" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="BitacoraRepository-attr" parent="BitacoraRepository" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="- _bitacoraDataMapper: BitacoraDataMapper" vertex="1">
+          <mxGeometry height="36" width="270" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="BitacoraRepository-op" parent="BitacoraRepository" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="+ Registrar(bitacora: IBitacoraEvento): bool" vertex="1">
+          <mxGeometry height="104" width="270" y="66" as="geometry" />
+        </mxCell>
+        <mxCell id="UsuarioDataMapper" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#343a40;" value="UsuarioDataMapper" vertex="1">
+          <mxGeometry height="230" width="270" x="1245" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="UsuarioDataMapper-attr" parent="UsuarioDataMapper" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="- _databaseContext: DatabaseContext" vertex="1">
+          <mxGeometry height="36" width="270" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UsuarioDataMapper-op" parent="UsuarioDataMapper" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="+ ObtenerPorCredenciales(identificador, passwordHash): Usuario&lt;br/&gt;+ ExistePorNombreUsuario(username): bool&lt;br/&gt;- MapearUsuario(registro: DataRow): Usuario" vertex="1">
+          <mxGeometry height="164" width="270" y="66" as="geometry" />
+        </mxCell>
+        <mxCell id="BitacoraDataMapper" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#343a40;" value="BitacoraDataMapper" vertex="1">
+          <mxGeometry height="200" width="270" x="1245" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="BitacoraDataMapper-attr" parent="BitacoraDataMapper" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="- _databaseContext: DatabaseContext" vertex="1">
+          <mxGeometry height="36" width="270" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="BitacoraDataMapper-op" parent="BitacoraDataMapper" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="+ Insertar(bitacora: BitacoraRegistro): int&lt;br/&gt;- CrearParametro(...): SqlParameter" vertex="1">
+          <mxGeometry height="134" width="270" y="66" as="geometry" />
+        </mxCell>
+        <mxCell id="Usuario" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#343a40;" value="Usuario" vertex="1">
+          <mxGeometry height="210" width="230" x="465" y="830" as="geometry" />
+        </mxCell>
+        <mxCell id="Usuario-attr" parent="Usuario" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="+ Id: int&lt;br/&gt;+ Username: string&lt;br/&gt;+ Email: string&lt;br/&gt;+ Password: string&lt;br/&gt;+ Nombre: string&lt;br/&gt;+ Apellido: string&lt;br/&gt;+ Idioma: string&lt;br/&gt;+ Estado: string" vertex="1">
+          <mxGeometry height="146" width="230" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Usuario-op" parent="Usuario" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="+ ToString(): string" vertex="1">
+          <mxGeometry height="34" width="230" y="176" as="geometry" />
+        </mxCell>
+        <mxCell id="Sesion" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=46;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#343a40;" value="&amp;lt;&amp;lt;singleton&amp;gt;&amp;gt;&lt;br/&gt;Sesion" vertex="1">
+          <mxGeometry height="180" width="230" x="720" y="830" as="geometry" />
+        </mxCell>
+        <mxCell id="Sesion-attr" parent="Sesion" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="- _instance: Sesion&lt;br/&gt;+ Usuario: Usuario&lt;br/&gt;+ FechaInicio: DateTime" vertex="1">
+          <mxGeometry height="74" width="230" y="46" as="geometry" />
+        </mxCell>
+        <mxCell id="Sesion-op" parent="Sesion" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="+ GetInstance(): Sesion&lt;br/&gt;+ Logout(): void" vertex="1">
+          <mxGeometry height="60" width="230" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="PlainTextPasswordService" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#343a40;" value="PlainTextPasswordService" vertex="1">
+          <mxGeometry height="92" width="190" x="1035" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="PlainTextPasswordService-op" parent="PlainTextPasswordService" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="+ Hash(password: string): string" vertex="1">
+          <mxGeometry height="62" width="190" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="UiTextService" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;marginBottom=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#343a40;" value="UiTextService" vertex="1">
+          <mxGeometry height="92" width="190" x="1035" y="925" as="geometry" />
+        </mxCell>
+        <mxCell id="UiTextService-op" parent="UiTextService" style="text;strokeColor=#343a40;fillColor=none;align=left;verticalAlign=top;spacingLeft=6;spacingRight=6;overflow=hidden;rotatable=0;points=[];portConstraint=eastwest;html=1;" value="+ BuildWelcomeMessage(nombreVisible): string" vertex="1">
+          <mxGeometry height="62" width="190" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-program-login" edge="1" parent="1" source="Program" style="endArrow=open;endFill=0;html=1;rounded=0;dashed=1;" target="Login" value="&amp;lt;&amp;lt;create&amp;gt;&amp;gt;"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="edge-program-main" edge="1" parent="1" source="Program" style="endArrow=open;endFill=0;html=1;rounded=0;dashed=1;" target="MainForm" value="&amp;lt;&amp;lt;create&amp;gt;&amp;gt;"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="edge-login-service" edge="1" parent="1" source="Login" style="endArrow=open;endFill=0;html=1;rounded=0;" target="UsuarioApplicationService" value="- _usuarioService"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="edge-login-uiText" edge="1" parent="1" source="Login" style="endArrow=open;endFill=0;html=1;rounded=0;" target="UiTextService" value="- _uiTextService"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="edge-login-sesion" edge="1" parent="1" source="Login" style="endArrow=open;endFill=0;html=1;rounded=0;" target="Sesion" value="+ Usuario"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="edge-service-repo" edge="1" parent="1" source="UsuarioApplicationService" style="endArrow=open;endFill=0;html=1;rounded=0;" target="UsuarioRepository" value="- _usuarioRepository"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="edge-service-bitacoraRepo" edge="1" parent="1" source="UsuarioApplicationService" style="endArrow=open;endFill=0;html=1;rounded=0;" target="BitacoraRepository" value="- _bitacoraRepository"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="edge-service-password" edge="1" parent="1" source="UsuarioApplicationService" style="endArrow=open;endFill=0;html=1;rounded=0;" target="PlainTextPasswordService" value="- _passwordService"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="edge-repo-mapper" edge="1" parent="1" source="UsuarioRepository" style="endArrow=open;endFill=0;html=1;rounded=0;" target="UsuarioDataMapper" value="- _usuarioDataMapper"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="edge-bitacora-mapper" edge="1" parent="1" source="BitacoraRepository" style="endArrow=open;endFill=0;html=1;rounded=0;" target="BitacoraDataMapper" value="- _bitacoraDataMapper"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="edge-login-usuario" edge="1" parent="1" source="UsuarioApplicationService" style="endArrow=open;endFill=0;html=1;rounded=0;dashed=1;" target="Usuario" value="&amp;lt;&amp;lt;use&amp;gt;&amp;gt;"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
