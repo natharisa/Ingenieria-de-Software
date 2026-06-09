@@ -125,7 +125,7 @@ namespace DAL
             }
         }
 
-        public bool ExisteActivoPorIdentificador(string identificador)
+        public Usuario ObtenerActivoPorIdentificador(string identificador)
         {
             List<SqlParameter> parametros = new List<SqlParameter>
             {
@@ -133,7 +133,13 @@ namespace DAL
             };
 
             const string sql = @"
-                SELECT TOP (1) id_usuario
+                SELECT TOP (1)
+                    id_usuario,
+                    id_idioma,
+                    nombre_usuario,
+                    email,
+                    estado_usuario,
+                    intentos_login_fallidos
                 FROM dbo.Usuario
                 WHERE (nombre_usuario = @identificador OR email = @identificador)
                   AND estado_usuario = 'ACTIVO'";
@@ -142,7 +148,13 @@ namespace DAL
             {
                 _databaseContext.Abrir();
                 DataTable tabla = _databaseContext.LeerTexto(sql, parametros);
-                return tabla.Rows.Count > 0;
+
+                if (tabla.Rows.Count == 0)
+                {
+                    return null;
+                }
+
+                return MapearUsuario(tabla.Rows[0]);
             }
             finally
             {

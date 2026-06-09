@@ -38,9 +38,9 @@ namespace Repository
             return _usuarioDataMapper.ExistePorNombreUsuario(username);
         }
 
-        public bool ExisteActivoPorIdentificador(string identificador)
+        public Usuario ObtenerActivoPorIdentificador(string identificador)
         {
-            return _usuarioDataMapper.ExisteActivoPorIdentificador(identificador);
+            return _usuarioDataMapper.ObtenerActivoPorIdentificador(identificador);
         }
 
         public int RegistrarLoginFallidoPorIdentificador(string identificador)

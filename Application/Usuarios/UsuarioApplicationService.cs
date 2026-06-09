@@ -81,7 +81,9 @@ namespace Application
 
             if (usuario == null)
             {
-                if (_usuarioRepository.ExisteActivoPorIdentificador(identificador))
+                Usuario usuarioExistente = _usuarioRepository.ObtenerActivoPorIdentificador(identificador);
+
+                if (usuarioExistente != null)
                 {
                     int intentosFallidos = _usuarioRepository.RegistrarLoginFallidoPorIdentificador(identificador);
                     this._bitacoraFactory = new LoginFallidoBitacoraFactory();
@@ -89,7 +91,7 @@ namespace Application
                         ? "Intento de login con contrasena incorrecta. Usuario deshabilitado por alcanzar 3 intentos fallidos."
                         : "Intento de login con contrasena incorrecta.";
 
-                    RegistrarLoginFallido(identificador, descripcion);
+                    RegistrarLoginFallido(usuarioExistente, descripcion);
                 }
 
                 return null;
@@ -156,9 +158,15 @@ namespace Application
             return _usuarioRepository.Listar();
         }
 
-        private void RegistrarLoginFallido(string username, string descripcion)
+        private void RegistrarLoginFallido(Usuario usuario, string descripcion)
         {
-            IBitacoraEvento evento = _bitacoraFactory.Crear(NormalizarIdentificador(username), descripcion);
+            if (usuario == null)
+            {
+                return;
+            }
+
+            IBitacoraEvento evento = _bitacoraFactory.Crear(NormalizarIdentificador(usuario.Username), descripcion);
+            evento.IdUsuario = usuario.Id;
             _bitacoraRepository.Registrar(evento);
         }
 
