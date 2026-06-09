@@ -12,6 +12,7 @@ namespace Domain
         public string Apellido { get; set; }
         public string Idioma { get; set; }
         public string Estado { get; set; }
+        public int IntentosLoginFallidos { get; set; }
 
         public override string ToString()
         {

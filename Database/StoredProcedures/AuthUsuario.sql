@@ -25,6 +25,14 @@ BEGIN
 END
 GO
 
+IF COL_LENGTH('dbo.Usuario', 'intentos_login_fallidos') IS NULL
+BEGIN
+    ALTER TABLE dbo.Usuario
+    ADD intentos_login_fallidos INT NOT NULL
+        CONSTRAINT DF_Usuario_intentos_login_fallidos DEFAULT (0);
+END
+GO
+
 IF OBJECT_ID('dbo.sp_Usuario_Registrar', 'P') IS NOT NULL
 BEGIN
     DROP PROCEDURE dbo.sp_Usuario_Registrar;
@@ -93,6 +101,7 @@ BEGIN
             email,
             password_hash,
             estado_usuario,
+            intentos_login_fallidos,
             fecha_alta
         )
         VALUES
@@ -102,6 +111,7 @@ BEGIN
             @email,
             @password_hash,
             'ACTIVO',
+            0,
             GETDATE()
         );
 
@@ -117,6 +127,7 @@ BEGIN
             u.nombre_usuario,
             u.email,
             u.estado_usuario,
+            u.intentos_login_fallidos,
             u.fecha_alta
         FROM dbo.Usuario u
         WHERE u.id_usuario = @id_usuario_nuevo;
@@ -169,6 +180,7 @@ BEGIN
         u.nombre_usuario,
         u.email,
         u.estado_usuario,
+        u.intentos_login_fallidos,
         u.fecha_alta
     FROM dbo.Usuario u
     WHERE (u.nombre_usuario = @identificador OR u.email = @identificador)

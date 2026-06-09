@@ -56,6 +56,9 @@ namespace DAL
                 }
 
                 usuario.Id = Convert.ToInt32(tabla.Rows[0]["id_usuario"]);
+                usuario.IntentosLoginFallidos = tabla.Columns.Contains("intentos_login_fallidos")
+                    ? Convert.ToInt32(tabla.Rows[0]["intentos_login_fallidos"])
+                    : 0;
                 return CodigoRegistroUsuario.Creado;
             }
             catch (SqlException ex)
@@ -147,6 +150,65 @@ namespace DAL
             }
         }
 
+        public int RegistrarLoginFallidoPorIdentificador(string identificador)
+        {
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                _databaseContext.CrearParametro("@identificador", identificador)
+            };
+
+            const string sql = @"
+                UPDATE dbo.Usuario
+                SET intentos_login_fallidos = ISNULL(intentos_login_fallidos, 0) + 1,
+                    estado_usuario = CASE
+                        WHEN ISNULL(intentos_login_fallidos, 0) + 1 >= 3 THEN 'INACTIVO'
+                        ELSE estado_usuario
+                    END
+                OUTPUT INSERTED.intentos_login_fallidos
+                WHERE (nombre_usuario = @identificador OR email = @identificador)
+                  AND estado_usuario = 'ACTIVO'";
+
+            try
+            {
+                _databaseContext.Abrir();
+                DataTable tabla = _databaseContext.LeerTexto(sql, parametros);
+
+                if (tabla.Rows.Count == 0)
+                {
+                    return -1;
+                }
+
+                return Convert.ToInt32(tabla.Rows[0]["intentos_login_fallidos"]);
+            }
+            finally
+            {
+                _databaseContext.Cerrar();
+            }
+        }
+
+        public void ReiniciarIntentosLoginFallidos(int idUsuario)
+        {
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                _databaseContext.CrearParametro("@id_usuario", idUsuario)
+            };
+
+            const string sql = @"
+                UPDATE dbo.Usuario
+                SET intentos_login_fallidos = 0
+                WHERE id_usuario = @id_usuario";
+
+            try
+            {
+                _databaseContext.Abrir();
+                _databaseContext.Escribir(sql, parametros);
+            }
+            finally
+            {
+                _databaseContext.Cerrar();
+            }
+        }
+
         public int Editar(Usuario usuario)
         {
             if (usuario == null || usuario.Id == 0)
@@ -218,7 +280,8 @@ namespace DAL
                     u.id_idioma,
                     u.nombre_usuario,
                     u.email,
-                    u.estado_usuario
+                    u.estado_usuario,
+                    u.intentos_login_fallidos
                 FROM dbo.Usuario u
                 ORDER BY u.nombre_usuario";
 
@@ -251,7 +314,10 @@ namespace DAL
                 Idioma = registro["id_idioma"].ToString(),
                 Estado = registro.Table.Columns.Contains("estado_usuario")
                     ? registro["estado_usuario"].ToString()
-                    : null
+                    : null,
+                IntentosLoginFallidos = registro.Table.Columns.Contains("intentos_login_fallidos")
+                    ? Convert.ToInt32(registro["intentos_login_fallidos"])
+                    : 0
             };
         }
 
@@ -263,6 +329,9 @@ namespace DAL
             {
                 case "OK":
                     usuario.Id = Convert.ToInt32(registro["id_usuario"]);
+                    usuario.IntentosLoginFallidos = registro.Table.Columns.Contains("intentos_login_fallidos")
+                        ? Convert.ToInt32(registro["intentos_login_fallidos"])
+                        : 0;
                     return CodigoRegistroUsuario.Creado;
 
                 case "USUARIO_EXISTENTE":
