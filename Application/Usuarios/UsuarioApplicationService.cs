@@ -97,7 +97,6 @@ namespace Application
                 return null;
             }
 
-            _usuarioRepository.ReiniciarIntentosLoginFallidos(usuario.Id);
             this._bitacoraFactory = new LoginExitosoBitacoraFactory();
             RegistrarLoginExitoso(usuario, "Login exitoso.");
             return usuario;

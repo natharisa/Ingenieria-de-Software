@@ -53,11 +53,6 @@ namespace Repository
             return _usuarioDataMapper.RegistrarLoginFallidoPorIdentificador(identificador);
         }
 
-        public void ReiniciarIntentosLoginFallidos(int idUsuario)
-        {
-            _usuarioDataMapper.ReiniciarIntentosLoginFallidos(idUsuario);
-        }
-
         public void Guardar(Usuario usuario)
         {
             if (usuario == null)

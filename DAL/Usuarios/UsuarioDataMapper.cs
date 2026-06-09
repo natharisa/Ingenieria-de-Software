@@ -154,7 +154,10 @@ namespace DAL
                     return null;
                 }
 
-                return MapearUsuario(tabla.Rows[0]);
+                Usuario usuario = MapearUsuario(tabla.Rows[0]);
+                ReiniciarIntentosLoginFallidosEnConexion(usuario.Id);
+                usuario.IntentosLoginFallidos = 0;
+                return usuario;
             }
             finally
             {
@@ -223,7 +226,7 @@ namespace DAL
             }
         }
 
-        public void ReiniciarIntentosLoginFallidos(int idUsuario)
+        private void ReiniciarIntentosLoginFallidosEnConexion(int idUsuario)
         {
             List<SqlParameter> parametros = new List<SqlParameter>
             {
@@ -235,15 +238,7 @@ namespace DAL
                 SET intentos_login_fallidos = 0
                 WHERE id_usuario = @id_usuario";
 
-            try
-            {
-                _databaseContext.Abrir();
-                _databaseContext.Escribir(sql, parametros);
-            }
-            finally
-            {
-                _databaseContext.Cerrar();
-            }
+            _databaseContext.Escribir(sql, parametros);
         }
 
         public int Editar(Usuario usuario)
