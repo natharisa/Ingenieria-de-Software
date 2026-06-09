@@ -262,6 +262,10 @@ namespace DAL
                 SET nombre_usuario = @nombre_usuario,
                     email = @email,
                     estado_usuario = @estado_usuario,
+                    intentos_login_fallidos = CASE
+                        WHEN @estado_usuario = 'ACTIVO' AND estado_usuario <> 'ACTIVO' THEN 0
+                        ELSE intentos_login_fallidos
+                    END,
                     password_hash = COALESCE(@password_hash, password_hash)
                 WHERE id_usuario = @id_usuario";
 
