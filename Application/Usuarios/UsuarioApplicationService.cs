@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Net.Mail;
 using Domain;
 using Repository;
 using Services;
@@ -36,6 +37,11 @@ namespace Application
                 string.IsNullOrWhiteSpace(nuevoUsuario.Password))
             {
                 return CodigoRegistroUsuario.DatosInvalidos;
+            }
+
+            if (!EsFormatoEmailValido(nuevoUsuario.Email))
+            {
+                return CodigoRegistroUsuario.EmailInvalido;
             }
 
             //Aplicacion del hash
@@ -132,6 +138,11 @@ namespace Application
                 return false;
             }
 
+            if (!EsFormatoEmailValido(usuario.Email))
+            {
+                return false;
+            }
+
             Usuario usuarioNormalizado = new Usuario
             {
                 Id = usuario.Id,
@@ -200,6 +211,31 @@ namespace Application
         private static string NormalizarIdentificador(string username)
         {
             return string.IsNullOrWhiteSpace(username) ? null : username.Trim();
+        }
+
+        public bool EsEmailValido(string email)
+        {
+            return EsFormatoEmailValido(email);
+        }
+
+        private static bool EsFormatoEmailValido(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return false;
+            }
+
+            string emailNormalizado = email.Trim();
+
+            try
+            {
+                MailAddress direccion = new MailAddress(emailNormalizado);
+                return direccion.Address == emailNormalizado;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

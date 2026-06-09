@@ -174,6 +174,22 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
+    DECLARE @id_usuario INT;
+
+    SELECT TOP (1)
+        @id_usuario = u.id_usuario
+    FROM dbo.Usuario u
+    WHERE (u.nombre_usuario = @identificador OR u.email = @identificador)
+      AND u.password_hash = @password_hash
+      AND u.estado_usuario = 'ACTIVO';
+
+    IF @id_usuario IS NOT NULL
+    BEGIN
+        UPDATE dbo.Usuario
+        SET intentos_login_fallidos = 0
+        WHERE id_usuario = @id_usuario;
+    END;
+
     SELECT TOP (1)
         u.id_usuario,
         u.id_idioma,
@@ -183,9 +199,7 @@ BEGIN
         u.intentos_login_fallidos,
         u.fecha_alta
     FROM dbo.Usuario u
-    WHERE (u.nombre_usuario = @identificador OR u.email = @identificador)
-      AND u.password_hash = @password_hash
-      AND u.estado_usuario = 'ACTIVO';
+    WHERE u.id_usuario = @id_usuario;
 
     SELECT
         ur.id_usuario,
@@ -196,9 +210,7 @@ BEGIN
         ON r.id_rol = ur.id_rol
     INNER JOIN dbo.Usuario u
         ON u.id_usuario = ur.id_usuario
-    WHERE (u.nombre_usuario = @identificador OR u.email = @identificador)
-      AND u.password_hash = @password_hash
-      AND u.estado_usuario = 'ACTIVO'
+    WHERE u.id_usuario = @id_usuario
       AND ur.estado_usuario_rol = 'ACTIVO'
       AND r.estado_rol = 'ACTIVO';
 END

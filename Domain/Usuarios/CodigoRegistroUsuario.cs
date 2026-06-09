@@ -4,6 +4,7 @@ namespace Domain
     {
         Creado,
         DatosInvalidos,
+        EmailInvalido,
         UsuarioExistente,
         EmailExistente,
         IdiomaDefaultInexistente,

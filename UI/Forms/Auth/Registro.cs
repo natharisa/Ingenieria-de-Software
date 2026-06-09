@@ -60,6 +60,9 @@ namespace UI
                 case CodigoRegistroUsuario.DatosInvalidos:
                     return "Completa todos los campos para registrarte.";
 
+                case CodigoRegistroUsuario.EmailInvalido:
+                    return "Ingresa un email valido.";
+
                 case CodigoRegistroUsuario.UsuarioExistente:
                     return "Ya existe un usuario con ese nombre.";
 

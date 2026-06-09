@@ -238,7 +238,7 @@ namespace DAL
                 SET intentos_login_fallidos = 0
                 WHERE id_usuario = @id_usuario";
 
-            _databaseContext.Escribir(sql, parametros);
+            _databaseContext.EscribirTexto(sql, parametros);
         }
 
         public int Editar(Usuario usuario)
@@ -268,7 +268,7 @@ namespace DAL
             try
             {
                 _databaseContext.Abrir();
-                return _databaseContext.Escribir(sql, parametros);
+                return _databaseContext.EscribirTexto(sql, parametros);
             }
             finally
             {
@@ -296,7 +296,7 @@ namespace DAL
             try
             {
                 _databaseContext.Abrir();
-                return _databaseContext.Escribir(sql, parametros);
+                return _databaseContext.EscribirTexto(sql, parametros);
             }
             finally
             {

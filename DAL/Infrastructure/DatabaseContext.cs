@@ -92,6 +92,21 @@ namespace DAL
             }
         }
 
+        public int EscribirTexto(string sql, List<SqlParameter> parametros = null)
+        {
+            using (SqlCommand comando = CrearComando(sql, parametros, CommandType.Text))
+            {
+                try
+                {
+                    return comando.ExecuteNonQuery();
+                }
+                catch
+                {
+                    return -1;
+                }
+            }
+        }
+
         public DataTable Leer(string sql, List<SqlParameter> parametros = null)
         {
             using (SqlDataAdapter adaptador = new SqlDataAdapter())
