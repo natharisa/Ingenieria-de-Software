@@ -93,7 +93,10 @@ namespace DAL
                     return null;
                 }
 
-                return MapearUsuario(tabla.Rows[0]);
+                Usuario usuario = MapearUsuario(tabla.Rows[0]);
+                ReiniciarIntentosLoginFallidosEnConexion(usuario.Id);
+                usuario.IntentosLoginFallidos = 0;
+                return usuario;
             }
             finally
             {
@@ -154,10 +157,7 @@ namespace DAL
                     return null;
                 }
 
-                Usuario usuario = MapearUsuario(tabla.Rows[0]);
-                ReiniciarIntentosLoginFallidosEnConexion(usuario.Id);
-                usuario.IntentosLoginFallidos = 0;
-                return usuario;
+                return MapearUsuario(tabla.Rows[0]);
             }
             finally
             {
