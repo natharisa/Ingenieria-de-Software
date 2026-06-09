@@ -108,6 +108,16 @@ namespace Application
             return _usuarioRepository.Existe(username);
         }
 
+        public bool EstaBloqueado(string username)
+        {
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                return false;
+            }
+
+            return _usuarioRepository.EstaBloqueadoPorIdentificador(username.Trim());
+        }
+
         public void Grabar(Usuario usuario)
         {
             _usuarioRepository.Guardar(usuario);

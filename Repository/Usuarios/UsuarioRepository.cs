@@ -43,6 +43,11 @@ namespace Repository
             return _usuarioDataMapper.ObtenerActivoPorIdentificador(identificador);
         }
 
+        public bool EstaBloqueadoPorIdentificador(string identificador)
+        {
+            return _usuarioDataMapper.EstaBloqueadoPorIdentificador(identificador);
+        }
+
         public int RegistrarLoginFallidoPorIdentificador(string identificador)
         {
             return _usuarioDataMapper.RegistrarLoginFallidoPorIdentificador(identificador);

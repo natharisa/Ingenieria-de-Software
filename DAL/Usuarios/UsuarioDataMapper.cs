@@ -162,6 +162,31 @@ namespace DAL
             }
         }
 
+        public bool EstaBloqueadoPorIdentificador(string identificador)
+        {
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                _databaseContext.CrearParametro("@identificador", identificador)
+            };
+
+            const string sql = @"
+                SELECT TOP (1) id_usuario
+                FROM dbo.Usuario
+                WHERE (nombre_usuario = @identificador OR email = @identificador)
+                  AND estado_usuario <> 'ACTIVO'";
+
+            try
+            {
+                _databaseContext.Abrir();
+                DataTable tabla = _databaseContext.LeerTexto(sql, parametros);
+                return tabla.Rows.Count > 0;
+            }
+            finally
+            {
+                _databaseContext.Cerrar();
+            }
+        }
+
         public int RegistrarLoginFallidoPorIdentificador(string identificador)
         {
             List<SqlParameter> parametros = new List<SqlParameter>

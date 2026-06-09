@@ -38,6 +38,12 @@ namespace UI
             }
             else
             {
+                if (_usuarioService.EstaBloqueado(txtUser.Text))
+                {
+                    MessageBox.Show("El usuario esta bloqueado. Contacte a un administrador.");
+                    return;
+                }
+
                 MessageBox.Show("Usuario, email o contrasena incorrectos.");
             }
         }
