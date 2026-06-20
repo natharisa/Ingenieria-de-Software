@@ -33,6 +33,11 @@ namespace Repository
             return _traduccionDataMapper.ObtenerTexto(key, idiomaId);
         }
 
+        public Traduccion ObtenerTraduccion(int etiquetaId, int idiomaId)
+        {
+            return _traduccionDataMapper.ObtenerTraduccion(etiquetaId, idiomaId);
+        }
+
         public Dictionary<string, string> ListarPorIdioma(int idiomaId)
         {
             return _traduccionDataMapper.ListarPorIdioma(idiomaId);

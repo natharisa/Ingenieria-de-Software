@@ -18,9 +18,9 @@ CREATE TABLE Idioma (
     id_idioma INT IDENTITY(1,1) PRIMARY KEY,
     codigo VARCHAR(10) NOT NULL,
     nombre VARCHAR(100) NOT NULL,
-    estado_idioma VARCHAR(20) NOT NULL DEFAULT 'Activo',
+    estado_idioma VARCHAR(20) NOT NULL DEFAULT 'ACTIVO',
     CONSTRAINT UQ_Idioma_Codigo UNIQUE (codigo),
-    CONSTRAINT CK_Idioma_Estado CHECK (estado_idioma IN ('Activo', 'Inactivo'))
+    CONSTRAINT CK_Idioma_Estado CHECK (estado_idioma IN ('ACTIVO', 'INACTIVO'))
 );
 GO
 
@@ -42,11 +42,11 @@ CREATE TABLE Usuario (
     nombre_usuario VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    estado_usuario VARCHAR(20) NOT NULL DEFAULT 'Activo',
+    estado_usuario VARCHAR(20) NOT NULL DEFAULT 'ACTIVO',
     fecha_alta DATETIME NOT NULL DEFAULT GETDATE(),
     CONSTRAINT UQ_Usuario_Nombre UNIQUE (nombre_usuario),
     CONSTRAINT UQ_Usuario_Email UNIQUE (email),
-    CONSTRAINT CK_Usuario_Estado CHECK (estado_usuario IN ('Activo', 'Inactivo', 'Bloqueado')),
+    CONSTRAINT CK_Usuario_Estado CHECK (estado_usuario IN ('ACTIVO', 'INACTIVO', 'BLOQUEADO')),
     CONSTRAINT FK_Usuario_Idioma FOREIGN KEY (id_idioma) REFERENCES Idioma(id_idioma)
 );
 GO
@@ -55,9 +55,9 @@ CREATE TABLE Rol (
     id_rol INT IDENTITY(1,1) PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     descripcion VARCHAR(255) NULL,
-    estado_rol VARCHAR(20) NOT NULL DEFAULT 'Activo',
+    estado_rol VARCHAR(20) NOT NULL DEFAULT 'ACTIVO',
     CONSTRAINT UQ_Rol_Nombre UNIQUE (nombre),
-    CONSTRAINT CK_Rol_Estado CHECK (estado_rol IN ('Activo', 'Inactivo'))
+    CONSTRAINT CK_Rol_Estado CHECK (estado_rol IN ('ACTIVO', 'INACTIVO'))
 );
 GO
 
@@ -68,9 +68,9 @@ CREATE TABLE Permiso (
     descripcion VARCHAR(255) NULL,
     modulo VARCHAR(100) NOT NULL,
     accion VARCHAR(100) NOT NULL,
-    estado_permiso VARCHAR(20) NOT NULL DEFAULT 'Activo',
+    estado_permiso VARCHAR(20) NOT NULL DEFAULT 'ACTIVO',
     CONSTRAINT UQ_Permiso_Codigo UNIQUE (codigo),
-    CONSTRAINT CK_Permiso_Estado CHECK (estado_permiso IN ('Activo', 'Inactivo'))
+    CONSTRAINT CK_Permiso_Estado CHECK (estado_permiso IN ('ACTIVO', 'INACTIVO'))
 );
 GO
 
@@ -79,9 +79,9 @@ CREATE TABLE UsuarioRol (
     id_usuario INT NOT NULL,
     id_rol INT NOT NULL,
     fecha_asignacion DATETIME NOT NULL DEFAULT GETDATE(),
-    estado_usuario_rol VARCHAR(20) NOT NULL DEFAULT 'Activo',
+    estado_usuario_rol VARCHAR(20) NOT NULL DEFAULT 'ACTIVO',
     CONSTRAINT UQ_UsuarioRol UNIQUE (id_usuario, id_rol),
-    CONSTRAINT CK_UsuarioRol_Estado CHECK (estado_usuario_rol IN ('Activo', 'Inactivo')),
+    CONSTRAINT CK_UsuarioRol_Estado CHECK (estado_usuario_rol IN ('ACTIVO', 'INACTIVO')),
     CONSTRAINT FK_UsuarioRol_Usuario FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario),
     CONSTRAINT FK_UsuarioRol_Rol FOREIGN KEY (id_rol) REFERENCES Rol(id_rol)
 );
@@ -95,6 +95,48 @@ CREATE TABLE RolPermiso (
     CONSTRAINT FK_RolPermiso_Rol FOREIGN KEY (id_rol) REFERENCES Rol(id_rol),
     CONSTRAINT FK_RolPermiso_Permiso FOREIGN KEY (id_permiso) REFERENCES Permiso(id_permiso)
 );
+GO
+
+CREATE TABLE ComponentePermiso (
+    id_componente INT IDENTITY(1,1) PRIMARY KEY,
+    codigo VARCHAR(100) NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion VARCHAR(255) NULL,
+    tipo VARCHAR(20) NOT NULL,
+    estado_componente VARCHAR(20) NOT NULL DEFAULT 'ACTIVO',
+    CONSTRAINT UQ_ComponentePermiso_Codigo UNIQUE (codigo),
+    CONSTRAINT CK_ComponentePermiso_Tipo CHECK (tipo IN ('FAMILIA', 'PERMISO')),
+    CONSTRAINT CK_ComponentePermiso_Estado CHECK (estado_componente IN ('ACTIVO', 'INACTIVO'))
+);
+GO
+
+CREATE TABLE ComponentePermisoRelacion (
+    id_relacion INT IDENTITY(1,1) PRIMARY KEY,
+    id_padre INT NOT NULL,
+    id_hijo INT NOT NULL,
+    CONSTRAINT UQ_ComponentePermisoRelacion UNIQUE (id_padre, id_hijo),
+    CONSTRAINT CK_ComponentePermisoRelacion_NoAutoReferencia CHECK (id_padre <> id_hijo),
+    CONSTRAINT FK_ComponentePermisoRelacion_Padre FOREIGN KEY (id_padre) REFERENCES ComponentePermiso(id_componente),
+    CONSTRAINT FK_ComponentePermisoRelacion_Hijo FOREIGN KEY (id_hijo) REFERENCES ComponentePermiso(id_componente)
+);
+GO
+
+CREATE TABLE UsuarioComponentePermiso (
+    id_usuario_componente INT IDENTITY(1,1) PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    id_componente INT NOT NULL,
+    fecha_asignacion DATETIME NOT NULL DEFAULT GETDATE(),
+    estado_usuario_componente VARCHAR(20) NOT NULL DEFAULT 'ACTIVO',
+    CONSTRAINT UQ_UsuarioComponentePermiso UNIQUE (id_usuario, id_componente),
+    CONSTRAINT CK_UsuarioComponentePermiso_Estado CHECK (estado_usuario_componente IN ('ACTIVO', 'INACTIVO')),
+    CONSTRAINT FK_UsuarioComponentePermiso_Usuario FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario),
+    CONSTRAINT FK_UsuarioComponentePermiso_Componente FOREIGN KEY (id_componente) REFERENCES ComponentePermiso(id_componente)
+);
+GO
+
+CREATE UNIQUE INDEX UX_UsuarioComponentePermiso_UsuarioActivo
+    ON UsuarioComponentePermiso(id_usuario)
+    WHERE estado_usuario_componente = 'ACTIVO';
 GO
 
 CREATE TABLE Etiqueta (
@@ -510,9 +552,40 @@ INSERT INTO Etiqueta (clave, descripcion) VALUES
 ('PERMISSIONS_TITLE', 'Titulo permisos'),
 ('PERMISSIONS_DESCRIPTION', 'Descripcion permisos'),
 ('PERMISSIONS_AVAILABLE', 'Permisos disponibles'),
+('PERMISSIONS_TREE', 'Arbol de permisos'),
 ('ROLES_TITLE', 'Titulo roles'),
 ('ROLES_DESCRIPTION', 'Descripcion roles'),
 ('ROLES_STRUCTURE', 'Estructura de roles'),
+('ROLES_ADMIN', 'Administracion de roles'),
+('ROLE_CODE', 'Codigo de rol'),
+('ROLE_SELECTED_FAMILY', 'Familia seleccionada'),
+('ROLE_CHILD_COMPONENT', 'Componente hijo de rol'),
+('ROLE_SELECT_FAMILY', 'Seleccionar familia de rol'),
+('ROLE_SELECT_FAMILY_AND_COMPONENT', 'Seleccionar familia y componente de rol'),
+('ROLE_SELECT_CHILD', 'Seleccionar hijo de rol'),
+('ROLE_CREATED', 'Rol creado'),
+('ROLE_CREATE_ERROR', 'Error al crear rol'),
+('ROLE_RELATION_ADDED', 'Relacion de rol agregada'),
+('ROLE_RELATION_ADD_ERROR', 'Error al agregar relacion de rol'),
+('ROLE_RELATION_REMOVED', 'Relacion de rol quitada'),
+('ROLE_RELATION_REMOVE_ERROR', 'Error al quitar relacion de rol'),
+('ROLE_RELATION_IDENTIFY_ERROR', 'Error al identificar relacion de rol'),
+('ROLE_SELF_REFERENCE_ERROR', 'Error por autorreferencia de rol'),
+('ROLE_INVALID_PARENT', 'Padre de rol invalido'),
+('ROLE_INVALID_CHILD', 'Hijo de rol invalido'),
+('ROLE_CYCLE_ERROR', 'Ciclo detectado en roles'),
+('USER_ROLES', 'Roles de usuario'),
+('USER_ROLE_SELECT_HELP', 'Ayuda seleccion rol de usuario'),
+('USER_ROLE_EDIT_DENIED', 'Permiso denegado para modificar rol de usuario'),
+('USER_ROLE_EMPTY', 'Roles no disponibles para usuario'),
+('USER_ROLE_SELECT_ONE', 'Seleccionar un rol de usuario'),
+('SECURITY_ACCESS_DENIED', 'Acceso denegado'),
+('SECURITY_ROLE_CREATE_DENIED', 'Creacion de rol denegada'),
+('SECURITY_ROLE_EDIT_DENIED', 'Edicion de rol denegada'),
+('SECURITY_LANGUAGE_CREATE_DENIED', 'Creacion de idioma denegada'),
+('SECURITY_LANGUAGE_EDIT_DENIED', 'Edicion de idioma denegada'),
+('SECURITY_TRANSLATION_EDIT_DENIED', 'Edicion de traduccion denegada'),
+('NO_PERMISSIONS_ASSIGNED', 'Sin permisos asignados'),
 ('LANGUAGES_TITLE', 'Titulo idiomas'),
 ('LANGUAGES_DESCRIPTION', 'Descripcion idiomas'),
 ('LANGUAGE_DETAIL', 'Detalle idioma'),
@@ -532,6 +605,9 @@ INSERT INTO Etiqueta (clave, descripcion) VALUES
 ('BTN_CREATE', 'Boton crear'),
 ('BTN_DISABLE', 'Boton inhabilitar'),
 ('BTN_REFRESH', 'Boton actualizar'),
+('BTN_ADD', 'Boton agregar'),
+('BTN_REMOVE_SELECTED', 'Boton quitar seleccionado'),
+('BTN_REMOVE_FROM', 'Boton quitar de'),
 ('BTN_CREATE_LABEL', 'Boton crear etiqueta'),
 ('FIELD_USER', 'Campo usuario'),
 ('FIELD_EMAIL', 'Campo email'),
@@ -581,9 +657,40 @@ INNER JOIN (VALUES
 ('PERMISSIONS_TITLE', 'Permisos'),
 ('PERMISSIONS_DESCRIPTION', 'Pantalla base para administrar permisos futuros.'),
 ('PERMISSIONS_AVAILABLE', 'Permisos disponibles'),
+('PERMISSIONS_TREE', 'Arbol de familias y permisos'),
 ('ROLES_TITLE', 'Roles'),
 ('ROLES_DESCRIPTION', 'Pantalla base para asignacion y gestion de roles.'),
 ('ROLES_STRUCTURE', 'Estructura de roles'),
+('ROLES_ADMIN', 'Administracion de roles'),
+('ROLE_CODE', 'Codigo'),
+('ROLE_SELECTED_FAMILY', 'Familia seleccionada en el arbol'),
+('ROLE_CHILD_COMPONENT', 'Permiso o familia a agregar'),
+('ROLE_SELECT_FAMILY', 'Selecciona una familia en el arbol'),
+('ROLE_SELECT_FAMILY_AND_COMPONENT', 'Selecciona una familia en el arbol y un componente para agregar.'),
+('ROLE_SELECT_CHILD', 'Selecciona un componente hijo dentro del arbol.'),
+('ROLE_CREATED', 'Rol creado correctamente.'),
+('ROLE_CREATE_ERROR', 'No se pudo crear el rol.'),
+('ROLE_RELATION_ADDED', 'Componente agregado correctamente.'),
+('ROLE_RELATION_ADD_ERROR', 'No se pudo agregar el componente.'),
+('ROLE_RELATION_REMOVED', 'Relacion quitada correctamente.'),
+('ROLE_RELATION_REMOVE_ERROR', 'No se pudo quitar la relacion.'),
+('ROLE_RELATION_IDENTIFY_ERROR', 'No se pudo identificar la relacion seleccionada.'),
+('ROLE_SELF_REFERENCE_ERROR', 'Un rol no puede agregarse a si mismo.'),
+('ROLE_INVALID_PARENT', 'El padre debe ser una familia activa.'),
+('ROLE_INVALID_CHILD', 'El componente hijo no existe o esta inactivo.'),
+('ROLE_CYCLE_ERROR', 'No se puede agregar porque generaria una relacion circular.'),
+('USER_ROLES', 'Roles'),
+('USER_ROLE_SELECT_HELP', 'Selecciona un usuario para asignar rol.'),
+('USER_ROLE_EDIT_DENIED', 'No tenes permiso para modificar roles.'),
+('USER_ROLE_EMPTY', 'No hay roles cargados. Revisa el script de permisos.'),
+('USER_ROLE_SELECT_ONE', 'Elegi un unico rol y guarda.'),
+('SECURITY_ACCESS_DENIED', 'No tenes permisos para acceder a esta funcionalidad.'),
+('SECURITY_ROLE_CREATE_DENIED', 'No tenes permisos para crear roles.'),
+('SECURITY_ROLE_EDIT_DENIED', 'No tenes permisos para modificar roles.'),
+('SECURITY_LANGUAGE_CREATE_DENIED', 'No tenes permisos para crear idiomas.'),
+('SECURITY_LANGUAGE_EDIT_DENIED', 'No tenes permisos para modificar idiomas.'),
+('SECURITY_TRANSLATION_EDIT_DENIED', 'No tenes permisos para modificar traducciones.'),
+('NO_PERMISSIONS_ASSIGNED', 'No tenes permisos asignados para acceder a modulos del sistema.'),
 ('LANGUAGES_TITLE', 'Idiomas y traducciones'),
 ('LANGUAGES_DESCRIPTION', 'Administracion dinamica de idiomas, etiquetas y textos visibles.'),
 ('LANGUAGE_DETAIL', 'Idioma'),
@@ -603,6 +710,9 @@ INNER JOIN (VALUES
 ('BTN_CREATE', 'Crear'),
 ('BTN_DISABLE', 'Inhabilitar'),
 ('BTN_REFRESH', 'Actualizar'),
+('BTN_ADD', 'Agregar'),
+('BTN_REMOVE_SELECTED', 'Quitar seleccionado'),
+('BTN_REMOVE_FROM', 'Quitar de {0}'),
 ('BTN_CREATE_LABEL', 'Crear etiqueta'),
 ('FIELD_USER', 'Usuario'),
 ('FIELD_EMAIL', 'Email'),
@@ -649,9 +759,40 @@ INNER JOIN (VALUES
 ('PERMISSIONS_TITLE', 'Permissions'),
 ('PERMISSIONS_DESCRIPTION', 'Base screen for future permission management.'),
 ('PERMISSIONS_AVAILABLE', 'Available permissions'),
+('PERMISSIONS_TREE', 'Families and permissions tree'),
 ('ROLES_TITLE', 'Roles'),
 ('ROLES_DESCRIPTION', 'Base screen for role assignment and management.'),
 ('ROLES_STRUCTURE', 'Role structure'),
+('ROLES_ADMIN', 'Role administration'),
+('ROLE_CODE', 'Code'),
+('ROLE_SELECTED_FAMILY', 'Family selected in the tree'),
+('ROLE_CHILD_COMPONENT', 'Permission or family to add'),
+('ROLE_SELECT_FAMILY', 'Select a family in the tree'),
+('ROLE_SELECT_FAMILY_AND_COMPONENT', 'Select a family in the tree and a component to add.'),
+('ROLE_SELECT_CHILD', 'Select a child component in the tree.'),
+('ROLE_CREATED', 'Role created successfully.'),
+('ROLE_CREATE_ERROR', 'Could not create the role.'),
+('ROLE_RELATION_ADDED', 'Component added successfully.'),
+('ROLE_RELATION_ADD_ERROR', 'Could not add the component.'),
+('ROLE_RELATION_REMOVED', 'Relation removed successfully.'),
+('ROLE_RELATION_REMOVE_ERROR', 'Could not remove the relation.'),
+('ROLE_RELATION_IDENTIFY_ERROR', 'Could not identify the selected relation.'),
+('ROLE_SELF_REFERENCE_ERROR', 'A role cannot be added to itself.'),
+('ROLE_INVALID_PARENT', 'The parent must be an active family.'),
+('ROLE_INVALID_CHILD', 'The child component does not exist or is inactive.'),
+('ROLE_CYCLE_ERROR', 'Cannot add it because it would create a circular relation.'),
+('USER_ROLES', 'Roles'),
+('USER_ROLE_SELECT_HELP', 'Select a user to assign a role.'),
+('USER_ROLE_EDIT_DENIED', 'You do not have permission to modify roles.'),
+('USER_ROLE_EMPTY', 'There are no roles loaded. Check the permissions script.'),
+('USER_ROLE_SELECT_ONE', 'Choose a single role and save.'),
+('SECURITY_ACCESS_DENIED', 'You do not have permission to access this feature.'),
+('SECURITY_ROLE_CREATE_DENIED', 'You do not have permission to create roles.'),
+('SECURITY_ROLE_EDIT_DENIED', 'You do not have permission to modify roles.'),
+('SECURITY_LANGUAGE_CREATE_DENIED', 'You do not have permission to create languages.'),
+('SECURITY_LANGUAGE_EDIT_DENIED', 'You do not have permission to modify languages.'),
+('SECURITY_TRANSLATION_EDIT_DENIED', 'You do not have permission to modify translations.'),
+('NO_PERMISSIONS_ASSIGNED', 'You do not have assigned permissions to access system modules.'),
 ('LANGUAGES_TITLE', 'Languages and translations'),
 ('LANGUAGES_DESCRIPTION', 'Dynamic administration of languages, labels and visible texts.'),
 ('LANGUAGE_DETAIL', 'Language'),
@@ -671,6 +812,9 @@ INNER JOIN (VALUES
 ('BTN_CREATE', 'Create'),
 ('BTN_DISABLE', 'Disable'),
 ('BTN_REFRESH', 'Refresh'),
+('BTN_ADD', 'Add'),
+('BTN_REMOVE_SELECTED', 'Remove selected'),
+('BTN_REMOVE_FROM', 'Remove from {0}'),
 ('BTN_CREATE_LABEL', 'Create label'),
 ('FIELD_USER', 'User'),
 ('FIELD_EMAIL', 'Email'),
@@ -708,6 +852,87 @@ INSERT INTO Rol (nombre, descripcion) VALUES
 ('Profesional', 'Gestión de atenciones'),
 ('EncargadoStock', 'Gestión de inventario e insumos'),
 ('Direccion', 'Consulta de reportes e indicadores');
+GO
+
+INSERT INTO ComponentePermiso (codigo, nombre, descripcion, tipo) VALUES
+('ADMINISTRADOR', 'Administrador', 'Familia con acceso total a los modulos actuales', 'FAMILIA'),
+('SEGURIDAD', 'Seguridad', 'Familia para gestion de roles y permisos', 'FAMILIA'),
+('AUDITORIA', 'Auditoria', 'Familia para consulta de bitacora', 'FAMILIA'),
+('IDIOMAS_TRADUCCIONES', 'Idiomas y traducciones', 'Familia para gestion de idiomas y traducciones', 'FAMILIA'),
+('USUARIO_VER', 'Ver usuarios', 'Permite acceder al modulo de usuarios', 'PERMISO'),
+('USUARIO_CREAR', 'Crear usuarios', 'Permite crear usuarios', 'PERMISO'),
+('USUARIO_EDITAR', 'Editar usuarios', 'Permite modificar usuarios', 'PERMISO'),
+('USUARIO_INHABILITAR', 'Inhabilitar usuarios', 'Permite inhabilitar usuarios', 'PERMISO'),
+('ROL_VER', 'Ver roles', 'Permite acceder al modulo de roles', 'PERMISO'),
+('ROL_CREAR', 'Crear roles', 'Permite crear familias de permisos', 'PERMISO'),
+('ROL_EDITAR', 'Editar roles', 'Permite modificar familias de permisos', 'PERMISO'),
+('ROL_INHABILITAR', 'Inhabilitar roles', 'Permite inhabilitar familias de permisos', 'PERMISO'),
+('PERMISO_VER', 'Ver permisos', 'Permite acceder al modulo de permisos', 'PERMISO'),
+('PERMISO_ASIGNAR', 'Asignar permisos', 'Permite asignar permisos o familias', 'PERMISO'),
+('IDIOMA_VER', 'Ver idiomas', 'Permite acceder a la administracion de idiomas', 'PERMISO'),
+('IDIOMA_CREAR', 'Crear idiomas', 'Permite crear nuevos idiomas', 'PERMISO'),
+('IDIOMA_EDITAR', 'Editar idiomas', 'Permite modificar y activar o desactivar idiomas', 'PERMISO'),
+('TRADUCCION_VER', 'Ver traducciones', 'Permite ver el arbol de etiquetas y traducciones de UI', 'PERMISO'),
+('TRADUCCION_EDITAR', 'Editar traducciones', 'Permite crear o modificar traducciones detectadas desde la UI', 'PERMISO'),
+('BITACORA_VER', 'Ver bitacora', 'Permite consultar la bitacora del sistema', 'PERMISO');
+GO
+
+INSERT INTO ComponentePermisoRelacion (id_padre, id_hijo)
+SELECT padre.id_componente, hijo.id_componente
+FROM ComponentePermiso padre
+INNER JOIN ComponentePermiso hijo
+    ON hijo.codigo IN ('SEGURIDAD', 'AUDITORIA', 'IDIOMAS_TRADUCCIONES', 'USUARIO_VER', 'USUARIO_CREAR', 'USUARIO_EDITAR', 'USUARIO_INHABILITAR')
+WHERE padre.codigo = 'ADMINISTRADOR';
+GO
+
+INSERT INTO ComponentePermisoRelacion (id_padre, id_hijo)
+SELECT padre.id_componente, hijo.id_componente
+FROM ComponentePermiso padre
+INNER JOIN ComponentePermiso hijo
+    ON hijo.codigo IN ('ROL_VER', 'ROL_CREAR', 'ROL_EDITAR', 'ROL_INHABILITAR', 'PERMISO_VER', 'PERMISO_ASIGNAR')
+WHERE padre.codigo = 'SEGURIDAD';
+GO
+
+INSERT INTO ComponentePermisoRelacion (id_padre, id_hijo)
+SELECT padre.id_componente, hijo.id_componente
+FROM ComponentePermiso padre
+INNER JOIN ComponentePermiso hijo
+    ON hijo.codigo IN ('IDIOMA_VER', 'IDIOMA_CREAR', 'IDIOMA_EDITAR', 'TRADUCCION_VER', 'TRADUCCION_EDITAR')
+WHERE padre.codigo = 'IDIOMAS_TRADUCCIONES';
+GO
+
+INSERT INTO ComponentePermisoRelacion (id_padre, id_hijo)
+SELECT padre.id_componente, hijo.id_componente
+FROM ComponentePermiso padre
+INNER JOIN ComponentePermiso hijo
+    ON hijo.codigo = 'BITACORA_VER'
+WHERE padre.codigo = 'AUDITORIA';
+GO
+
+INSERT INTO Usuario
+(
+    id_idioma,
+    nombre_usuario,
+    email,
+    password_hash,
+    estado_usuario
+)
+SELECT TOP (1)
+    id_idioma,
+    'admin',
+    'admin@tecnisalud.local',
+    '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
+    'ACTIVO'
+FROM Idioma
+WHERE codigo = 'es-AR';
+GO
+
+INSERT INTO UsuarioComponentePermiso (id_usuario, id_componente)
+SELECT u.id_usuario, c.id_componente
+FROM Usuario u
+INNER JOIN ComponentePermiso c
+    ON c.codigo = 'ADMINISTRADOR'
+WHERE u.nombre_usuario = 'admin';
 GO
 
 -- ============================================================

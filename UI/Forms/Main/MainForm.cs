@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
+using Application;
 using Domain;
 using Services;
 
@@ -8,10 +10,17 @@ namespace UI
 {
     public partial class MainForm : Form, IObserverLanguage
     {
+        private readonly AutorizacionApplicationService _autorizacionService;
         private bool _cargandoIdiomas;
 
         public MainForm()
+            : this(new AutorizacionApplicationService())
         {
+        }
+
+        public MainForm(AutorizacionApplicationService autorizacionService)
+        {
+            _autorizacionService = autorizacionService;
             InitializeComponent();
             ConfigurarTraducciones();
             Load += MainForm_Load;
@@ -26,7 +35,8 @@ namespace UI
             CargarSelectorIdiomas();
             ActualizarUsuario();
 
-            ShowScreen(new BitacoraView());
+            ConfigurarMenuPorPermisos();
+            MostrarPantallaInicial();
         }
 
         public void OnLanguageChanged(Idioma idioma)
@@ -48,7 +58,6 @@ namespace UI
         {
             bitacoraToolStripMenuItem.Tag = "MENU_AUDIT";
             usuariosToolStripMenuItem.Tag = "MENU_USERS";
-            permisosToolStripMenuItem.Tag = "MENU_PERMISSIONS";
             rolesToolStripMenuItem.Tag = "MENU_ROLES";
             idiomasToolStripMenuItem.Tag = "MENU_LANGUAGES";
             salirToolStripMenuItem.Tag = "MENU_LOGOUT";
@@ -57,26 +66,43 @@ namespace UI
 
         private void bitacoraToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ShowScreen(new BitacoraView());
-        }
+            if (!ValidarPermiso(PermisosSistema.BitacoraVer))
+            {
+                return;
+            }
 
-        private void permisosToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ShowScreen(new PermisosView());
+            ShowScreen(new BitacoraView());
         }
 
         private void rolesToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!ValidarPermiso(PermisosSistema.RolVer))
+            {
+                return;
+            }
+
             ShowScreen(new RolesView());
         }
 
         private void idiomasToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!_autorizacionService.TienePermiso(PermisosSistema.IdiomaVer) &&
+                !_autorizacionService.TienePermiso(PermisosSistema.TraduccionVer))
+            {
+                MessageBox.Show(LanguageManager.Instance.Translate("SECURITY_ACCESS_DENIED"));
+                return;
+            }
+
             ShowScreen(new IdiomasView());
         }
 
         private void usuariosToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!ValidarPermiso(PermisosSistema.UsuarioVer))
+            {
+                return;
+            }
+
             ShowScreen(new UsuariosView());
         }
 
@@ -131,6 +157,64 @@ namespace UI
             Idioma idioma = cmbIdiomas.SelectedItem as Idioma;
             Usuario usuario = Sesion.ObtenerInstancia().ObtenerUsuario();
             LanguageManager.Instance.ChangeLanguage(idioma, usuario);
+        }
+
+        private void ConfigurarMenuPorPermisos()
+        {
+            bitacoraToolStripMenuItem.Visible = _autorizacionService.TienePermiso(PermisosSistema.BitacoraVer);
+            usuariosToolStripMenuItem.Visible = _autorizacionService.TienePermiso(PermisosSistema.UsuarioVer);
+            rolesToolStripMenuItem.Visible = _autorizacionService.TienePermiso(PermisosSistema.RolVer);
+            idiomasToolStripMenuItem.Visible = _autorizacionService.TienePermiso(PermisosSistema.IdiomaVer) ||
+                                               _autorizacionService.TienePermiso(PermisosSistema.TraduccionVer);
+        }
+
+        private void MostrarPantallaInicial()
+        {
+            if (bitacoraToolStripMenuItem.Visible)
+            {
+                ShowScreen(new BitacoraView());
+                return;
+            }
+
+            if (usuariosToolStripMenuItem.Visible)
+            {
+                ShowScreen(new UsuariosView());
+                return;
+            }
+
+            if (rolesToolStripMenuItem.Visible)
+            {
+                ShowScreen(new RolesView());
+                return;
+            }
+
+            if (idiomasToolStripMenuItem.Visible)
+            {
+                ShowScreen(new IdiomasView());
+                return;
+            }
+
+            Label mensaje = new Label
+            {
+                Dock = DockStyle.Fill,
+                Font = new Font("Segoe UI", 12F),
+                TextAlign = ContentAlignment.MiddleCenter,
+                Text = LanguageManager.Instance.Translate("NO_PERMISSIONS_ASSIGNED")
+            };
+
+            contentPanel.Controls.Clear();
+            contentPanel.Controls.Add(mensaje);
+        }
+
+        private bool ValidarPermiso(string codigoPermiso)
+        {
+            if (_autorizacionService.TienePermiso(codigoPermiso))
+            {
+                return true;
+            }
+
+            MessageBox.Show(LanguageManager.Instance.Translate("SECURITY_ACCESS_DENIED"));
+            return false;
         }
 
         private void ActualizarUsuario()

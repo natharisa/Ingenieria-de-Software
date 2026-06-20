@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
 using Application;
 using Domain;
@@ -11,13 +12,15 @@ namespace UI
     public class IdiomasView : LocalizedUserControl
     {
         private readonly IdiomaApplicationService _idiomaService;
+        private readonly AutorizacionApplicationService _autorizacionService;
         private readonly Label lblTitulo = new Label();
         private readonly Label lblDescripcion = new Label();
         private readonly DataGridView dgvIdiomas = new DataGridView();
-        private readonly DataGridView dgvTraducciones = new DataGridView();
+        private readonly TreeView tvComponentes = new TreeView();
         private readonly GroupBox groupIdioma = new GroupBox();
-        private readonly GroupBox groupEtiqueta = new GroupBox();
         private readonly GroupBox groupTraduccion = new GroupBox();
+        private readonly Label lblComponentes = new Label();
+        private readonly TextBox txtComponenteSeleccionado = new TextBox();
         private readonly TextBox txtCodigo = new TextBox();
         private readonly TextBox txtNombre = new TextBox();
         private readonly CheckBox chkActivo = new CheckBox();
@@ -25,15 +28,15 @@ namespace UI
         private readonly Button btnGuardarIdioma = new Button();
         private readonly TextBox txtKey = new TextBox();
         private readonly TextBox txtDescripcionEtiqueta = new TextBox();
-        private readonly Button btnCrearEtiqueta = new Button();
-        private readonly ComboBox cmbEtiquetas = new ComboBox();
         private readonly ComboBox cmbIdiomas = new ComboBox();
         private readonly TextBox txtTraduccion = new TextBox();
         private readonly Button btnGuardarTraduccion = new Button();
+        private readonly Button btnRefrescarComponentes = new Button();
 
         private List<Idioma> _idiomas = new List<Idioma>();
         private List<Etiqueta> _etiquetas = new List<Etiqueta>();
         private Idioma _idiomaSeleccionado;
+        private bool _cargandoDatos;
 
         public IdiomasView()
             : this(new IdiomaApplicationService())
@@ -43,16 +46,20 @@ namespace UI
         public IdiomasView(IdiomaApplicationService idiomaService)
         {
             _idiomaService = idiomaService;
+            _autorizacionService = new AutorizacionApplicationService();
             ConstruirVista();
             ConfigurarTraducciones();
+            ConfigurarPermisos();
             CargarDatos();
             PrepararNuevoIdioma();
+            CargarArbolComponentes();
+            Load += IdiomasView_Load;
         }
 
         private void ConstruirVista()
         {
             BackColor = Color.White;
-            Size = new Size(900, 520);
+            Size = new Size(960, 620);
 
             lblTitulo.SetBounds(18, 18, 300, 36);
             lblTitulo.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
@@ -60,8 +67,8 @@ namespace UI
             lblDescripcion.Font = new Font("Segoe UI", 10F);
             lblDescripcion.ForeColor = Color.FromArgb(108, 117, 125);
 
-            dgvIdiomas.SetBounds(24, 98, 385, 250);
-            dgvIdiomas.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+            dgvIdiomas.SetBounds(24, 98, 300, 170);
+            dgvIdiomas.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             dgvIdiomas.AutoGenerateColumns = false;
             dgvIdiomas.AllowUserToAddRows = false;
             dgvIdiomas.AllowUserToDeleteRows = false;
@@ -75,7 +82,17 @@ namespace UI
             dgvIdiomas.Columns.Add(new DataGridViewCheckBoxColumn { DataPropertyName = "Activo", HeaderText = "Activo", Width = 70, Tag = "LANGUAGE_ACTIVE" });
             dgvIdiomas.SelectionChanged += dgvIdiomas_SelectionChanged;
 
-            groupIdioma.SetBounds(430, 98, 430, 150);
+            lblComponentes.SetBounds(24, 282, 178, 22);
+            lblComponentes.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold);
+            btnRefrescarComponentes.SetBounds(212, 278, 112, 28);
+            btnRefrescarComponentes.Click += btnRefrescarComponentes_Click;
+
+            tvComponentes.SetBounds(24, 312, 300, 260);
+            tvComponentes.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+            tvComponentes.HideSelection = false;
+            tvComponentes.AfterSelect += tvComponentes_AfterSelect;
+
+            groupIdioma.SetBounds(340, 98, 520, 150);
             groupIdioma.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             groupIdioma.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold);
 
@@ -90,38 +107,49 @@ namespace UI
             btnGuardarIdioma.Click += btnGuardarIdioma_Click;
             groupIdioma.Controls.AddRange(new Control[] { lblCodigo, lblNombre, txtCodigo, txtNombre, chkActivo, btnNuevoIdioma, btnGuardarIdioma });
 
-            groupEtiqueta.SetBounds(430, 258, 430, 112);
-            groupEtiqueta.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            groupEtiqueta.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold);
-            Label lblKey = CrearLabel("Key", 16, 28, "LABEL_KEY");
-            Label lblDescripcionEtiqueta = CrearLabel("Descripcion", 150, 28, "GRID_DESCRIPTION");
-            txtKey.SetBounds(16, 48, 120, 25);
-            txtDescripcionEtiqueta.SetBounds(150, 48, 250, 25);
-            btnCrearEtiqueta.SetBounds(275, 78, 125, 28);
-            btnCrearEtiqueta.Click += btnCrearEtiqueta_Click;
-            groupEtiqueta.Controls.AddRange(new Control[] { lblKey, lblDescripcionEtiqueta, txtKey, txtDescripcionEtiqueta, btnCrearEtiqueta });
-
-            groupTraduccion.SetBounds(24, 360, 836, 124);
-            groupTraduccion.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom;
+            groupTraduccion.SetBounds(340, 258, 520, 314);
+            groupTraduccion.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             groupTraduccion.Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold);
-            cmbEtiquetas.SetBounds(16, 44, 210, 25);
-            cmbIdiomas.SetBounds(236, 44, 170, 25);
-            txtTraduccion.SetBounds(416, 44, 275, 25);
-            btnGuardarTraduccion.SetBounds(700, 42, 120, 29);
+            txtComponenteSeleccionado.SetBounds(16, 44, 484, 25);
+            txtComponenteSeleccionado.ReadOnly = true;
+            txtKey.SetBounds(16, 92, 210, 25);
+            txtKey.ReadOnly = true;
+            txtDescripcionEtiqueta.SetBounds(236, 92, 264, 25);
+            txtDescripcionEtiqueta.ReadOnly = true;
+            cmbIdiomas.SetBounds(16, 140, 210, 25);
+            txtTraduccion.SetBounds(16, 190, 360, 25);
+            btnGuardarTraduccion.SetBounds(386, 188, 114, 29);
+            cmbIdiomas.SelectedIndexChanged += cmbIdiomas_SelectedIndexChanged;
             btnGuardarTraduccion.Click += btnGuardarTraduccion_Click;
             groupTraduccion.Controls.AddRange(new Control[]
             {
-                CrearLabel("Etiqueta", 16, 24, "LABEL_TAG"),
-                CrearLabel("Idioma", 236, 24, "LANGUAGE_SELECTOR"),
-                CrearLabel("Traduccion", 416, 24, "TRANSLATION_TEXT"),
-                cmbEtiquetas,
+                CrearLabel("Componente", 16, 24, "COMPONENT_SELECTED"),
+                txtComponenteSeleccionado,
+                CrearLabel("Etiqueta", 16, 72, "LABEL_TAG"),
+                CrearLabel("Descripcion", 236, 72, "GRID_DESCRIPTION"),
+                txtKey,
+                txtDescripcionEtiqueta,
+                CrearLabel("Idioma", 16, 120, "LANGUAGE_SELECTOR"),
+                CrearLabel("Traduccion", 16, 170, "TRANSLATION_TEXT"),
                 cmbIdiomas,
                 txtTraduccion,
                 btnGuardarTraduccion
             });
 
-            dgvTraducciones.SetBounds(24, 490, 836, 0);
-            Controls.AddRange(new Control[] { lblTitulo, lblDescripcion, dgvIdiomas, groupIdioma, groupEtiqueta, groupTraduccion });
+            Controls.AddRange(new Control[]
+            {
+                lblTitulo,
+                lblDescripcion,
+                dgvIdiomas,
+                lblComponentes,
+                btnRefrescarComponentes,
+                tvComponentes,
+                groupIdioma,
+                groupTraduccion
+            });
+
+            Resize += IdiomasView_Resize;
+            AjustarLayout();
         }
 
         private Label CrearLabel(string texto, int x, int y, string tag)
@@ -141,17 +169,18 @@ namespace UI
             lblTitulo.Tag = "LANGUAGES_TITLE";
             lblDescripcion.Tag = "LANGUAGES_DESCRIPTION";
             groupIdioma.Tag = "LANGUAGE_DETAIL";
-            groupEtiqueta.Tag = "LABEL_DETAIL";
             groupTraduccion.Tag = "TRANSLATION_DETAIL";
+            lblComponentes.Tag = "COMPONENT_TREE";
             chkActivo.Tag = "LANGUAGE_ACTIVE";
             btnNuevoIdioma.Tag = "BTN_NEW";
             btnGuardarIdioma.Tag = "BTN_SAVE";
-            btnCrearEtiqueta.Tag = "BTN_CREATE_LABEL";
             btnGuardarTraduccion.Tag = "BTN_SAVE";
+            btnRefrescarComponentes.Tag = "BTN_REFRESH";
         }
 
         private void CargarDatos()
         {
+            _cargandoDatos = true;
             _idiomas = _idiomaService.ListarIdiomas(false);
             _etiquetas = _idiomaService.ListarEtiquetas();
 
@@ -162,11 +191,7 @@ namespace UI
             cmbIdiomas.DisplayMember = "Nombre";
             cmbIdiomas.ValueMember = "Id";
             cmbIdiomas.DataSource = new List<Idioma>(_idiomas);
-
-            cmbEtiquetas.DataSource = null;
-            cmbEtiquetas.DisplayMember = "Key";
-            cmbEtiquetas.ValueMember = "Id";
-            cmbEtiquetas.DataSource = new List<Etiqueta>(_etiquetas);
+            _cargandoDatos = false;
         }
 
         private void PrepararNuevoIdioma()
@@ -197,11 +222,31 @@ namespace UI
 
         private void btnNuevoIdioma_Click(object sender, EventArgs e)
         {
+            if (!_autorizacionService.TienePermiso(PermisosSistema.IdiomaCrear))
+            {
+                MessageBox.Show(LanguageManager.Instance.Translate("SECURITY_LANGUAGE_CREATE_DENIED"));
+                return;
+            }
+
             PrepararNuevoIdioma();
         }
 
         private void btnGuardarIdioma_Click(object sender, EventArgs e)
         {
+            if (_idiomaSeleccionado == null &&
+                !_autorizacionService.TienePermiso(PermisosSistema.IdiomaCrear))
+            {
+                MessageBox.Show(LanguageManager.Instance.Translate("SECURITY_LANGUAGE_CREATE_DENIED"));
+                return;
+            }
+
+            if (_idiomaSeleccionado != null &&
+                !_autorizacionService.TienePermiso(PermisosSistema.IdiomaEditar))
+            {
+                MessageBox.Show(LanguageManager.Instance.Translate("SECURITY_LANGUAGE_EDIT_DENIED"));
+                return;
+            }
+
             Idioma idioma = _idiomaSeleccionado ?? new Idioma();
             idioma.Codigo = txtCodigo.Text;
             idioma.Nombre = txtNombre.Text;
@@ -219,36 +264,24 @@ namespace UI
 
             CargarDatos();
             CargarSelectorPrincipalSiCorresponde();
-        }
-
-        private void btnCrearEtiqueta_Click(object sender, EventArgs e)
-        {
-            bool resultado = _idiomaService.CrearEtiqueta(new Etiqueta
-            {
-                Key = txtKey.Text,
-                Descripcion = txtDescripcionEtiqueta.Text
-            });
-
-            MessageBox.Show(resultado
-                ? LanguageManager.Instance.Translate("LABEL_SAVED")
-                : LanguageManager.Instance.Translate("SAVE_ERROR"));
-
-            txtKey.Clear();
-            txtDescripcionEtiqueta.Clear();
-            CargarDatos();
+            CargarArbolComponentes();
         }
 
         private void btnGuardarTraduccion_Click(object sender, EventArgs e)
         {
-            Etiqueta etiqueta = cmbEtiquetas.SelectedItem as Etiqueta;
+            if (!_autorizacionService.TienePermiso(PermisosSistema.TraduccionEditar))
+            {
+                MessageBox.Show(LanguageManager.Instance.Translate("SECURITY_TRANSLATION_EDIT_DENIED"));
+                return;
+            }
+
             Idioma idioma = cmbIdiomas.SelectedItem as Idioma;
 
-            bool resultado = _idiomaService.GuardarTraduccion(new Traduccion
-            {
-                EtiquetaId = etiqueta == null ? 0 : etiqueta.Id,
-                IdiomaId = idioma == null ? 0 : idioma.Id,
-                Texto = txtTraduccion.Text
-            });
+            bool resultado = _idiomaService.GuardarTraduccionDetectada(
+                txtKey.Text,
+                txtDescripcionEtiqueta.Text,
+                idioma == null ? 0 : idioma.Id,
+                txtTraduccion.Text);
 
             MessageBox.Show(resultado
                 ? LanguageManager.Instance.Translate("TRANSLATION_SAVED")
@@ -260,7 +293,300 @@ namespace UI
                 LanguageManager.Instance.Notify();
             }
 
+            string key = txtKey.Text;
             txtTraduccion.Clear();
+            CargarDatos();
+            SeleccionarEtiquetaPorClave(key);
+            CargarTraduccionSeleccionada();
+        }
+
+        private void ConfigurarPermisos()
+        {
+            bool puedeVerIdiomas = _autorizacionService.TienePermiso(PermisosSistema.IdiomaVer);
+            bool puedeCrearIdiomas = _autorizacionService.TienePermiso(PermisosSistema.IdiomaCrear);
+            bool puedeEditarIdiomas = _autorizacionService.TienePermiso(PermisosSistema.IdiomaEditar);
+            bool puedeVerTraducciones = _autorizacionService.TienePermiso(PermisosSistema.TraduccionVer);
+            bool puedeEditarTraducciones = _autorizacionService.TienePermiso(PermisosSistema.TraduccionEditar);
+
+            dgvIdiomas.Visible = puedeVerIdiomas;
+            groupIdioma.Visible = puedeVerIdiomas;
+            lblComponentes.Visible = puedeVerTraducciones;
+            btnRefrescarComponentes.Visible = puedeVerTraducciones;
+            tvComponentes.Visible = puedeVerTraducciones;
+            groupTraduccion.Visible = puedeVerTraducciones;
+
+            btnNuevoIdioma.Visible = puedeCrearIdiomas;
+            btnGuardarIdioma.Visible = puedeCrearIdiomas || puedeEditarIdiomas;
+            btnGuardarTraduccion.Visible = puedeEditarTraducciones;
+            txtTraduccion.ReadOnly = !puedeEditarTraducciones;
+        }
+
+        private void btnRefrescarComponentes_Click(object sender, EventArgs e)
+        {
+            CargarArbolComponentes();
+        }
+
+        private void IdiomasView_Resize(object sender, EventArgs e)
+        {
+            AjustarLayout();
+        }
+
+        private void IdiomasView_Load(object sender, EventArgs e)
+        {
+            CargarArbolComponentes();
+        }
+
+        private void cmbIdiomas_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            CargarTraduccionSeleccionada();
+        }
+
+        private void tvComponentes_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            UiComponentInfo info = e.Node == null ? null : e.Node.Tag as UiComponentInfo;
+            if (info == null)
+            {
+                return;
+            }
+
+            txtComponenteSeleccionado.Text = info.Path;
+
+            if (!string.IsNullOrWhiteSpace(info.Key))
+            {
+                SeleccionarEtiquetaPorClave(info.Key);
+                return;
+            }
+
+            txtKey.Clear();
+            txtDescripcionEtiqueta.Text = "Componente sin etiqueta de UI. Asignar Tag en la pantalla para traducirlo.";
+            txtTraduccion.Clear();
+            CargarTraduccionSeleccionada();
+        }
+
+        private void CargarTraduccionSeleccionada()
+        {
+            if (_cargandoDatos)
+            {
+                return;
+            }
+
+            Idioma idioma = cmbIdiomas.SelectedItem as Idioma;
+            Etiqueta etiqueta = ObtenerEtiquetaSeleccionada();
+            if (etiqueta == null || idioma == null)
+            {
+                txtTraduccion.Clear();
+                return;
+            }
+
+            Traduccion traduccion = _idiomaService.ObtenerTraduccion(etiqueta.Id, idioma.Id);
+            txtTraduccion.Text = traduccion == null ? string.Empty : traduccion.Texto;
+        }
+
+        private void SeleccionarEtiquetaPorClave(string key)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                return;
+            }
+
+            foreach (Etiqueta etiqueta in _etiquetas)
+            {
+                if (string.Equals(etiqueta.Key, key, StringComparison.OrdinalIgnoreCase))
+                {
+                    txtKey.Text = etiqueta.Key;
+                    txtDescripcionEtiqueta.Text = etiqueta.Descripcion;
+                    CargarTraduccionSeleccionada();
+                    return;
+                }
+            }
+
+            txtKey.Text = key;
+            txtDescripcionEtiqueta.Text = "Etiqueta detectada desde componente visual.";
+            txtTraduccion.Clear();
+        }
+
+        private void CargarArbolComponentes()
+        {
+            tvComponentes.BeginUpdate();
+            tvComponentes.Nodes.Clear();
+
+            Form form = FindForm();
+            if (form != null)
+            {
+                TreeNode formNode = CrearNodoRaiz("Formulario: " + NombreVisible(form));
+                AgregarControles(form.Controls, formNode, NombreVisible(form));
+
+                if (form.MainMenuStrip != null)
+                {
+                    TreeNode menuNode = CrearNodoRaiz("Menu principal");
+                    foreach (ToolStripItem item in form.MainMenuStrip.Items)
+                    {
+                        AgregarToolStripItem(item, menuNode, "Menu principal");
+                    }
+
+                    formNode.Nodes.Insert(0, menuNode);
+                }
+
+                tvComponentes.Nodes.Add(formNode);
+            }
+            else
+            {
+                TreeNode viewNode = CrearNodoRaiz("Vista: " + GetType().Name);
+                AgregarControles(Controls, viewNode, GetType().Name);
+                tvComponentes.Nodes.Add(viewNode);
+            }
+
+            tvComponentes.ExpandAll();
+            tvComponentes.EndUpdate();
+        }
+
+        private TreeNode CrearNodoRaiz(string texto)
+        {
+            return new TreeNode(texto)
+            {
+                Tag = new UiComponentInfo
+                {
+                    Path = texto,
+                    SuggestedKey = NormalizarClave(texto)
+                }
+            };
+        }
+
+        private void AgregarControles(Control.ControlCollection controls, TreeNode parentNode, string parentPath)
+        {
+            foreach (Control control in controls)
+            {
+                string path = parentPath + "/" + NombreVisible(control);
+                TreeNode node = CrearNodoComponente(control.GetType().Name, NombreVisible(control), control.Text, control.Tag as string, path);
+                parentNode.Nodes.Add(node);
+
+                DataGridView dataGridView = control as DataGridView;
+                if (dataGridView != null)
+                {
+                    AgregarColumnas(dataGridView, node, path);
+                }
+
+                if (control.Controls.Count > 0)
+                {
+                    AgregarControles(control.Controls, node, path);
+                }
+            }
+        }
+
+        private void AgregarColumnas(DataGridView dataGridView, TreeNode parentNode, string parentPath)
+        {
+            foreach (DataGridViewColumn column in dataGridView.Columns)
+            {
+                string path = parentPath + "/Column:" + NombreVisible(column);
+                parentNode.Nodes.Add(CrearNodoComponente(
+                    "DataGridViewColumn",
+                    NombreVisible(column),
+                    column.HeaderText,
+                    column.Tag as string,
+                    path));
+            }
+        }
+
+        private void AgregarToolStripItem(ToolStripItem item, TreeNode parentNode, string parentPath)
+        {
+            string path = parentPath + "/" + NombreVisible(item);
+            TreeNode node = CrearNodoComponente(item.GetType().Name, NombreVisible(item), item.Text, item.Tag as string, path);
+            parentNode.Nodes.Add(node);
+
+            ToolStripDropDownItem dropDownItem = item as ToolStripDropDownItem;
+            if (dropDownItem == null)
+            {
+                return;
+            }
+
+            foreach (ToolStripItem child in dropDownItem.DropDownItems)
+            {
+                AgregarToolStripItem(child, node, path);
+            }
+        }
+
+        private TreeNode CrearNodoComponente(string tipo, string nombre, string texto, string key, string path)
+        {
+            string detalleClave = string.IsNullOrWhiteSpace(key) ? "sin etiqueta" : key;
+            string detalleTexto = string.IsNullOrWhiteSpace(texto) ? string.Empty : " - " + texto;
+            return new TreeNode(tipo + ": " + nombre + " [" + detalleClave + "]" + detalleTexto)
+            {
+                Tag = new UiComponentInfo
+                {
+                    Key = key,
+                    Path = path,
+                    SuggestedKey = NormalizarClave(path),
+                    CurrentText = texto
+                }
+            };
+        }
+
+        private static string NombreVisible(Control control)
+        {
+            if (!string.IsNullOrWhiteSpace(control.Name))
+            {
+                return control.Name;
+            }
+
+            if (!string.IsNullOrWhiteSpace(control.Text))
+            {
+                return control.Text;
+            }
+
+            return control.GetType().Name;
+        }
+
+        private static string NombreVisible(DataGridViewColumn column)
+        {
+            if (!string.IsNullOrWhiteSpace(column.Name))
+            {
+                return column.Name;
+            }
+
+            if (!string.IsNullOrWhiteSpace(column.HeaderText))
+            {
+                return column.HeaderText;
+            }
+
+            return "Column";
+        }
+
+        private static string NombreVisible(ToolStripItem item)
+        {
+            if (!string.IsNullOrWhiteSpace(item.Name))
+            {
+                return item.Name;
+            }
+
+            if (!string.IsNullOrWhiteSpace(item.Text))
+            {
+                return item.Text;
+            }
+
+            return item.GetType().Name;
+        }
+
+        private static string NormalizarClave(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return "UI_COMPONENT";
+            }
+
+            StringBuilder builder = new StringBuilder();
+            foreach (char c in value)
+            {
+                if (char.IsLetterOrDigit(c))
+                {
+                    builder.Append(char.ToUpperInvariant(c));
+                }
+                else if (builder.Length > 0 && builder[builder.Length - 1] != '_')
+                {
+                    builder.Append('_');
+                }
+            }
+
+            return builder.ToString().Trim('_');
         }
 
         private void CargarSelectorPrincipalSiCorresponde()
@@ -271,6 +597,58 @@ namespace UI
             {
                 mainForm.RefrescarIdiomasDisponibles();
             }
+        }
+
+        private void AjustarLayout()
+        {
+            int margen = 24;
+            int anchoDisponible = Math.Max(900, ClientSize.Width);
+            int altoDisponible = Math.Max(580, ClientSize.Height);
+            int anchoIzquierdo = Math.Min(620, Math.Max(420, (int)(anchoDisponible * 0.40)));
+            int xDerecha = margen + anchoIzquierdo + 24;
+            int anchoDerecha = Math.Max(430, anchoDisponible - xDerecha - margen);
+
+            lblTitulo.SetBounds(margen, 18, anchoDisponible - (margen * 2), 36);
+            lblDescripcion.SetBounds(margen + 2, 58, anchoDisponible - (margen * 2), 24);
+
+            dgvIdiomas.SetBounds(margen, 98, anchoIzquierdo, 170);
+            lblComponentes.SetBounds(margen, 282, anchoIzquierdo - 130, 22);
+            btnRefrescarComponentes.SetBounds(margen + anchoIzquierdo - 112, 278, 112, 28);
+            tvComponentes.SetBounds(margen, 312, anchoIzquierdo, Math.Max(230, altoDisponible - 336));
+
+            groupIdioma.SetBounds(xDerecha, 98, anchoDerecha, 150);
+            groupTraduccion.SetBounds(xDerecha, 258, anchoDerecha, Math.Max(314, altoDisponible - 282));
+
+            txtNombre.Width = Math.Max(250, groupIdioma.Width - txtNombre.Left - 24);
+            btnGuardarIdioma.Left = groupIdioma.Width - btnGuardarIdioma.Width - 24;
+            btnNuevoIdioma.Left = btnGuardarIdioma.Left - btnNuevoIdioma.Width - 8;
+
+            txtComponenteSeleccionado.Width = Math.Max(300, groupTraduccion.Width - 32);
+            txtDescripcionEtiqueta.Width = Math.Max(240, groupTraduccion.Width - txtDescripcionEtiqueta.Left - 16);
+            cmbIdiomas.Width = Math.Max(210, (groupTraduccion.Width - 32) / 2);
+            txtTraduccion.Width = Math.Max(300, groupTraduccion.Width - btnGuardarTraduccion.Width - 48);
+            btnGuardarTraduccion.Left = txtTraduccion.Right + 16;
+        }
+
+        private Etiqueta ObtenerEtiquetaSeleccionada()
+        {
+            foreach (Etiqueta etiqueta in _etiquetas)
+            {
+                if (string.Equals(etiqueta.Key, txtKey.Text, StringComparison.OrdinalIgnoreCase))
+                {
+                    return etiqueta;
+                }
+            }
+
+            return null;
+        }
+
+        private class UiComponentInfo
+        {
+            public string Key { get; set; }
+            public string SuggestedKey { get; set; }
+            public string Path { get; set; }
+            public string CurrentText { get; set; }
         }
     }
 }

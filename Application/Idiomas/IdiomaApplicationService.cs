@@ -81,9 +81,64 @@ namespace Application
             return _translationRepository.GuardarTraduccion(traduccion);
         }
 
+        public bool GuardarTraduccionDetectada(string key, string descripcion, int idiomaId, string texto)
+        {
+            if (string.IsNullOrWhiteSpace(key) ||
+                idiomaId == 0 ||
+                string.IsNullOrWhiteSpace(texto))
+            {
+                return false;
+            }
+
+            key = key.Trim();
+            texto = texto.Trim();
+            descripcion = string.IsNullOrWhiteSpace(descripcion) ? null : descripcion.Trim();
+
+            Etiqueta etiqueta = null;
+            foreach (Etiqueta item in _translationRepository.ListarEtiquetas())
+            {
+                if (string.Equals(item.Key, key, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    etiqueta = item;
+                    break;
+                }
+            }
+
+            if (etiqueta == null)
+            {
+                etiqueta = new Etiqueta
+                {
+                    Key = key,
+                    Descripcion = descripcion
+                };
+
+                if (_translationRepository.CrearEtiqueta(etiqueta) <= 0)
+                {
+                    return false;
+                }
+            }
+
+            return _translationRepository.GuardarTraduccion(new Traduccion
+            {
+                EtiquetaId = etiqueta.Id,
+                IdiomaId = idiomaId,
+                Texto = texto
+            });
+        }
+
         public List<Traduccion> ListarTraducciones()
         {
             return _translationRepository.ListarTraducciones();
+        }
+
+        public Traduccion ObtenerTraduccion(int etiquetaId, int idiomaId)
+        {
+            if (etiquetaId == 0 || idiomaId == 0)
+            {
+                return null;
+            }
+
+            return _translationRepository.ObtenerTraduccion(etiquetaId, idiomaId);
         }
     }
 }

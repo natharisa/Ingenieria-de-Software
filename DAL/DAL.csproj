@@ -46,6 +46,7 @@
     <Compile Include="Idiomas\IdiomaDataMapper.cs" />
     <Compile Include="Idiomas\TraduccionDataMapper.cs" />
     <Compile Include="Infrastructure\DatabaseContext.cs" />
+    <Compile Include="Permisos\PermisoDataMapper.cs" />
     <Compile Include="Usuarios\UsuarioDataMapper.cs" />
   </ItemGroup>
   <ItemGroup>

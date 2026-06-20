@@ -119,6 +119,40 @@ namespace DAL
             }
         }
 
+        public Traduccion ObtenerTraduccion(int etiquetaId, int idiomaId)
+        {
+            const string sql = @"
+                SELECT TOP (1)
+                    t.id_traduccion,
+                    t.id_etiqueta,
+                    t.id_idioma,
+                    t.texto,
+                    e.clave,
+                    i.codigo
+                FROM dbo.Traduccion t
+                INNER JOIN dbo.Etiqueta e ON e.id_etiqueta = t.id_etiqueta
+                INNER JOIN dbo.Idioma i ON i.id_idioma = t.id_idioma
+                WHERE t.id_etiqueta = @id_etiqueta
+                  AND t.id_idioma = @id_idioma";
+
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                _databaseContext.CrearParametro("@id_etiqueta", etiquetaId),
+                _databaseContext.CrearParametro("@id_idioma", idiomaId)
+            };
+
+            try
+            {
+                _databaseContext.Abrir();
+                DataTable tabla = _databaseContext.LeerTexto(sql, parametros);
+                return tabla.Rows.Count == 0 ? null : MapearTraduccion(tabla.Rows[0]);
+            }
+            finally
+            {
+                _databaseContext.Cerrar();
+            }
+        }
+
         public Dictionary<string, string> ListarPorIdioma(int idiomaId)
         {
             const string sql = @"
@@ -205,15 +239,7 @@ namespace DAL
 
                 foreach (DataRow registro in tabla.Rows)
                 {
-                    traducciones.Add(new Traduccion
-                    {
-                        Id = Convert.ToInt32(registro["id_traduccion"]),
-                        EtiquetaId = Convert.ToInt32(registro["id_etiqueta"]),
-                        IdiomaId = Convert.ToInt32(registro["id_idioma"]),
-                        Texto = registro["texto"].ToString(),
-                        EtiquetaKey = registro["clave"].ToString(),
-                        IdiomaCodigo = registro["codigo"].ToString()
-                    });
+                    traducciones.Add(MapearTraduccion(registro));
                 }
 
                 return traducciones;
@@ -222,6 +248,19 @@ namespace DAL
             {
                 _databaseContext.Cerrar();
             }
+        }
+
+        private static Traduccion MapearTraduccion(DataRow registro)
+        {
+            return new Traduccion
+            {
+                Id = Convert.ToInt32(registro["id_traduccion"]),
+                EtiquetaId = Convert.ToInt32(registro["id_etiqueta"]),
+                IdiomaId = Convert.ToInt32(registro["id_idioma"]),
+                Texto = registro["texto"].ToString(),
+                EtiquetaKey = registro["clave"].ToString(),
+                IdiomaCodigo = registro["codigo"].ToString()
+            };
         }
     }
 }

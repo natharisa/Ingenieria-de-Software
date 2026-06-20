@@ -73,12 +73,6 @@
     <Compile Include="Forms\Main\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\Permisos\PermisosView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Views\Permisos\PermisosView.Designer.cs">
-      <DependentUpon>PermisosView.cs</DependentUpon>
-    </Compile>
     <Compile Include="Views\Usuarios\UsuariosView.cs">
       <SubType>UserControl</SubType>
     </Compile>

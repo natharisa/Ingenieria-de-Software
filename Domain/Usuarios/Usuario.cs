@@ -1,4 +1,6 @@
 using Abstractions;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Domain
 {
@@ -14,6 +16,17 @@ namespace Domain
         public int? IdiomaPreferidoId { get; set; }
         public string Estado { get; set; }
         public int IntentosLoginFallidos { get; set; }
+        public List<ComponentePermiso> ComponentesPermiso { get; set; } = new List<ComponentePermiso>();
+
+        public bool TienePermiso(string codigoPermiso)
+        {
+            if (ComponentesPermiso == null || string.IsNullOrWhiteSpace(codigoPermiso))
+            {
+                return false;
+            }
+
+            return ComponentesPermiso.Any(c => c.TienePermiso(codigoPermiso));
+        }
 
         public override string ToString()
         {

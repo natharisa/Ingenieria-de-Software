@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows.Forms;
 using Application;
 using Domain;
@@ -10,9 +11,16 @@ namespace UI
     public partial class UsuariosView : LocalizedUserControl
     {
         private readonly UsuarioApplicationService _usuarioService;
+        private readonly PermisoApplicationService _permisoService;
+        private readonly AutorizacionApplicationService _autorizacionService;
         private List<Usuario> _usuarios;
+        private List<ComponentePermiso> _familiasDisponibles;
         private Usuario _usuarioSeleccionado;
         private bool _preparandoFormulario;
+        private GroupBox groupBoxRolesUsuario;
+        private Label lblRolesInfo;
+        private ComboBox cmbRolUsuario;
+        private Button btnGuardarRoles;
 
         public UsuariosView()
             : this(new UsuarioApplicationService())
@@ -22,10 +30,15 @@ namespace UI
         public UsuariosView(UsuarioApplicationService usuarioService)
         {
             _usuarioService = usuarioService;
+            _permisoService = new PermisoApplicationService();
+            _autorizacionService = new AutorizacionApplicationService();
             InitializeComponent();
             ConfigurarTraducciones();
             ConfigurarGrilla();
+            ConfigurarAsignacionRoles();
+            ConfigurarPermisos();
             CargarUsuarios();
+            CargarRolesDisponibles();
             PrepararNuevoUsuario();
         }
 
@@ -52,6 +65,12 @@ namespace UI
         {
             dgvUsuarios.AutoGenerateColumns = false;
             cmbEstado.Items.AddRange(new object[] { "ACTIVO", "INACTIVO" });
+        }
+
+        protected override void ApplyTranslations()
+        {
+            base.ApplyTranslations();
+            ActualizarEstadoRolesUsuario();
         }
 
         private void CargarUsuarios()
@@ -90,7 +109,12 @@ namespace UI
             lblModo.Text = LanguageManager.Instance.Translate("USERS_EDIT_MODE");
             btnGuardar.Tag = "BTN_SAVE";
             btnGuardar.Text = LanguageManager.Instance.Translate("BTN_SAVE");
-            btnInhabilitar.Enabled = usuario.Id > 0 && usuario.Estado != "INACTIVO";
+            btnGuardar.Enabled = _autorizacionService.TienePermiso(PermisosSistema.UsuarioEditar);
+            btnInhabilitar.Enabled = _autorizacionService.TienePermiso(PermisosSistema.UsuarioInhabilitar) &&
+                                     usuario.Id > 0 &&
+                                     usuario.Estado != "INACTIVO";
+            CargarRolesUsuario(usuario.Id);
+            ActualizarEstadoRolesUsuario();
         }
 
         private void btnNuevo_Click(object sender, EventArgs e)
@@ -230,9 +254,186 @@ namespace UI
             lblModo.Text = LanguageManager.Instance.Translate("USERS_CREATE_MODE");
             btnGuardar.Tag = "BTN_CREATE";
             btnGuardar.Text = LanguageManager.Instance.Translate("BTN_CREATE");
+            btnGuardar.Enabled = _autorizacionService.TienePermiso(PermisosSistema.UsuarioCrear);
             btnInhabilitar.Enabled = false;
+            LimpiarRolesUsuario();
+            ActualizarEstadoRolesUsuario();
             txtUsuario.Focus();
             _preparandoFormulario = false;
+        }
+
+        private void ConfigurarPermisos()
+        {
+            btnNuevo.Visible = _autorizacionService.TienePermiso(PermisosSistema.UsuarioCrear);
+            btnGuardar.Visible = _autorizacionService.TienePermiso(PermisosSistema.UsuarioCrear) ||
+                                 _autorizacionService.TienePermiso(PermisosSistema.UsuarioEditar);
+            btnInhabilitar.Visible = _autorizacionService.TienePermiso(PermisosSistema.UsuarioInhabilitar);
+            btnGuardarRoles.Visible = _autorizacionService.TienePermiso(PermisosSistema.UsuarioEditar);
+            ActualizarEstadoRolesUsuario();
+        }
+
+        private void ConfigurarAsignacionRoles()
+        {
+            dgvUsuarios.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            dgvUsuarios.Location = new Point(24, 98);
+            dgvUsuarios.Size = new Size(350, 390);
+
+            groupBoxRolesUsuario = new GroupBox
+            {
+                Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold),
+                Location = new Point(394, 98),
+                Size = new Size(150, 390),
+                Tag = "USER_ROLES",
+                Text = "Roles"
+            };
+
+            lblRolesInfo = new Label
+            {
+                AutoSize = false,
+                Font = new Font("Segoe UI", 8.5F),
+                ForeColor = Color.FromArgb(108, 117, 125),
+                Location = new Point(10, 24),
+                Size = new Size(130, 68),
+                Tag = "USER_ROLE_SELECT_HELP",
+                Text = "Selecciona un usuario para asignarle un rol."
+            };
+
+            cmbRolUsuario = new ComboBox
+            {
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Font = new Font("Segoe UI", 9F),
+                Location = new Point(10, 112),
+                Size = new Size(130, 23)
+            };
+
+            btnGuardarRoles = new Button
+            {
+                BackColor = Color.FromArgb(25, 135, 84),
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold),
+                ForeColor = Color.White,
+                Location = new Point(10, 343),
+                Size = new Size(130, 31),
+                Tag = "BTN_SAVE",
+                Text = "Guardar",
+                UseVisualStyleBackColor = false
+            };
+            btnGuardarRoles.Click += btnGuardarRoles_Click;
+
+            groupBoxRolesUsuario.Controls.Add(lblRolesInfo);
+            groupBoxRolesUsuario.Controls.Add(cmbRolUsuario);
+            groupBoxRolesUsuario.Controls.Add(btnGuardarRoles);
+            Controls.Add(groupBoxRolesUsuario);
+        }
+
+        private void CargarRolesDisponibles()
+        {
+            _familiasDisponibles = _permisoService.ListarFamilias();
+            LimpiarRolesUsuario();
+            ActualizarEstadoRolesUsuario();
+        }
+
+        private void CargarRolesUsuario(int idUsuario)
+        {
+            if (_familiasDisponibles == null)
+            {
+                CargarRolesDisponibles();
+            }
+
+            List<int> idsAsignados = _permisoService.ListarIdsComponentesAsignadosPorUsuario(idUsuario);
+
+            cmbRolUsuario.DataSource = null;
+            cmbRolUsuario.DataSource = _familiasDisponibles;
+
+            ComponentePermiso rolAsignado = null;
+            foreach (ComponentePermiso familia in _familiasDisponibles)
+            {
+                if (idsAsignados.Contains(familia.Id))
+                {
+                    rolAsignado = familia;
+                    break;
+                }
+            }
+
+            cmbRolUsuario.SelectedItem = rolAsignado;
+            ActualizarEstadoRolesUsuario();
+        }
+
+        private void LimpiarRolesUsuario()
+        {
+            cmbRolUsuario.DataSource = null;
+
+            if (_familiasDisponibles == null)
+            {
+                return;
+            }
+
+            cmbRolUsuario.DataSource = _familiasDisponibles;
+            cmbRolUsuario.SelectedIndex = -1;
+        }
+
+        private void ActualizarEstadoRolesUsuario()
+        {
+            if (cmbRolUsuario == null || btnGuardarRoles == null || lblRolesInfo == null)
+            {
+                return;
+            }
+
+            bool puedeEditar = _autorizacionService.TienePermiso(PermisosSistema.UsuarioEditar);
+            bool hayUsuarioSeleccionado = _usuarioSeleccionado != null && _usuarioSeleccionado.Id > 0;
+            bool hayRoles = cmbRolUsuario.Items.Count > 0;
+
+            cmbRolUsuario.Enabled = puedeEditar && hayUsuarioSeleccionado && hayRoles;
+            btnGuardarRoles.Enabled = puedeEditar && hayUsuarioSeleccionado && hayRoles;
+
+            if (!puedeEditar)
+            {
+                lblRolesInfo.Text = LanguageManager.Instance.Translate("USER_ROLE_EDIT_DENIED");
+                return;
+            }
+
+            if (!hayRoles)
+            {
+                lblRolesInfo.Text = LanguageManager.Instance.Translate("USER_ROLE_EMPTY");
+                return;
+            }
+
+            lblRolesInfo.Text = hayUsuarioSeleccionado
+                ? LanguageManager.Instance.Translate("USER_ROLE_SELECT_ONE")
+                : LanguageManager.Instance.Translate("USER_ROLE_SELECT_HELP");
+        }
+
+        private void btnGuardarRoles_Click(object sender, EventArgs e)
+        {
+            if (_usuarioSeleccionado == null)
+            {
+                MessageBox.Show("Selecciona un usuario para asignarle roles.");
+                return;
+            }
+
+            if (!_autorizacionService.TienePermiso(PermisosSistema.UsuarioEditar))
+            {
+                MessageBox.Show("No tenes permisos para modificar roles de usuarios.");
+                return;
+            }
+
+            ComponentePermiso rolSeleccionado = cmbRolUsuario.SelectedItem as ComponentePermiso;
+
+            if (rolSeleccionado == null)
+            {
+                MessageBox.Show("Selecciona un rol para el usuario.");
+                return;
+            }
+
+            List<int> idsSeleccionados = new List<int> { rolSeleccionado.Id };
+
+            bool guardado = _permisoService.GuardarComponentesUsuario(_usuarioSeleccionado.Id, idsSeleccionados);
+            MessageBox.Show(guardado ? "Rol asignado correctamente." : "No se pudo asignar el rol.");
+
+            if (guardado)
+            {
+                CargarRolesUsuario(_usuarioSeleccionado.Id);
+            }
         }
 
         private static string ObtenerMensajeRegistro(CodigoRegistroUsuario resultado)

@@ -27,7 +27,6 @@ namespace UI
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.bitacoraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.usuariosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.permisosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rolesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.idiomasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.salirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -46,7 +45,6 @@ namespace UI
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.bitacoraToolStripMenuItem,
             this.usuariosToolStripMenuItem,
-            this.permisosToolStripMenuItem,
             this.rolesToolStripMenuItem,
             this.idiomasToolStripMenuItem,
             this.salirToolStripMenuItem});
@@ -74,16 +72,6 @@ namespace UI
             this.usuariosToolStripMenuItem.Size = new System.Drawing.Size(78, 24);
             this.usuariosToolStripMenuItem.Text = "Usuarios";
             this.usuariosToolStripMenuItem.Click += new System.EventHandler(this.usuariosToolStripMenuItem_Click);
-            // 
-            // permisosToolStripMenuItem
-            // 
-            this.permisosToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.permisosToolStripMenuItem.ForeColor = System.Drawing.Color.White;
-            this.permisosToolStripMenuItem.Name = "permisosToolStripMenuItem";
-            this.permisosToolStripMenuItem.Size = new System.Drawing.Size(83, 24);
-            this.permisosToolStripMenuItem.Text = "Permisos";
-            this.permisosToolStripMenuItem.Click += new System.EventHandler(this.permisosToolStripMenuItem_Click);
-            // 
             // rolesToolStripMenuItem
             // 
             this.rolesToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 10F);
@@ -197,7 +185,6 @@ namespace UI
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem bitacoraToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem usuariosToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem permisosToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rolesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem idiomasToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem salirToolStripMenuItem;
