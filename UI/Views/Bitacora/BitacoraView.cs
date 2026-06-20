@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using Application;
 using Domain;
 using System.Windows.Forms;
+using Services;
 
 namespace UI
 {
-    public partial class BitacoraView : UserControl
+    public partial class BitacoraView : LocalizedUserControl
     {
         private readonly BitacoraApplicationService _bitacoraService;
+        private int _cantidadRegistros;
 
         public BitacoraView()
             : this(new BitacoraApplicationService())
@@ -19,7 +21,30 @@ namespace UI
         {
             _bitacoraService = bitacoraService;
             InitializeComponent();
+            ConfigurarTraducciones();
             CargarBitacora();
+        }
+
+        private void ConfigurarTraducciones()
+        {
+            lblTitulo.Tag = "AUDIT_TITLE";
+            lblDescripcion.Tag = "AUDIT_DESCRIPTION";
+            btnActualizar.Tag = "BTN_REFRESH";
+            columnId.Tag = "GRID_ID";
+            columnFecha.Tag = "GRID_DATE";
+            columnIdUsuario.Tag = "GRID_USER_ID";
+            columnUsuario.Tag = "GRID_USER";
+            columnModulo.Tag = "GRID_MODULE";
+            columnAccion.Tag = "GRID_ACTION";
+            columnNivel.Tag = "GRID_LEVEL";
+            columnDescripcion.Tag = "GRID_DESCRIPTION";
+            columnEquipo.Tag = "GRID_DEVICE";
+        }
+
+        protected override void ApplyTranslations()
+        {
+            base.ApplyTranslations();
+            ActualizarEstado();
         }
 
         private void btnActualizar_Click(object sender, EventArgs e)
@@ -50,9 +75,15 @@ namespace UI
             }
 
             listViewBitacora.EndUpdate();
-            lblEstado.Text = registros.Count == 0
-                ? "No hay eventos registrados."
-                : string.Format("{0} evento(s) registrados.", registros.Count);
+            _cantidadRegistros = registros.Count;
+            ActualizarEstado();
+        }
+
+        private void ActualizarEstado()
+        {
+            lblEstado.Text = _cantidadRegistros == 0
+                ? LanguageManager.Instance.Translate("AUDIT_EMPTY")
+                : string.Format(LanguageManager.Instance.Translate("AUDIT_COUNT"), _cantidadRegistros);
         }
     }
 }

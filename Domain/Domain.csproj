@@ -41,6 +41,9 @@
     <Compile Include="Bitacora\LoginExitosoBitacoraFactory.cs" />
     <Compile Include="Bitacora\LoginFallidoBitacoraFactory.cs" />
     <Compile Include="Bitacora\RegistroFallidoBitacoraFactory.cs" />
+    <Compile Include="Idiomas\Etiqueta.cs" />
+    <Compile Include="Idiomas\Idioma.cs" />
+    <Compile Include="Idiomas\Traduccion.cs" />
     <Compile Include="Seguridad\Sesion.cs" />
     <Compile Include="Usuarios\CodigoRegistroUsuario.cs" />
     <Compile Include="Usuarios\Usuario.cs" />

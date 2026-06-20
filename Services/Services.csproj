@@ -33,6 +33,10 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Idiomas\IObservableLanguage.cs" />
+    <Compile Include="Idiomas\IObserverLanguage.cs" />
+    <Compile Include="Idiomas\LanguageManager.cs" />
+    <Compile Include="Idiomas\TranslationService.cs" />
     <Compile Include="Seguridad\PlainTextPasswordService.cs" />
     <Compile Include="UI\UiTextService.cs" />
   </ItemGroup>
@@ -40,6 +44,14 @@
     <ProjectReference Include="..\Abstractions\Abstractions.csproj">
       <Project>{ec2907e8-4417-4320-b769-767f15bbe62d}</Project>
       <Name>Abstractions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Domain\Domain.csproj">
+      <Project>{be12b97c-d2b5-4dbb-89b5-7e3e72bba151}</Project>
+      <Name>Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Repository\Repository.csproj">
+      <Project>{f1ef03ab-d846-492c-83ce-fcb34defc09a}</Project>
+      <Name>Repository</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

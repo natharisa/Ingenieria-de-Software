@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using Application;
 using Domain;
+using Services;
 
 namespace UI
 {
-    public partial class UsuariosView : UserControl
+    public partial class UsuariosView : LocalizedUserControl
     {
         private readonly UsuarioApplicationService _usuarioService;
         private List<Usuario> _usuarios;
@@ -22,9 +23,29 @@ namespace UI
         {
             _usuarioService = usuarioService;
             InitializeComponent();
+            ConfigurarTraducciones();
             ConfigurarGrilla();
             CargarUsuarios();
             PrepararNuevoUsuario();
+        }
+
+        private void ConfigurarTraducciones()
+        {
+            lblTitulo.Tag = "USERS_TITLE";
+            lblDescripcion.Tag = "USERS_DESCRIPTION";
+            groupBoxDetalle.Tag = "USERS_DETAIL";
+            lblUsuario.Tag = "FIELD_USER";
+            lblEmail.Tag = "FIELD_EMAIL";
+            lblNombre.Tag = "FIELD_NAME";
+            lblApellido.Tag = "FIELD_LASTNAME";
+            lblPassword.Tag = "FIELD_NEW_PASSWORD";
+            lblEstado.Tag = "FIELD_STATUS";
+            btnNuevo.Tag = "BTN_NEW";
+            btnInhabilitar.Tag = "BTN_DISABLE";
+            columnId.Tag = "GRID_ID";
+            columnUsuario.Tag = "GRID_USER";
+            columnEmail.Tag = "GRID_EMAIL";
+            columnEstado.Tag = "GRID_STATUS";
         }
 
         private void ConfigurarGrilla()
@@ -65,8 +86,10 @@ namespace UI
             txtApellido.Text = usuario.Apellido;
             txtPassword.Text = string.Empty;
             cmbEstado.SelectedItem = string.IsNullOrWhiteSpace(usuario.Estado) ? "ACTIVO" : usuario.Estado;
-            lblModo.Text = "Modificar usuario";
-            btnGuardar.Text = "Guardar";
+            lblModo.Tag = "USERS_EDIT_MODE";
+            lblModo.Text = LanguageManager.Instance.Translate("USERS_EDIT_MODE");
+            btnGuardar.Tag = "BTN_SAVE";
+            btnGuardar.Text = LanguageManager.Instance.Translate("BTN_SAVE");
             btnInhabilitar.Enabled = usuario.Id > 0 && usuario.Estado != "INACTIVO";
         }
 
@@ -203,8 +226,10 @@ namespace UI
             txtApellido.Clear();
             txtPassword.Clear();
             cmbEstado.SelectedItem = "ACTIVO";
-            lblModo.Text = "Crear usuario";
-            btnGuardar.Text = "Crear";
+            lblModo.Tag = "USERS_CREATE_MODE";
+            lblModo.Text = LanguageManager.Instance.Translate("USERS_CREATE_MODE");
+            btnGuardar.Tag = "BTN_CREATE";
+            btnGuardar.Text = LanguageManager.Instance.Translate("BTN_CREATE");
             btnInhabilitar.Enabled = false;
             txtUsuario.Focus();
             _preparandoFormulario = false;

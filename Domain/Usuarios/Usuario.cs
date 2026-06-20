@@ -11,6 +11,7 @@ namespace Domain
         public string Nombre { get; set; }
         public string Apellido { get; set; }
         public string Idioma { get; set; }
+        public int? IdiomaPreferidoId { get; set; }
         public string Estado { get; set; }
         public int IntentosLoginFallidos { get; set; }
 
