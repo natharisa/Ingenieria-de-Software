@@ -18,9 +18,9 @@ CREATE TABLE Idioma (
     id_idioma INT IDENTITY(1,1) PRIMARY KEY,
     codigo VARCHAR(10) NOT NULL,
     nombre VARCHAR(100) NOT NULL,
-    estado_idioma VARCHAR(20) NOT NULL DEFAULT 'Activo',
+    estado_idioma VARCHAR(20) NOT NULL DEFAULT 'ACTIVO',
     CONSTRAINT UQ_Idioma_Codigo UNIQUE (codigo),
-    CONSTRAINT CK_Idioma_Estado CHECK (estado_idioma IN ('Activo', 'Inactivo'))
+    CONSTRAINT CK_Idioma_Estado CHECK (estado_idioma IN ('ACTIVO', 'INACTIVO'))
 );
 GO
 
@@ -30,11 +30,11 @@ CREATE TABLE Usuario (
     nombre_usuario VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    estado_usuario VARCHAR(20) NOT NULL DEFAULT 'Activo',
+    estado_usuario VARCHAR(20) NOT NULL DEFAULT 'ACTIVO',
     fecha_alta DATETIME NOT NULL DEFAULT GETDATE(),
     CONSTRAINT UQ_Usuario_Nombre UNIQUE (nombre_usuario),
     CONSTRAINT UQ_Usuario_Email UNIQUE (email),
-    CONSTRAINT CK_Usuario_Estado CHECK (estado_usuario IN ('Activo', 'Inactivo', 'Bloqueado')),
+    CONSTRAINT CK_Usuario_Estado CHECK (estado_usuario IN ('ACTIVO', 'INACTIVO', 'BLOQUEADO')),
     CONSTRAINT FK_Usuario_Idioma FOREIGN KEY (id_idioma) REFERENCES Idioma(id_idioma)
 );
 GO
@@ -43,9 +43,9 @@ CREATE TABLE Rol (
     id_rol INT IDENTITY(1,1) PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     descripcion VARCHAR(255) NULL,
-    estado_rol VARCHAR(20) NOT NULL DEFAULT 'Activo',
+    estado_rol VARCHAR(20) NOT NULL DEFAULT 'ACTIVO',
     CONSTRAINT UQ_Rol_Nombre UNIQUE (nombre),
-    CONSTRAINT CK_Rol_Estado CHECK (estado_rol IN ('Activo', 'Inactivo'))
+    CONSTRAINT CK_Rol_Estado CHECK (estado_rol IN ('ACTIVO', 'INACTIVO'))
 );
 GO
 
@@ -56,9 +56,9 @@ CREATE TABLE Permiso (
     descripcion VARCHAR(255) NULL,
     modulo VARCHAR(100) NOT NULL,
     accion VARCHAR(100) NOT NULL,
-    estado_permiso VARCHAR(20) NOT NULL DEFAULT 'Activo',
+    estado_permiso VARCHAR(20) NOT NULL DEFAULT 'ACTIVO',
     CONSTRAINT UQ_Permiso_Codigo UNIQUE (codigo),
-    CONSTRAINT CK_Permiso_Estado CHECK (estado_permiso IN ('Activo', 'Inactivo'))
+    CONSTRAINT CK_Permiso_Estado CHECK (estado_permiso IN ('ACTIVO', 'INACTIVO'))
 );
 GO
 
@@ -67,9 +67,9 @@ CREATE TABLE UsuarioRol (
     id_usuario INT NOT NULL,
     id_rol INT NOT NULL,
     fecha_asignacion DATETIME NOT NULL DEFAULT GETDATE(),
-    estado_usuario_rol VARCHAR(20) NOT NULL DEFAULT 'Activo',
+    estado_usuario_rol VARCHAR(20) NOT NULL DEFAULT 'ACTIVO',
     CONSTRAINT UQ_UsuarioRol UNIQUE (id_usuario, id_rol),
-    CONSTRAINT CK_UsuarioRol_Estado CHECK (estado_usuario_rol IN ('Activo', 'Inactivo')),
+    CONSTRAINT CK_UsuarioRol_Estado CHECK (estado_usuario_rol IN ('ACTIVO', 'INACTIVO')),
     CONSTRAINT FK_UsuarioRol_Usuario FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario),
     CONSTRAINT FK_UsuarioRol_Rol FOREIGN KEY (id_rol) REFERENCES Rol(id_rol)
 );
@@ -83,6 +83,48 @@ CREATE TABLE RolPermiso (
     CONSTRAINT FK_RolPermiso_Rol FOREIGN KEY (id_rol) REFERENCES Rol(id_rol),
     CONSTRAINT FK_RolPermiso_Permiso FOREIGN KEY (id_permiso) REFERENCES Permiso(id_permiso)
 );
+GO
+
+CREATE TABLE ComponentePermiso (
+    id_componente INT IDENTITY(1,1) PRIMARY KEY,
+    codigo VARCHAR(100) NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion VARCHAR(255) NULL,
+    tipo VARCHAR(20) NOT NULL,
+    estado_componente VARCHAR(20) NOT NULL DEFAULT 'ACTIVO',
+    CONSTRAINT UQ_ComponentePermiso_Codigo UNIQUE (codigo),
+    CONSTRAINT CK_ComponentePermiso_Tipo CHECK (tipo IN ('FAMILIA', 'PERMISO')),
+    CONSTRAINT CK_ComponentePermiso_Estado CHECK (estado_componente IN ('ACTIVO', 'INACTIVO'))
+);
+GO
+
+CREATE TABLE ComponentePermisoRelacion (
+    id_relacion INT IDENTITY(1,1) PRIMARY KEY,
+    id_padre INT NOT NULL,
+    id_hijo INT NOT NULL,
+    CONSTRAINT UQ_ComponentePermisoRelacion UNIQUE (id_padre, id_hijo),
+    CONSTRAINT CK_ComponentePermisoRelacion_NoAutoReferencia CHECK (id_padre <> id_hijo),
+    CONSTRAINT FK_ComponentePermisoRelacion_Padre FOREIGN KEY (id_padre) REFERENCES ComponentePermiso(id_componente),
+    CONSTRAINT FK_ComponentePermisoRelacion_Hijo FOREIGN KEY (id_hijo) REFERENCES ComponentePermiso(id_componente)
+);
+GO
+
+CREATE TABLE UsuarioComponentePermiso (
+    id_usuario_componente INT IDENTITY(1,1) PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    id_componente INT NOT NULL,
+    fecha_asignacion DATETIME NOT NULL DEFAULT GETDATE(),
+    estado_usuario_componente VARCHAR(20) NOT NULL DEFAULT 'ACTIVO',
+    CONSTRAINT UQ_UsuarioComponentePermiso UNIQUE (id_usuario, id_componente),
+    CONSTRAINT CK_UsuarioComponentePermiso_Estado CHECK (estado_usuario_componente IN ('ACTIVO', 'INACTIVO')),
+    CONSTRAINT FK_UsuarioComponentePermiso_Usuario FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario),
+    CONSTRAINT FK_UsuarioComponentePermiso_Componente FOREIGN KEY (id_componente) REFERENCES ComponentePermiso(id_componente)
+);
+GO
+
+CREATE UNIQUE INDEX UX_UsuarioComponentePermiso_UsuarioActivo
+    ON UsuarioComponentePermiso(id_usuario)
+    WHERE estado_usuario_componente = 'ACTIVO';
 GO
 
 CREATE TABLE Etiqueta (
@@ -491,6 +533,73 @@ INSERT INTO Rol (nombre, descripcion) VALUES
 ('Profesional', 'Gestión de atenciones'),
 ('EncargadoStock', 'Gestión de inventario e insumos'),
 ('Direccion', 'Consulta de reportes e indicadores');
+GO
+
+INSERT INTO ComponentePermiso (codigo, nombre, descripcion, tipo) VALUES
+('ADMINISTRADOR', 'Administrador', 'Familia con acceso total a los modulos actuales', 'FAMILIA'),
+('SEGURIDAD', 'Seguridad', 'Familia para gestion de roles y permisos', 'FAMILIA'),
+('AUDITORIA', 'Auditoria', 'Familia para consulta de bitacora', 'FAMILIA'),
+('USUARIO_VER', 'Ver usuarios', 'Permite acceder al modulo de usuarios', 'PERMISO'),
+('USUARIO_CREAR', 'Crear usuarios', 'Permite crear usuarios', 'PERMISO'),
+('USUARIO_EDITAR', 'Editar usuarios', 'Permite modificar usuarios', 'PERMISO'),
+('USUARIO_INHABILITAR', 'Inhabilitar usuarios', 'Permite inhabilitar usuarios', 'PERMISO'),
+('ROL_VER', 'Ver roles', 'Permite acceder al modulo de roles', 'PERMISO'),
+('ROL_CREAR', 'Crear roles', 'Permite crear familias de permisos', 'PERMISO'),
+('ROL_EDITAR', 'Editar roles', 'Permite modificar familias de permisos', 'PERMISO'),
+('ROL_INHABILITAR', 'Inhabilitar roles', 'Permite inhabilitar familias de permisos', 'PERMISO'),
+('PERMISO_VER', 'Ver permisos', 'Permite acceder al modulo de permisos', 'PERMISO'),
+('PERMISO_ASIGNAR', 'Asignar permisos', 'Permite asignar permisos o familias', 'PERMISO'),
+('BITACORA_VER', 'Ver bitacora', 'Permite consultar la bitacora del sistema', 'PERMISO');
+GO
+
+INSERT INTO ComponentePermisoRelacion (id_padre, id_hijo)
+SELECT padre.id_componente, hijo.id_componente
+FROM ComponentePermiso padre
+INNER JOIN ComponentePermiso hijo
+    ON hijo.codigo IN ('SEGURIDAD', 'AUDITORIA', 'USUARIO_VER', 'USUARIO_CREAR', 'USUARIO_EDITAR', 'USUARIO_INHABILITAR')
+WHERE padre.codigo = 'ADMINISTRADOR';
+GO
+
+INSERT INTO ComponentePermisoRelacion (id_padre, id_hijo)
+SELECT padre.id_componente, hijo.id_componente
+FROM ComponentePermiso padre
+INNER JOIN ComponentePermiso hijo
+    ON hijo.codigo IN ('ROL_VER', 'ROL_CREAR', 'ROL_EDITAR', 'ROL_INHABILITAR', 'PERMISO_VER', 'PERMISO_ASIGNAR')
+WHERE padre.codigo = 'SEGURIDAD';
+GO
+
+INSERT INTO ComponentePermisoRelacion (id_padre, id_hijo)
+SELECT padre.id_componente, hijo.id_componente
+FROM ComponentePermiso padre
+INNER JOIN ComponentePermiso hijo
+    ON hijo.codigo = 'BITACORA_VER'
+WHERE padre.codigo = 'AUDITORIA';
+GO
+
+INSERT INTO Usuario
+(
+    id_idioma,
+    nombre_usuario,
+    email,
+    password_hash,
+    estado_usuario
+)
+SELECT TOP (1)
+    id_idioma,
+    'admin',
+    'admin@tecnisalud.local',
+    '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
+    'ACTIVO'
+FROM Idioma
+WHERE codigo = 'es-AR';
+GO
+
+INSERT INTO UsuarioComponentePermiso (id_usuario, id_componente)
+SELECT u.id_usuario, c.id_componente
+FROM Usuario u
+INNER JOIN ComponentePermiso c
+    ON c.codigo = 'ADMINISTRADOR'
+WHERE u.nombre_usuario = 'admin';
 GO
 
 -- ============================================================

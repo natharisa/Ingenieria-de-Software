@@ -20,7 +20,7 @@ namespace UI
             this.lblTitulo = new System.Windows.Forms.Label();
             this.lblDescripcion = new System.Windows.Forms.Label();
             this.groupBoxPermisos = new System.Windows.Forms.GroupBox();
-            this.listBoxPermisos = new System.Windows.Forms.ListBox();
+            this.treeViewPermisos = new System.Windows.Forms.TreeView();
             this.groupBoxPermisos.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -47,29 +47,23 @@ namespace UI
             // 
             // groupBoxPermisos
             // 
-            this.groupBoxPermisos.Controls.Add(this.listBoxPermisos);
+            this.groupBoxPermisos.Controls.Add(this.treeViewPermisos);
             this.groupBoxPermisos.Font = new System.Drawing.Font("Segoe UI Semibold", 10F, System.Drawing.FontStyle.Bold);
             this.groupBoxPermisos.Location = new System.Drawing.Point(24, 98);
             this.groupBoxPermisos.Name = "groupBoxPermisos";
-            this.groupBoxPermisos.Size = new System.Drawing.Size(380, 253);
+            this.groupBoxPermisos.Size = new System.Drawing.Size(520, 390);
             this.groupBoxPermisos.TabIndex = 2;
             this.groupBoxPermisos.TabStop = false;
-            this.groupBoxPermisos.Text = "Permisos disponibles";
+            this.groupBoxPermisos.Text = "Arbol de familias y permisos";
             // 
-            // listBoxPermisos
+            // treeViewPermisos
             // 
-            this.listBoxPermisos.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listBoxPermisos.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.listBoxPermisos.FormattingEnabled = true;
-            this.listBoxPermisos.ItemHeight = 17;
-            this.listBoxPermisos.Items.AddRange(new object[] {
-            "Ver bitacora",
-            "Gestionar permisos",
-            "Asignar roles"});
-            this.listBoxPermisos.Location = new System.Drawing.Point(3, 21);
-            this.listBoxPermisos.Name = "listBoxPermisos";
-            this.listBoxPermisos.Size = new System.Drawing.Size(374, 229);
-            this.listBoxPermisos.TabIndex = 0;
+            this.treeViewPermisos.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeViewPermisos.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.treeViewPermisos.Location = new System.Drawing.Point(3, 21);
+            this.treeViewPermisos.Name = "treeViewPermisos";
+            this.treeViewPermisos.Size = new System.Drawing.Size(514, 366);
+            this.treeViewPermisos.TabIndex = 0;
             // 
             // PermisosView
             // 
@@ -92,6 +86,6 @@ namespace UI
         private System.Windows.Forms.Label lblTitulo;
         private System.Windows.Forms.Label lblDescripcion;
         private System.Windows.Forms.GroupBox groupBoxPermisos;
-        private System.Windows.Forms.ListBox listBoxPermisos;
+        private System.Windows.Forms.TreeView treeViewPermisos;
     }
 }

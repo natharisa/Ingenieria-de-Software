@@ -9,21 +9,24 @@ namespace Application
     public class UsuarioApplicationService
     {
         private readonly UsuarioRepository _usuarioRepository;
+        private readonly PermisoRepository _permisoRepository;
         private readonly BitacoraRepository _bitacoraRepository;
         private readonly PlainTextPasswordService _passwordService;
         private BitacoraFactory _bitacoraFactory;
 
         public UsuarioApplicationService()
-            : this(new UsuarioRepository(), new BitacoraRepository(), new PlainTextPasswordService())
+            : this(new UsuarioRepository(), new PermisoRepository(), new BitacoraRepository(), new PlainTextPasswordService())
         {
         }
 
         public UsuarioApplicationService(
             UsuarioRepository usuarioRepository,
+            PermisoRepository permisoRepository,
             BitacoraRepository bitacoraRepository,
             PlainTextPasswordService passwordService)
         {
             _usuarioRepository = usuarioRepository;
+            _permisoRepository = permisoRepository;
             _bitacoraRepository = bitacoraRepository;
             _passwordService = passwordService;
         }
@@ -104,6 +107,7 @@ namespace Application
             }
 
             this._bitacoraFactory = new LoginExitosoBitacoraFactory();
+            usuario.ComponentesPermiso = _permisoRepository.ListarAsignadosPorUsuario(usuario.Id);
             RegistrarLoginExitoso(usuario, "Login exitoso.");
             return usuario;
         }

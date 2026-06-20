@@ -35,6 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bitacora\BitacoraRepository.cs" />
+    <Compile Include="Permisos\PermisoRepository.cs" />
     <Compile Include="Usuarios\UsuarioRepository.cs" />
   </ItemGroup>
   <ItemGroup>

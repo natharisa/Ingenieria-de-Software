@@ -41,6 +41,11 @@
     <Compile Include="Bitacora\LoginExitosoBitacoraFactory.cs" />
     <Compile Include="Bitacora\LoginFallidoBitacoraFactory.cs" />
     <Compile Include="Bitacora\RegistroFallidoBitacoraFactory.cs" />
+    <Compile Include="Permisos\ComponentePermiso.cs" />
+    <Compile Include="Permisos\FamiliaPermiso.cs" />
+    <Compile Include="Permisos\Permiso.cs" />
+    <Compile Include="Permisos\PermisosSistema.cs" />
+    <Compile Include="Permisos\TipoComponentePermiso.cs" />
     <Compile Include="Seguridad\Sesion.cs" />
     <Compile Include="Usuarios\CodigoRegistroUsuario.cs" />
     <Compile Include="Usuarios\Usuario.cs" />
