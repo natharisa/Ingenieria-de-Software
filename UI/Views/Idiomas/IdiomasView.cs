@@ -436,8 +436,125 @@ namespace UI
                 tvComponentes.Nodes.Add(viewNode);
             }
 
+            tvComponentes.Nodes.Add(CrearNodoCatalogoEtiquetas());
             tvComponentes.ExpandAll();
             tvComponentes.EndUpdate();
+        }
+
+        private TreeNode CrearNodoCatalogoEtiquetas()
+        {
+            TreeNode catalogo = CrearNodoRaiz("Etiquetas disponibles");
+
+            AgregarSeccionCatalogo(catalogo, "Menu", new[]
+            {
+                new UiCatalogItem("MAIN_TITLE", "Titulo de la ventana principal"),
+                new UiCatalogItem("MAIN_USER", "Texto de usuario autenticado"),
+                new UiCatalogItem("MAIN_NO_SESSION", "Texto sin sesion"),
+                new UiCatalogItem("MENU_AUDIT", "Menu bitacora"),
+                new UiCatalogItem("MENU_USERS", "Menu usuarios"),
+                new UiCatalogItem("MENU_ROLES", "Menu roles"),
+                new UiCatalogItem("MENU_LANGUAGES", "Menu idiomas"),
+                new UiCatalogItem("MENU_LOGOUT", "Menu salir"),
+                new UiCatalogItem("LANGUAGE_SELECTOR", "Selector de idioma"),
+                new UiCatalogItem("SECURITY_ACCESS_DENIED", "Acceso denegado"),
+                new UiCatalogItem("NO_PERMISSIONS_ASSIGNED", "Sin permisos asignados")
+            });
+
+            AgregarSeccionCatalogo(catalogo, "Bitacora", new[]
+            {
+                new UiCatalogItem("AUDIT_TITLE", "Titulo de bitacora"),
+                new UiCatalogItem("AUDIT_DESCRIPTION", "Descripcion de bitacora"),
+                new UiCatalogItem("AUDIT_EMPTY", "Mensaje sin eventos"),
+                new UiCatalogItem("AUDIT_COUNT", "Cantidad de eventos registrados"),
+                new UiCatalogItem("BTN_REFRESH", "Boton actualizar"),
+                new UiCatalogItem("GRID_ID", "Columna id"),
+                new UiCatalogItem("GRID_DATE", "Columna fecha"),
+                new UiCatalogItem("GRID_USER_ID", "Columna id usuario"),
+                new UiCatalogItem("GRID_USER", "Columna usuario"),
+                new UiCatalogItem("GRID_MODULE", "Columna modulo"),
+                new UiCatalogItem("GRID_ACTION", "Columna accion"),
+                new UiCatalogItem("GRID_LEVEL", "Columna nivel"),
+                new UiCatalogItem("GRID_DESCRIPTION", "Columna descripcion"),
+                new UiCatalogItem("GRID_DEVICE", "Columna equipo")
+            });
+
+            AgregarSeccionCatalogo(catalogo, "Usuarios", new[]
+            {
+                new UiCatalogItem("USERS_TITLE", "Titulo de usuarios"),
+                new UiCatalogItem("USERS_DESCRIPTION", "Descripcion de usuarios"),
+                new UiCatalogItem("USERS_DETAIL", "Detalle de usuario"),
+                new UiCatalogItem("USERS_CREATE_MODE", "Modo crear usuario"),
+                new UiCatalogItem("USERS_EDIT_MODE", "Modo modificar usuario"),
+                new UiCatalogItem("FIELD_USER", "Campo usuario"),
+                new UiCatalogItem("FIELD_EMAIL", "Campo email"),
+                new UiCatalogItem("FIELD_NAME", "Campo nombre"),
+                new UiCatalogItem("FIELD_LASTNAME", "Campo apellido"),
+                new UiCatalogItem("FIELD_NEW_PASSWORD", "Campo contrasena nueva"),
+                new UiCatalogItem("FIELD_STATUS", "Campo estado"),
+                new UiCatalogItem("GRID_ID", "Columna id"),
+                new UiCatalogItem("GRID_USER", "Columna usuario"),
+                new UiCatalogItem("GRID_EMAIL", "Columna email"),
+                new UiCatalogItem("GRID_STATUS", "Columna estado"),
+                new UiCatalogItem("BTN_NEW", "Boton nuevo"),
+                new UiCatalogItem("BTN_CREATE", "Boton crear"),
+                new UiCatalogItem("BTN_SAVE", "Boton guardar"),
+                new UiCatalogItem("BTN_DISABLE", "Boton inhabilitar"),
+                new UiCatalogItem("USER_ROLES", "Grupo roles de usuario"),
+                new UiCatalogItem("USER_ROLE_SELECT_HELP", "Ayuda para seleccionar usuario"),
+                new UiCatalogItem("USER_ROLE_SELECT_ONE", "Ayuda para seleccionar rol"),
+                new UiCatalogItem("USER_ROLE_EMPTY", "Sin roles disponibles"),
+                new UiCatalogItem("USER_ROLE_EDIT_DENIED", "Permiso denegado para roles de usuario")
+            });
+
+            AgregarSeccionCatalogo(catalogo, "Roles", new[]
+            {
+                new UiCatalogItem("ROLES_TITLE", "Titulo de roles"),
+                new UiCatalogItem("ROLES_DESCRIPTION", "Descripcion de roles"),
+                new UiCatalogItem("ROLES_STRUCTURE", "Estructura de roles"),
+                new UiCatalogItem("ROLES_ADMIN", "Administracion de roles"),
+                new UiCatalogItem("ROLE_CODE", "Campo codigo de rol"),
+                new UiCatalogItem("ROLE_SELECTED_FAMILY", "Familia seleccionada"),
+                new UiCatalogItem("ROLE_CHILD_COMPONENT", "Permiso o familia a agregar"),
+                new UiCatalogItem("ROLE_SELECT_FAMILY", "Seleccionar familia"),
+                new UiCatalogItem("ROLE_SELECT_CHILD", "Seleccionar permiso hijo"),
+                new UiCatalogItem("ROLE_SELECT_FAMILY_AND_COMPONENT", "Seleccionar familia y componente"),
+                new UiCatalogItem("ROLE_CREATED", "Rol creado"),
+                new UiCatalogItem("ROLE_CREATE_ERROR", "Error al crear rol"),
+                new UiCatalogItem("ROLE_RELATION_ADDED", "Relacion agregada"),
+                new UiCatalogItem("ROLE_RELATION_ADD_ERROR", "Error al agregar relacion"),
+                new UiCatalogItem("ROLE_RELATION_REMOVED", "Relacion quitada"),
+                new UiCatalogItem("ROLE_RELATION_REMOVE_ERROR", "Error al quitar relacion"),
+                new UiCatalogItem("ROLE_RELATION_IDENTIFY_ERROR", "Error al identificar relacion"),
+                new UiCatalogItem("ROLE_SELF_REFERENCE_ERROR", "Error por autoreferencia"),
+                new UiCatalogItem("ROLE_INVALID_PARENT", "Padre invalido"),
+                new UiCatalogItem("ROLE_INVALID_CHILD", "Hijo invalido"),
+                new UiCatalogItem("ROLE_CYCLE_ERROR", "Ciclo detectado"),
+                new UiCatalogItem("BTN_CREATE_ROLE", "Boton crear rol"),
+                new UiCatalogItem("BTN_ADD", "Boton agregar"),
+                new UiCatalogItem("BTN_REMOVE_SELECTED", "Boton quitar seleccionado"),
+                new UiCatalogItem("BTN_REMOVE_FROM", "Boton quitar desde familia"),
+                new UiCatalogItem("SECURITY_ROLE_CREATE_DENIED", "Permiso denegado para crear roles"),
+                new UiCatalogItem("SECURITY_ROLE_EDIT_DENIED", "Permiso denegado para modificar roles")
+            });
+
+            return catalogo;
+        }
+
+        private void AgregarSeccionCatalogo(TreeNode parentNode, string nombre, IEnumerable<UiCatalogItem> items)
+        {
+            TreeNode seccion = CrearNodoRaiz(nombre);
+
+            foreach (UiCatalogItem item in items)
+            {
+                seccion.Nodes.Add(CrearNodoComponente(
+                    "Etiqueta",
+                    item.Key,
+                    item.Description,
+                    item.Key,
+                    nombre + "/" + item.Key));
+            }
+
+            parentNode.Nodes.Add(seccion);
         }
 
         private TreeNode CrearNodoRaiz(string texto)
@@ -649,6 +766,18 @@ namespace UI
             public string SuggestedKey { get; set; }
             public string Path { get; set; }
             public string CurrentText { get; set; }
+        }
+
+        private class UiCatalogItem
+        {
+            public UiCatalogItem(string key, string description)
+            {
+                Key = key;
+                Description = description;
+            }
+
+            public string Key { get; private set; }
+            public string Description { get; private set; }
         }
     }
 }
