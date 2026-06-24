@@ -37,6 +37,7 @@
     <Compile Include="BitacoraApplicationService.cs" />
     <Compile Include="Permisos\PermisoApplicationService.cs" />
     <Compile Include="Seguridad\AutorizacionApplicationService.cs" />
+    <Compile Include="Idiomas\IdiomaApplicationService.cs" />
     <Compile Include="Usuarios\UsuarioApplicationService.cs" />
   </ItemGroup>
   <ItemGroup>

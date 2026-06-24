@@ -43,6 +43,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bitacora\BitacoraDataMapper.cs" />
+    <Compile Include="Idiomas\IdiomaDataMapper.cs" />
+    <Compile Include="Idiomas\TraduccionDataMapper.cs" />
     <Compile Include="Infrastructure\DatabaseContext.cs" />
     <Compile Include="Permisos\PermisoDataMapper.cs" />
     <Compile Include="Usuarios\UsuarioDataMapper.cs" />

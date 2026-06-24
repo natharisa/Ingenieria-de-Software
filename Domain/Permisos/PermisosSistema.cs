@@ -16,5 +16,11 @@ namespace Domain
 
         public const string PermisoVer = "PERMISO_VER";
         public const string PermisoAsignar = "PERMISO_ASIGNAR";
+
+        public const string IdiomaVer = "IDIOMA_VER";
+        public const string IdiomaCrear = "IDIOMA_CREAR";
+        public const string IdiomaEditar = "IDIOMA_EDITAR";
+        public const string TraduccionVer = "TRADUCCION_VER";
+        public const string TraduccionEditar = "TRADUCCION_EDITAR";
     }
 }

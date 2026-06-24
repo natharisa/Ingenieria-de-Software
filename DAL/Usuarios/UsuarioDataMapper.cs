@@ -254,13 +254,18 @@ namespace DAL
                 _databaseContext.CrearParametro("@nombre_usuario", usuario.Username),
                 _databaseContext.CrearParametro("@email", usuario.Email),
                 _databaseContext.CrearParametro("@estado_usuario", usuario.Estado),
-                _databaseContext.CrearParametro("@password_hash", string.IsNullOrWhiteSpace(usuario.Password) ? null : usuario.Password)
+                _databaseContext.CrearParametro("@password_hash", string.IsNullOrWhiteSpace(usuario.Password) ? null : usuario.Password),
+                new SqlParameter("@id_idioma", SqlDbType.Int)
+                {
+                    Value = usuario.IdiomaPreferidoId.HasValue ? (object)usuario.IdiomaPreferidoId.Value : DBNull.Value
+                }
             };
 
             const string sql = @"
                 UPDATE dbo.Usuario
                 SET nombre_usuario = @nombre_usuario,
                     email = @email,
+                    id_idioma = @id_idioma,
                     estado_usuario = @estado_usuario,
                     intentos_login_fallidos = CASE
                         WHEN @estado_usuario = 'ACTIVO' AND estado_usuario <> 'ACTIVO' THEN 0
@@ -340,14 +345,45 @@ namespace DAL
             }
         }
 
+        public int ActualizarIdiomaPreferido(int usuarioId, int idiomaId)
+        {
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                _databaseContext.CrearParametro("@id_usuario", usuarioId),
+                _databaseContext.CrearParametro("@id_idioma", idiomaId)
+            };
+
+            const string sql = @"
+                UPDATE dbo.Usuario
+                SET id_idioma = @id_idioma
+                WHERE id_usuario = @id_usuario";
+
+            try
+            {
+                _databaseContext.Abrir();
+                return _databaseContext.EscribirTexto(sql, parametros);
+            }
+            finally
+            {
+                _databaseContext.Cerrar();
+            }
+        }
+
         private static Usuario MapearUsuario(DataRow registro)
         {
+            int? idiomaPreferidoId = null;
+            if (registro.Table.Columns.Contains("id_idioma") && registro["id_idioma"] != DBNull.Value)
+            {
+                idiomaPreferidoId = Convert.ToInt32(registro["id_idioma"]);
+            }
+
             return new Usuario
             {
                 Id = Convert.ToInt32(registro["id_usuario"]),
                 Username = registro["nombre_usuario"].ToString(),
                 Email = registro["email"].ToString(),
-                Idioma = registro["id_idioma"].ToString(),
+                Idioma = idiomaPreferidoId.HasValue ? idiomaPreferidoId.Value.ToString() : null,
+                IdiomaPreferidoId = idiomaPreferidoId,
                 Estado = registro.Table.Columns.Contains("estado_usuario")
                     ? registro["estado_usuario"].ToString()
                     : null,

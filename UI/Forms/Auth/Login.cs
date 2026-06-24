@@ -32,6 +32,7 @@ namespace UI
                 Sesion sesion = Sesion.ObtenerInstancia();
 
                 sesion.IniciarSesion(usuarioValidado);
+                LanguageManager.Instance.Initialize(usuarioValidado);
                 MessageBox.Show(_uiTextService.BuildWelcomeMessage(sesion.ObtenerUsuario().ToString()));
                 DialogResult = DialogResult.OK;
                 Close();

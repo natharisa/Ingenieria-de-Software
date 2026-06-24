@@ -252,6 +252,7 @@ INSERT INTO @componentes (codigo, nombre, descripcion, tipo) VALUES
 ('ADMINISTRADOR', 'Administrador', 'Familia con acceso total a los modulos actuales', 'FAMILIA'),
 ('SEGURIDAD', 'Seguridad', 'Familia para gestion de roles y permisos', 'FAMILIA'),
 ('AUDITORIA', 'Auditoria', 'Familia para consulta de bitacora', 'FAMILIA'),
+('IDIOMAS_TRADUCCIONES', 'Idiomas y traducciones', 'Familia para gestion de idiomas y traducciones', 'FAMILIA'),
 ('USUARIO_VER', 'Ver usuarios', 'Permite acceder al modulo de usuarios', 'PERMISO'),
 ('USUARIO_CREAR', 'Crear usuarios', 'Permite crear usuarios', 'PERMISO'),
 ('USUARIO_EDITAR', 'Editar usuarios', 'Permite modificar usuarios', 'PERMISO'),
@@ -262,6 +263,11 @@ INSERT INTO @componentes (codigo, nombre, descripcion, tipo) VALUES
 ('ROL_INHABILITAR', 'Inhabilitar roles', 'Permite inhabilitar familias de permisos', 'PERMISO'),
 ('PERMISO_VER', 'Ver permisos', 'Permite acceder al modulo de permisos', 'PERMISO'),
 ('PERMISO_ASIGNAR', 'Asignar permisos', 'Permite asignar permisos o familias', 'PERMISO'),
+('IDIOMA_VER', 'Ver idiomas', 'Permite acceder a la administracion de idiomas', 'PERMISO'),
+('IDIOMA_CREAR', 'Crear idiomas', 'Permite crear nuevos idiomas', 'PERMISO'),
+('IDIOMA_EDITAR', 'Editar idiomas', 'Permite modificar y activar o desactivar idiomas', 'PERMISO'),
+('TRADUCCION_VER', 'Ver traducciones', 'Permite ver el arbol de etiquetas y traducciones de UI', 'PERMISO'),
+('TRADUCCION_EDITAR', 'Editar traducciones', 'Permite crear o modificar traducciones detectadas desde la UI', 'PERMISO'),
 ('BITACORA_VER', 'Ver bitacora', 'Permite consultar la bitacora del sistema', 'PERMISO');
 
 MERGE dbo.ComponentePermiso AS destino
@@ -286,6 +292,7 @@ DECLARE @relaciones TABLE (
 INSERT INTO @relaciones (codigo_padre, codigo_hijo) VALUES
 ('ADMINISTRADOR', 'SEGURIDAD'),
 ('ADMINISTRADOR', 'AUDITORIA'),
+('ADMINISTRADOR', 'IDIOMAS_TRADUCCIONES'),
 ('ADMINISTRADOR', 'USUARIO_VER'),
 ('ADMINISTRADOR', 'USUARIO_CREAR'),
 ('ADMINISTRADOR', 'USUARIO_EDITAR'),
@@ -296,6 +303,11 @@ INSERT INTO @relaciones (codigo_padre, codigo_hijo) VALUES
 ('SEGURIDAD', 'ROL_INHABILITAR'),
 ('SEGURIDAD', 'PERMISO_VER'),
 ('SEGURIDAD', 'PERMISO_ASIGNAR'),
+('IDIOMAS_TRADUCCIONES', 'IDIOMA_VER'),
+('IDIOMAS_TRADUCCIONES', 'IDIOMA_CREAR'),
+('IDIOMAS_TRADUCCIONES', 'IDIOMA_EDITAR'),
+('IDIOMAS_TRADUCCIONES', 'TRADUCCION_VER'),
+('IDIOMAS_TRADUCCIONES', 'TRADUCCION_EDITAR'),
 ('AUDITORIA', 'BITACORA_VER');
 
 INSERT INTO dbo.ComponentePermisoRelacion (id_padre, id_hijo)
@@ -424,5 +436,64 @@ BEGIN
     INNER JOIN dbo.ComponentePermiso c
         ON c.codigo = 'ADMINISTRADOR'
     WHERE u.nombre_usuario = 'admin';
+END
+GO
+
+IF OBJECT_ID('dbo.Etiqueta', 'U') IS NOT NULL
+   AND OBJECT_ID('dbo.Traduccion', 'U') IS NOT NULL
+   AND OBJECT_ID('dbo.Idioma', 'U') IS NOT NULL
+BEGIN
+    DECLARE @etiquetas_i18n TABLE (
+        clave VARCHAR(150) NOT NULL,
+        descripcion VARCHAR(255) NULL
+    );
+
+    INSERT INTO @etiquetas_i18n (clave, descripcion) VALUES
+    ('SECURITY_LANGUAGE_CREATE_DENIED', 'Creacion de idioma denegada'),
+    ('SECURITY_LANGUAGE_EDIT_DENIED', 'Edicion de idioma denegada'),
+    ('SECURITY_TRANSLATION_EDIT_DENIED', 'Edicion de traduccion denegada');
+
+    MERGE dbo.Etiqueta AS destino
+    USING @etiquetas_i18n AS origen
+        ON destino.clave = origen.clave
+    WHEN MATCHED THEN
+        UPDATE SET descripcion = origen.descripcion
+    WHEN NOT MATCHED THEN
+        INSERT (clave, descripcion)
+        VALUES (origen.clave, origen.descripcion);
+
+    DECLARE @traducciones_i18n TABLE (
+        codigo_idioma VARCHAR(10) NOT NULL,
+        clave VARCHAR(150) NOT NULL,
+        texto NVARCHAR(500) NOT NULL
+    );
+
+    INSERT INTO @traducciones_i18n (codigo_idioma, clave, texto) VALUES
+    ('es-AR', 'SECURITY_LANGUAGE_CREATE_DENIED', 'No tenes permisos para crear idiomas.'),
+    ('es-AR', 'SECURITY_LANGUAGE_EDIT_DENIED', 'No tenes permisos para modificar idiomas.'),
+    ('es-AR', 'SECURITY_TRANSLATION_EDIT_DENIED', 'No tenes permisos para modificar traducciones.'),
+    ('en-US', 'SECURITY_LANGUAGE_CREATE_DENIED', 'You do not have permission to create languages.'),
+    ('en-US', 'SECURITY_LANGUAGE_EDIT_DENIED', 'You do not have permission to modify languages.'),
+    ('en-US', 'SECURITY_TRANSLATION_EDIT_DENIED', 'You do not have permission to modify translations.');
+
+    MERGE dbo.Traduccion AS destino
+    USING (
+        SELECT
+            e.id_etiqueta,
+            i.id_idioma,
+            t.texto
+        FROM @traducciones_i18n t
+        INNER JOIN dbo.Etiqueta e
+            ON e.clave = t.clave
+        INNER JOIN dbo.Idioma i
+            ON i.codigo = t.codigo_idioma
+    ) AS origen
+        ON destino.id_etiqueta = origen.id_etiqueta
+       AND destino.id_idioma = origen.id_idioma
+    WHEN MATCHED THEN
+        UPDATE SET texto = origen.texto
+    WHEN NOT MATCHED THEN
+        INSERT (id_etiqueta, id_idioma, texto)
+        VALUES (origen.id_etiqueta, origen.id_idioma, origen.texto);
 END
 GO

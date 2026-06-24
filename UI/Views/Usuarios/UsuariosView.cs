@@ -4,10 +4,11 @@ using System.Drawing;
 using System.Windows.Forms;
 using Application;
 using Domain;
+using Services;
 
 namespace UI
 {
-    public partial class UsuariosView : UserControl
+    public partial class UsuariosView : LocalizedUserControl
     {
         private readonly UsuarioApplicationService _usuarioService;
         private readonly PermisoApplicationService _permisoService;
@@ -32,6 +33,7 @@ namespace UI
             _permisoService = new PermisoApplicationService();
             _autorizacionService = new AutorizacionApplicationService();
             InitializeComponent();
+            ConfigurarTraducciones();
             ConfigurarGrilla();
             ConfigurarAsignacionRoles();
             ConfigurarPermisos();
@@ -40,10 +42,35 @@ namespace UI
             PrepararNuevoUsuario();
         }
 
+        private void ConfigurarTraducciones()
+        {
+            lblTitulo.Tag = "USERS_TITLE";
+            lblDescripcion.Tag = "USERS_DESCRIPTION";
+            groupBoxDetalle.Tag = "USERS_DETAIL";
+            lblUsuario.Tag = "FIELD_USER";
+            lblEmail.Tag = "FIELD_EMAIL";
+            lblNombre.Tag = "FIELD_NAME";
+            lblApellido.Tag = "FIELD_LASTNAME";
+            lblPassword.Tag = "FIELD_NEW_PASSWORD";
+            lblEstado.Tag = "FIELD_STATUS";
+            btnNuevo.Tag = "BTN_NEW";
+            btnInhabilitar.Tag = "BTN_DISABLE";
+            columnId.Tag = "GRID_ID";
+            columnUsuario.Tag = "GRID_USER";
+            columnEmail.Tag = "GRID_EMAIL";
+            columnEstado.Tag = "GRID_STATUS";
+        }
+
         private void ConfigurarGrilla()
         {
             dgvUsuarios.AutoGenerateColumns = false;
             cmbEstado.Items.AddRange(new object[] { "ACTIVO", "INACTIVO" });
+        }
+
+        protected override void ApplyTranslations()
+        {
+            base.ApplyTranslations();
+            ActualizarEstadoRolesUsuario();
         }
 
         private void CargarUsuarios()
@@ -78,8 +105,10 @@ namespace UI
             txtApellido.Text = usuario.Apellido;
             txtPassword.Text = string.Empty;
             cmbEstado.SelectedItem = string.IsNullOrWhiteSpace(usuario.Estado) ? "ACTIVO" : usuario.Estado;
-            lblModo.Text = "Modificar usuario";
-            btnGuardar.Text = "Guardar";
+            lblModo.Tag = "USERS_EDIT_MODE";
+            lblModo.Text = LanguageManager.Instance.Translate("USERS_EDIT_MODE");
+            btnGuardar.Tag = "BTN_SAVE";
+            btnGuardar.Text = LanguageManager.Instance.Translate("BTN_SAVE");
             btnGuardar.Enabled = _autorizacionService.TienePermiso(PermisosSistema.UsuarioEditar);
             btnInhabilitar.Enabled = _autorizacionService.TienePermiso(PermisosSistema.UsuarioInhabilitar) &&
                                      usuario.Id > 0 &&
@@ -221,8 +250,10 @@ namespace UI
             txtApellido.Clear();
             txtPassword.Clear();
             cmbEstado.SelectedItem = "ACTIVO";
-            lblModo.Text = "Crear usuario";
-            btnGuardar.Text = "Crear";
+            lblModo.Tag = "USERS_CREATE_MODE";
+            lblModo.Text = LanguageManager.Instance.Translate("USERS_CREATE_MODE");
+            btnGuardar.Tag = "BTN_CREATE";
+            btnGuardar.Text = LanguageManager.Instance.Translate("BTN_CREATE");
             btnGuardar.Enabled = _autorizacionService.TienePermiso(PermisosSistema.UsuarioCrear);
             btnInhabilitar.Enabled = false;
             LimpiarRolesUsuario();
@@ -252,6 +283,7 @@ namespace UI
                 Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold),
                 Location = new Point(394, 98),
                 Size = new Size(150, 390),
+                Tag = "USER_ROLES",
                 Text = "Roles"
             };
 
@@ -262,6 +294,7 @@ namespace UI
                 ForeColor = Color.FromArgb(108, 117, 125),
                 Location = new Point(10, 24),
                 Size = new Size(130, 68),
+                Tag = "USER_ROLE_SELECT_HELP",
                 Text = "Selecciona un usuario para asignarle un rol."
             };
 
@@ -281,6 +314,7 @@ namespace UI
                 ForeColor = Color.White,
                 Location = new Point(10, 343),
                 Size = new Size(130, 31),
+                Tag = "BTN_SAVE",
                 Text = "Guardar",
                 UseVisualStyleBackColor = false
             };
@@ -354,19 +388,19 @@ namespace UI
 
             if (!puedeEditar)
             {
-                lblRolesInfo.Text = "No tenes permiso para modificar roles.";
+                lblRolesInfo.Text = LanguageManager.Instance.Translate("USER_ROLE_EDIT_DENIED");
                 return;
             }
 
             if (!hayRoles)
             {
-                lblRolesInfo.Text = "No hay roles cargados. Revisa el script de permisos.";
+                lblRolesInfo.Text = LanguageManager.Instance.Translate("USER_ROLE_EMPTY");
                 return;
             }
 
             lblRolesInfo.Text = hayUsuarioSeleccionado
-                ? "Elegi un unico rol y guarda."
-                : "Selecciona un usuario para asignar rol.";
+                ? LanguageManager.Instance.Translate("USER_ROLE_SELECT_ONE")
+                : LanguageManager.Instance.Translate("USER_ROLE_SELECT_HELP");
         }
 
         private void btnGuardarRoles_Click(object sender, EventArgs e)

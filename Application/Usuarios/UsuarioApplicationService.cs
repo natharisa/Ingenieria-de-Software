@@ -57,6 +57,7 @@ namespace Application
                 Nombre = string.IsNullOrWhiteSpace(nuevoUsuario.Nombre) ? null : nuevoUsuario.Nombre.Trim(),
                 Apellido = string.IsNullOrWhiteSpace(nuevoUsuario.Apellido) ? null : nuevoUsuario.Apellido.Trim(),
                 Idioma = nuevoUsuario.Idioma,
+                IdiomaPreferidoId = nuevoUsuario.IdiomaPreferidoId,
                 Estado = "ACTIVO"
             };
 
@@ -156,6 +157,7 @@ namespace Application
                 Nombre = string.IsNullOrWhiteSpace(usuario.Nombre) ? null : usuario.Nombre.Trim(),
                 Apellido = string.IsNullOrWhiteSpace(usuario.Apellido) ? null : usuario.Apellido.Trim(),
                 Idioma = usuario.Idioma,
+                IdiomaPreferidoId = usuario.IdiomaPreferidoId,
                 Estado = string.IsNullOrWhiteSpace(usuario.Estado) ? "ACTIVO" : usuario.Estado.Trim()
             };
 

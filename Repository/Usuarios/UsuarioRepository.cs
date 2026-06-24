@@ -80,6 +80,16 @@ namespace Repository
             return _usuarioDataMapper.Editar(usuario) > 0;
         }
 
+        public bool ActualizarIdiomaPreferido(int usuarioId, int idiomaId)
+        {
+            if (usuarioId == 0 || idiomaId == 0)
+            {
+                return false;
+            }
+
+            return _usuarioDataMapper.ActualizarIdiomaPreferido(usuarioId, idiomaId) > 0;
+        }
+
         public void Borrar(Usuario usuario)
         {
             if (usuario == null)

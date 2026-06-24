@@ -27,10 +27,12 @@ namespace UI
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.bitacoraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.usuariosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.permisosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rolesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.idiomasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.salirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.topPanel = new System.Windows.Forms.Panel();
+            this.cmbIdiomas = new System.Windows.Forms.ComboBox();
+            this.lblIdioma = new System.Windows.Forms.Label();
             this.lblUsuario = new System.Windows.Forms.Label();
             this.contentPanel = new System.Windows.Forms.Panel();
             this.menuStrip1.SuspendLayout();
@@ -43,8 +45,8 @@ namespace UI
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.bitacoraToolStripMenuItem,
             this.usuariosToolStripMenuItem,
-            this.permisosToolStripMenuItem,
             this.rolesToolStripMenuItem,
+            this.idiomasToolStripMenuItem,
             this.salirToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -70,16 +72,6 @@ namespace UI
             this.usuariosToolStripMenuItem.Size = new System.Drawing.Size(78, 24);
             this.usuariosToolStripMenuItem.Text = "Usuarios";
             this.usuariosToolStripMenuItem.Click += new System.EventHandler(this.usuariosToolStripMenuItem_Click);
-            // 
-            // permisosToolStripMenuItem
-            // 
-            this.permisosToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.permisosToolStripMenuItem.ForeColor = System.Drawing.Color.White;
-            this.permisosToolStripMenuItem.Name = "permisosToolStripMenuItem";
-            this.permisosToolStripMenuItem.Size = new System.Drawing.Size(83, 24);
-            this.permisosToolStripMenuItem.Text = "Permisos";
-            this.permisosToolStripMenuItem.Click += new System.EventHandler(this.permisosToolStripMenuItem_Click);
-            // 
             // rolesToolStripMenuItem
             // 
             this.rolesToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 10F);
@@ -88,6 +80,15 @@ namespace UI
             this.rolesToolStripMenuItem.Size = new System.Drawing.Size(57, 24);
             this.rolesToolStripMenuItem.Text = "Roles";
             this.rolesToolStripMenuItem.Click += new System.EventHandler(this.rolesToolStripMenuItem_Click);
+            // 
+            // idiomasToolStripMenuItem
+            // 
+            this.idiomasToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.idiomasToolStripMenuItem.ForeColor = System.Drawing.Color.White;
+            this.idiomasToolStripMenuItem.Name = "idiomasToolStripMenuItem";
+            this.idiomasToolStripMenuItem.Size = new System.Drawing.Size(74, 24);
+            this.idiomasToolStripMenuItem.Text = "Idiomas";
+            this.idiomasToolStripMenuItem.Click += new System.EventHandler(this.idiomasToolStripMenuItem_Click);
             // 
             // salirToolStripMenuItem
             // 
@@ -102,12 +103,37 @@ namespace UI
             // topPanel
             // 
             this.topPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(248)))), ((int)(((byte)(249)))), ((int)(((byte)(250)))));
+            this.topPanel.Controls.Add(this.cmbIdiomas);
+            this.topPanel.Controls.Add(this.lblIdioma);
             this.topPanel.Controls.Add(this.lblUsuario);
             this.topPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.topPanel.Location = new System.Drawing.Point(0, 28);
             this.topPanel.Name = "topPanel";
             this.topPanel.Size = new System.Drawing.Size(1000, 48);
             this.topPanel.TabIndex = 1;
+            // 
+            // cmbIdiomas
+            // 
+            this.cmbIdiomas.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cmbIdiomas.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbIdiomas.FormattingEnabled = true;
+            this.cmbIdiomas.Location = new System.Drawing.Point(820, 13);
+            this.cmbIdiomas.Name = "cmbIdiomas";
+            this.cmbIdiomas.Size = new System.Drawing.Size(164, 23);
+            this.cmbIdiomas.TabIndex = 2;
+            this.cmbIdiomas.SelectedIndexChanged += new System.EventHandler(this.cmbIdiomas_SelectedIndexChanged);
+            // 
+            // lblIdioma
+            // 
+            this.lblIdioma.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblIdioma.AutoSize = true;
+            this.lblIdioma.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblIdioma.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(80)))), ((int)(((byte)(87)))));
+            this.lblIdioma.Location = new System.Drawing.Point(756, 16);
+            this.lblIdioma.Name = "lblIdioma";
+            this.lblIdioma.Size = new System.Drawing.Size(46, 15);
+            this.lblIdioma.TabIndex = 1;
+            this.lblIdioma.Text = "Idioma";
             // 
             // lblUsuario
             // 
@@ -159,10 +185,12 @@ namespace UI
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem bitacoraToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem usuariosToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem permisosToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rolesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem idiomasToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem salirToolStripMenuItem;
         private System.Windows.Forms.Panel topPanel;
+        private System.Windows.Forms.ComboBox cmbIdiomas;
+        private System.Windows.Forms.Label lblIdioma;
         private System.Windows.Forms.Label lblUsuario;
         private System.Windows.Forms.Panel contentPanel;
     }

@@ -48,6 +48,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\LocalizedUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Common\TranslationApplier.cs" />
+    <Compile Include="Views\Idiomas\IdiomasView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Views\Bitacora\BitacoraView.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -65,12 +72,6 @@
     </Compile>
     <Compile Include="Forms\Main\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Permisos\PermisosView.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Views\Permisos\PermisosView.Designer.cs">
-      <DependentUpon>PermisosView.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\Usuarios\UsuariosView.cs">
       <SubType>UserControl</SubType>
