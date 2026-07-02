@@ -32,8 +32,10 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web.Extensions" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Auditoria\AuditoriaRepository.cs" />
     <Compile Include="Bitacora\BitacoraRepository.cs" />
     <Compile Include="Idiomas\LanguageRepository.cs" />
     <Compile Include="Idiomas\TranslationRepository.cs" />

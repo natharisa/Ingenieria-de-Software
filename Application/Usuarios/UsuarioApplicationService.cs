@@ -11,11 +11,12 @@ namespace Application
         private readonly UsuarioRepository _usuarioRepository;
         private readonly PermisoRepository _permisoRepository;
         private readonly BitacoraRepository _bitacoraRepository;
+        private readonly AuditoriaApplicationService _auditoriaService;
         private readonly PlainTextPasswordService _passwordService;
         private BitacoraFactory _bitacoraFactory;
 
         public UsuarioApplicationService()
-            : this(new UsuarioRepository(), new PermisoRepository(), new BitacoraRepository(), new PlainTextPasswordService())
+            : this(new UsuarioRepository(), new PermisoRepository(), new BitacoraRepository(), new AuditoriaApplicationService(), new PlainTextPasswordService())
         {
         }
 
@@ -24,10 +25,21 @@ namespace Application
             PermisoRepository permisoRepository,
             BitacoraRepository bitacoraRepository,
             PlainTextPasswordService passwordService)
+            : this(usuarioRepository, permisoRepository, bitacoraRepository, new AuditoriaApplicationService(), passwordService)
+        {
+        }
+
+        public UsuarioApplicationService(
+            UsuarioRepository usuarioRepository,
+            PermisoRepository permisoRepository,
+            BitacoraRepository bitacoraRepository,
+            AuditoriaApplicationService auditoriaService,
+            PlainTextPasswordService passwordService)
         {
             _usuarioRepository = usuarioRepository;
             _permisoRepository = permisoRepository;
             _bitacoraRepository = bitacoraRepository;
+            _auditoriaService = auditoriaService;
             _passwordService = passwordService;
         }
 
@@ -64,6 +76,11 @@ namespace Application
             //Registro de la falla al ingresar REGISTRO
             CodigoRegistroUsuario resultado = _usuarioRepository.Crear(usuarioProtegido);
             this._bitacoraFactory = new RegistroFallidoBitacoraFactory();
+
+            if (resultado == CodigoRegistroUsuario.Creado)
+            {
+                _auditoriaService.RegistrarAlta(usuarioProtegido.CrearMemento());
+            }
 
             if (resultado == CodigoRegistroUsuario.UsuarioExistente)
             {
@@ -161,7 +178,29 @@ namespace Application
                 Estado = string.IsNullOrWhiteSpace(usuario.Estado) ? "ACTIVO" : usuario.Estado.Trim()
             };
 
-            return _usuarioRepository.Modificar(usuarioNormalizado);
+            Usuario usuarioAnterior = _usuarioRepository.ObtenerPorId(usuarioNormalizado.Id);
+
+            if (usuarioAnterior == null)
+            {
+                return false;
+            }
+
+            AuditoriaMemento estadoAnterior = usuarioAnterior.CrearMemento();
+            bool modificado = _usuarioRepository.Modificar(usuarioNormalizado);
+
+            if (!modificado)
+            {
+                return false;
+            }
+
+            Usuario usuarioPosterior = _usuarioRepository.ObtenerPorId(usuarioNormalizado.Id);
+
+            if (usuarioPosterior != null)
+            {
+                _auditoriaService.RegistrarModificacion(estadoAnterior, usuarioPosterior.CrearMemento());
+            }
+
+            return true;
         }
 
         public void Borrar(Usuario usuario)
@@ -176,7 +215,19 @@ namespace Application
                 return false;
             }
 
-            return _usuarioRepository.Inhabilitar(usuario);
+            Usuario usuarioAnterior = _usuarioRepository.ObtenerPorId(usuario.Id);
+            bool inhabilitado = _usuarioRepository.Inhabilitar(usuario);
+
+            if (inhabilitado)
+            {
+                Usuario usuarioPosterior = _usuarioRepository.ObtenerPorId(usuario.Id);
+                if (usuarioAnterior != null && usuarioPosterior != null)
+                {
+                    _auditoriaService.RegistrarCambio(usuarioAnterior.CrearMemento(), usuarioPosterior.CrearMemento(), "DISABLE");
+                }
+            }
+
+            return inhabilitado;
         }
 
         public List<Usuario> Listar()

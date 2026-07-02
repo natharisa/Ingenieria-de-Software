@@ -8,18 +8,28 @@ namespace Application
     {
         private readonly LanguageRepository _languageRepository;
         private readonly TranslationRepository _translationRepository;
+        private readonly AuditoriaApplicationService _auditoriaService;
 
         public IdiomaApplicationService()
-            : this(new LanguageRepository(), new TranslationRepository())
+            : this(new LanguageRepository(), new TranslationRepository(), new AuditoriaApplicationService())
         {
         }
 
         public IdiomaApplicationService(
             LanguageRepository languageRepository,
             TranslationRepository translationRepository)
+            : this(languageRepository, translationRepository, new AuditoriaApplicationService())
+        {
+        }
+
+        public IdiomaApplicationService(
+            LanguageRepository languageRepository,
+            TranslationRepository translationRepository,
+            AuditoriaApplicationService auditoriaService)
         {
             _languageRepository = languageRepository;
             _translationRepository = translationRepository;
+            _auditoriaService = auditoriaService;
         }
 
         public List<Idioma> ListarIdiomas(bool soloActivos)
@@ -41,10 +51,28 @@ namespace Application
 
             if (idioma.Id == 0)
             {
-                return _languageRepository.Crear(idioma, idUsuarioResponsable) > 0;
+                bool creado = _languageRepository.Crear(idioma, idUsuarioResponsable) > 0;
+                if (creado)
+                {
+                    _auditoriaService.RegistrarAlta(idioma.SaveToMemento());
+                }
+
+                return creado;
             }
 
-            return _languageRepository.Actualizar(idioma, idUsuarioResponsable, motivo);
+            Idioma idiomaAnterior = _languageRepository.ObtenerPorId(idioma.Id);
+            bool actualizado = _languageRepository.Actualizar(idioma, idUsuarioResponsable, motivo);
+
+            if (actualizado)
+            {
+                Idioma idiomaNuevo = _languageRepository.ObtenerPorId(idioma.Id);
+                if (idiomaAnterior != null && idiomaNuevo != null)
+                {
+                    _auditoriaService.RegistrarModificacion(idiomaAnterior.SaveToMemento(), idiomaNuevo.SaveToMemento());
+                }
+            }
+
+            return actualizado;
         }
 
         public List<Etiqueta> ListarEtiquetas()
@@ -64,7 +92,13 @@ namespace Application
                 ? null
                 : etiqueta.Descripcion.Trim();
 
-            return _translationRepository.CrearEtiqueta(etiqueta) > 0;
+            bool creada = _translationRepository.CrearEtiqueta(etiqueta) > 0;
+            if (creada)
+            {
+                _auditoriaService.RegistrarAlta(etiqueta.SaveToMemento());
+            }
+
+            return creada;
         }
 
         public bool GuardarTraduccion(Traduccion traduccion)
@@ -78,7 +112,26 @@ namespace Application
             }
 
             traduccion.Texto = traduccion.Texto.Trim();
-            return _translationRepository.GuardarTraduccion(traduccion);
+            Traduccion traduccionAnterior = _translationRepository.ObtenerTraduccion(traduccion.EtiquetaId, traduccion.IdiomaId);
+            bool guardada = _translationRepository.GuardarTraduccion(traduccion);
+
+            if (guardada)
+            {
+                Traduccion traduccionNueva = _translationRepository.ObtenerTraduccion(traduccion.EtiquetaId, traduccion.IdiomaId);
+                if (traduccionNueva != null)
+                {
+                    if (traduccionAnterior == null)
+                    {
+                        _auditoriaService.RegistrarAlta(traduccionNueva.SaveToMemento());
+                    }
+                    else
+                    {
+                        _auditoriaService.RegistrarModificacion(traduccionAnterior.SaveToMemento(), traduccionNueva.SaveToMemento());
+                    }
+                }
+            }
+
+            return guardada;
         }
 
         public bool GuardarTraduccionDetectada(string key, string descripcion, int idiomaId, string texto)
@@ -116,14 +169,18 @@ namespace Application
                 {
                     return false;
                 }
+
+                _auditoriaService.RegistrarAlta(etiqueta.SaveToMemento());
             }
 
-            return _translationRepository.GuardarTraduccion(new Traduccion
+            Traduccion traduccion = new Traduccion
             {
                 EtiquetaId = etiqueta.Id,
                 IdiomaId = idiomaId,
                 Texto = texto
-            });
+            };
+
+            return GuardarTraduccion(traduccion);
         }
 
         public List<Traduccion> ListarTraducciones()

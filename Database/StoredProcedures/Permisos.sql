@@ -251,7 +251,7 @@ DECLARE @componentes TABLE (
 INSERT INTO @componentes (codigo, nombre, descripcion, tipo) VALUES
 ('ADMINISTRADOR', 'Administrador', 'Familia con acceso total a los modulos actuales', 'FAMILIA'),
 ('SEGURIDAD', 'Seguridad', 'Familia para gestion de roles y permisos', 'FAMILIA'),
-('AUDITORIA', 'Auditoria', 'Familia para consulta de bitacora', 'FAMILIA'),
+('AUDITORIA', 'Auditoria', 'Familia para consulta de bitacora e historial de cambios', 'FAMILIA'),
 ('IDIOMAS_TRADUCCIONES', 'Idiomas y traducciones', 'Familia para gestion de idiomas y traducciones', 'FAMILIA'),
 ('USUARIO_VER', 'Ver usuarios', 'Permite acceder al modulo de usuarios', 'PERMISO'),
 ('USUARIO_CREAR', 'Crear usuarios', 'Permite crear usuarios', 'PERMISO'),
@@ -268,7 +268,8 @@ INSERT INTO @componentes (codigo, nombre, descripcion, tipo) VALUES
 ('IDIOMA_EDITAR', 'Editar idiomas', 'Permite modificar y activar o desactivar idiomas', 'PERMISO'),
 ('TRADUCCION_VER', 'Ver traducciones', 'Permite ver el arbol de etiquetas y traducciones de UI', 'PERMISO'),
 ('TRADUCCION_EDITAR', 'Editar traducciones', 'Permite crear o modificar traducciones detectadas desde la UI', 'PERMISO'),
-('BITACORA_VER', 'Ver bitacora', 'Permite consultar la bitacora del sistema', 'PERMISO');
+('BITACORA_VER', 'Ver bitacora', 'Permite consultar la bitacora del sistema', 'PERMISO'),
+('AUDITORIA_CAMBIOS_VER', 'Ver auditoria de cambios', 'Permite consultar el historial de cambios de entidades auditadas', 'PERMISO');
 
 MERGE dbo.ComponentePermiso AS destino
 USING @componentes AS origen
@@ -308,7 +309,8 @@ INSERT INTO @relaciones (codigo_padre, codigo_hijo) VALUES
 ('IDIOMAS_TRADUCCIONES', 'IDIOMA_EDITAR'),
 ('IDIOMAS_TRADUCCIONES', 'TRADUCCION_VER'),
 ('IDIOMAS_TRADUCCIONES', 'TRADUCCION_EDITAR'),
-('AUDITORIA', 'BITACORA_VER');
+('AUDITORIA', 'BITACORA_VER'),
+('AUDITORIA', 'AUDITORIA_CAMBIOS_VER');
 
 INSERT INTO dbo.ComponentePermisoRelacion (id_padre, id_hijo)
 SELECT padre.id_componente, hijo.id_componente
@@ -449,6 +451,19 @@ BEGIN
     );
 
     INSERT INTO @etiquetas_i18n (clave, descripcion) VALUES
+    ('MENU_CHANGE_AUDIT', 'Menu auditoria de cambios'),
+    ('CHANGE_AUDIT_TITLE', 'Titulo auditoria de cambios'),
+    ('CHANGE_AUDIT_DESCRIPTION', 'Descripcion auditoria de cambios'),
+    ('CHANGE_AUDIT_EMPTY', 'Auditoria de cambios sin eventos'),
+    ('CHANGE_AUDIT_COUNT', 'Cantidad de cambios auditados'),
+    ('CHANGE_AUDIT_USER', 'Usuario auditado'),
+    ('CHANGE_AUDIT_PREVIOUS_STATE', 'Estado anterior'),
+    ('CHANGE_AUDIT_NEW_STATE', 'Estado nuevo'),
+    ('GRID_ENTITY', 'Columna entidad'),
+    ('GRID_ENTITY_ID', 'Columna id entidad'),
+    ('GRID_FIELD', 'Columna campo'),
+    ('GRID_OLD_VALUE', 'Columna valor anterior'),
+    ('GRID_NEW_VALUE', 'Columna valor nuevo'),
     ('SECURITY_LANGUAGE_CREATE_DENIED', 'Creacion de idioma denegada'),
     ('SECURITY_LANGUAGE_EDIT_DENIED', 'Edicion de idioma denegada'),
     ('SECURITY_TRANSLATION_EDIT_DENIED', 'Edicion de traduccion denegada');
@@ -469,10 +484,36 @@ BEGIN
     );
 
     INSERT INTO @traducciones_i18n (codigo_idioma, clave, texto) VALUES
+    ('es-AR', 'MENU_CHANGE_AUDIT', 'Auditoria de cambios'),
+    ('es-AR', 'CHANGE_AUDIT_TITLE', 'Auditoria de cambios'),
+    ('es-AR', 'CHANGE_AUDIT_DESCRIPTION', 'Historial de cambios registrados sobre entidades auditadas.'),
+    ('es-AR', 'CHANGE_AUDIT_EMPTY', 'No hay cambios registrados para el usuario seleccionado.'),
+    ('es-AR', 'CHANGE_AUDIT_COUNT', '{0} cambio(s) registrado(s).'),
+    ('es-AR', 'CHANGE_AUDIT_USER', 'Usuario auditado'),
+    ('es-AR', 'CHANGE_AUDIT_PREVIOUS_STATE', 'Estado anterior'),
+    ('es-AR', 'CHANGE_AUDIT_NEW_STATE', 'Estado nuevo'),
+    ('es-AR', 'GRID_ENTITY', 'Entidad'),
+    ('es-AR', 'GRID_ENTITY_ID', 'Id entidad'),
+    ('es-AR', 'GRID_FIELD', 'Campo'),
+    ('es-AR', 'GRID_OLD_VALUE', 'Valor anterior'),
+    ('es-AR', 'GRID_NEW_VALUE', 'Valor nuevo'),
     ('es-AR', 'SECURITY_LANGUAGE_CREATE_DENIED', 'No tenes permisos para crear idiomas.'),
     ('es-AR', 'SECURITY_LANGUAGE_EDIT_DENIED', 'No tenes permisos para modificar idiomas.'),
     ('es-AR', 'SECURITY_TRANSLATION_EDIT_DENIED', 'No tenes permisos para modificar traducciones.'),
     ('en-US', 'SECURITY_LANGUAGE_CREATE_DENIED', 'You do not have permission to create languages.'),
+    ('en-US', 'MENU_CHANGE_AUDIT', 'Change audit'),
+    ('en-US', 'CHANGE_AUDIT_TITLE', 'Change audit'),
+    ('en-US', 'CHANGE_AUDIT_DESCRIPTION', 'History of recorded changes on audited entities.'),
+    ('en-US', 'CHANGE_AUDIT_EMPTY', 'No changes registered for the selected user.'),
+    ('en-US', 'CHANGE_AUDIT_COUNT', '{0} change(s) registered.'),
+    ('en-US', 'CHANGE_AUDIT_USER', 'Audited user'),
+    ('en-US', 'CHANGE_AUDIT_PREVIOUS_STATE', 'Previous state'),
+    ('en-US', 'CHANGE_AUDIT_NEW_STATE', 'New state'),
+    ('en-US', 'GRID_ENTITY', 'Entity'),
+    ('en-US', 'GRID_ENTITY_ID', 'Entity id'),
+    ('en-US', 'GRID_FIELD', 'Field'),
+    ('en-US', 'GRID_OLD_VALUE', 'Old value'),
+    ('en-US', 'GRID_NEW_VALUE', 'New value'),
     ('en-US', 'SECURITY_LANGUAGE_EDIT_DENIED', 'You do not have permission to modify languages.'),
     ('en-US', 'SECURITY_TRANSLATION_EDIT_DENIED', 'You do not have permission to modify translations.');
 

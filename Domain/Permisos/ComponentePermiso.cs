@@ -18,6 +18,19 @@ namespace Domain
         public abstract IReadOnlyList<ComponentePermiso> ObtenerHijos();
         public abstract bool TienePermiso(string codigoPermiso);
 
+        public AuditoriaMemento SaveToMemento()
+        {
+            return new AuditoriaMemento("ComponentePermiso", Id, new Dictionary<string, object>
+            {
+                { "Id", Id },
+                { "Codigo", Codigo },
+                { "Nombre", Nombre },
+                { "Descripcion", Descripcion },
+                { "Estado", Estado },
+                { "Tipo", Tipo.ToString() }
+            });
+        }
+
         public override string ToString()
         {
             return string.IsNullOrWhiteSpace(Nombre) ? Codigo : Nombre;

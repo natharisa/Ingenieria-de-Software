@@ -37,6 +37,8 @@ namespace DAL
                 _databaseContext.CrearParametro("@nombre_usuario", usuario.Username),
                 _databaseContext.CrearParametro("@email", usuario.Email),
                 _databaseContext.CrearParametro("@password_hash", usuario.Password),
+                _databaseContext.CrearParametro("@nombre", usuario.Nombre),
+                _databaseContext.CrearParametro("@apellido", usuario.Apellido),
                 idUsuarioNuevo
             };
 
@@ -141,11 +143,51 @@ namespace DAL
                     id_idioma,
                     nombre_usuario,
                     email,
+                    nombre,
+                    apellido,
                     estado_usuario,
                     intentos_login_fallidos
                 FROM dbo.Usuario
                 WHERE (nombre_usuario = @identificador OR email = @identificador)
                   AND estado_usuario = 'ACTIVO'";
+
+            try
+            {
+                _databaseContext.Abrir();
+                DataTable tabla = _databaseContext.LeerTexto(sql, parametros);
+
+                if (tabla.Rows.Count == 0)
+                {
+                    return null;
+                }
+
+                return MapearUsuario(tabla.Rows[0]);
+            }
+            finally
+            {
+                _databaseContext.Cerrar();
+            }
+        }
+
+        public Usuario ObtenerPorId(int id)
+        {
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                _databaseContext.CrearParametro("@id_usuario", id)
+            };
+
+            const string sql = @"
+                SELECT TOP (1)
+                    id_usuario,
+                    id_idioma,
+                    nombre_usuario,
+                    email,
+                    nombre,
+                    apellido,
+                    estado_usuario,
+                    intentos_login_fallidos
+                FROM dbo.Usuario
+                WHERE id_usuario = @id_usuario";
 
             try
             {
@@ -253,6 +295,8 @@ namespace DAL
                 _databaseContext.CrearParametro("@id_usuario", usuario.Id),
                 _databaseContext.CrearParametro("@nombre_usuario", usuario.Username),
                 _databaseContext.CrearParametro("@email", usuario.Email),
+                _databaseContext.CrearParametro("@nombre", usuario.Nombre),
+                _databaseContext.CrearParametro("@apellido", usuario.Apellido),
                 _databaseContext.CrearParametro("@estado_usuario", usuario.Estado),
                 _databaseContext.CrearParametro("@password_hash", string.IsNullOrWhiteSpace(usuario.Password) ? null : usuario.Password),
                 new SqlParameter("@id_idioma", SqlDbType.Int)
@@ -265,6 +309,8 @@ namespace DAL
                 UPDATE dbo.Usuario
                 SET nombre_usuario = @nombre_usuario,
                     email = @email,
+                    nombre = @nombre,
+                    apellido = @apellido,
                     id_idioma = @id_idioma,
                     estado_usuario = @estado_usuario,
                     intentos_login_fallidos = CASE
@@ -321,6 +367,8 @@ namespace DAL
                     u.id_idioma,
                     u.nombre_usuario,
                     u.email,
+                    u.nombre,
+                    u.apellido,
                     u.estado_usuario,
                     u.intentos_login_fallidos
                 FROM dbo.Usuario u
@@ -382,6 +430,12 @@ namespace DAL
                 Id = Convert.ToInt32(registro["id_usuario"]),
                 Username = registro["nombre_usuario"].ToString(),
                 Email = registro["email"].ToString(),
+                Nombre = registro.Table.Columns.Contains("nombre") && registro["nombre"] != DBNull.Value
+                    ? registro["nombre"].ToString()
+                    : null,
+                Apellido = registro.Table.Columns.Contains("apellido") && registro["apellido"] != DBNull.Value
+                    ? registro["apellido"].ToString()
+                    : null,
                 Idioma = idiomaPreferidoId.HasValue ? idiomaPreferidoId.Value.ToString() : null,
                 IdiomaPreferidoId = idiomaPreferidoId,
                 Estado = registro.Table.Columns.Contains("estado_usuario")

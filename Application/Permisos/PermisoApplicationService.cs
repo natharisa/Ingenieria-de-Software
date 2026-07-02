@@ -9,15 +9,22 @@ namespace Application
     public class PermisoApplicationService
     {
         private readonly PermisoRepository _permisoRepository;
+        private readonly AuditoriaApplicationService _auditoriaService;
 
         public PermisoApplicationService()
-            : this(new PermisoRepository())
+            : this(new PermisoRepository(), new AuditoriaApplicationService())
         {
         }
 
         public PermisoApplicationService(PermisoRepository permisoRepository)
+            : this(permisoRepository, new AuditoriaApplicationService())
+        {
+        }
+
+        public PermisoApplicationService(PermisoRepository permisoRepository, AuditoriaApplicationService auditoriaService)
         {
             _permisoRepository = permisoRepository;
+            _auditoriaService = auditoriaService;
         }
 
         public List<ComponentePermiso> ListarAsignadosPorUsuario(int idUsuario)
@@ -53,8 +60,31 @@ namespace Application
             }
 
             string codigoNormalizado = NormalizarCodigo(string.IsNullOrWhiteSpace(codigo) ? nombre : codigo);
-            return !string.IsNullOrWhiteSpace(codigoNormalizado) &&
-                   _permisoRepository.CrearFamilia(codigoNormalizado, nombre.Trim(), descripcion);
+            if (string.IsNullOrWhiteSpace(codigoNormalizado))
+            {
+                return false;
+            }
+
+            ComponentePermiso componenteAnterior = BuscarComponentePorCodigo(codigoNormalizado);
+            bool guardado = _permisoRepository.CrearFamilia(codigoNormalizado, nombre.Trim(), descripcion);
+
+            if (guardado)
+            {
+                ComponentePermiso componenteNuevo = BuscarComponentePorCodigo(codigoNormalizado);
+                if (componenteNuevo != null)
+                {
+                    if (componenteAnterior == null)
+                    {
+                        _auditoriaService.RegistrarAlta(componenteNuevo.SaveToMemento());
+                    }
+                    else
+                    {
+                        _auditoriaService.RegistrarModificacion(componenteAnterior.SaveToMemento(), componenteNuevo.SaveToMemento());
+                    }
+                }
+            }
+
+            return guardado;
         }
 
         public string AgregarRelacion(int idPadre, int idHijo)
@@ -64,17 +94,59 @@ namespace Application
                 return "DATOS_INVALIDOS";
             }
 
-            return _permisoRepository.AgregarRelacion(idPadre, idHijo);
+            string resultado = _permisoRepository.AgregarRelacion(idPadre, idHijo);
+            if (resultado == "OK")
+            {
+                _auditoriaService.RegistrarSnapshot(
+                    "ComponentePermisoRelacion",
+                    CrearIdRelacion(idPadre, idHijo),
+                    "CREATE",
+                    CrearEstadoRelacion(idPadre, idHijo));
+            }
+
+            return resultado;
         }
 
         public bool QuitarRelacion(int idPadre, int idHijo)
         {
-            return idPadre != 0 && idHijo != 0 && _permisoRepository.QuitarRelacion(idPadre, idHijo);
+            if (idPadre == 0 || idHijo == 0)
+            {
+                return false;
+            }
+
+            bool quitada = _permisoRepository.QuitarRelacion(idPadre, idHijo);
+            if (quitada)
+            {
+                _auditoriaService.RegistrarSnapshot(
+                    "ComponentePermisoRelacion",
+                    CrearIdRelacion(idPadre, idHijo),
+                    "DELETE",
+                    CrearEstadoRelacion(idPadre, idHijo));
+            }
+
+            return quitada;
         }
 
         public bool GuardarComponentesUsuario(int idUsuario, List<int> idsComponentes)
         {
-            return idUsuario != 0 && _permisoRepository.GuardarComponentesUsuario(idUsuario, idsComponentes);
+            if (idUsuario == 0)
+            {
+                return false;
+            }
+
+            List<int> idsAnteriores = _permisoRepository.ListarIdsComponentesAsignadosPorUsuario(idUsuario);
+            bool guardado = _permisoRepository.GuardarComponentesUsuario(idUsuario, idsComponentes);
+
+            if (guardado)
+            {
+                List<int> idsNuevos = _permisoRepository.ListarIdsComponentesAsignadosPorUsuario(idUsuario);
+                _auditoriaService.RegistrarCambio(
+                    CrearMementoComponentesUsuario(idUsuario, idsAnteriores),
+                    CrearMementoComponentesUsuario(idUsuario, idsNuevos),
+                    "UPDATE");
+            }
+
+            return guardado;
         }
 
         public bool PuedeAgregarRelacion(int idPadre, int idHijo)
@@ -104,6 +176,35 @@ namespace Application
             }
 
             return builder.ToString().Trim('_');
+        }
+
+        private ComponentePermiso BuscarComponentePorCodigo(string codigo)
+        {
+            return _permisoRepository.ListarComponentes()
+                .FirstOrDefault(c => c.Codigo == codigo);
+        }
+
+        private static int CrearIdRelacion(int idPadre, int idHijo)
+        {
+            return (idPadre * 100000) + idHijo;
+        }
+
+        private static Dictionary<string, object> CrearEstadoRelacion(int idPadre, int idHijo)
+        {
+            return new Dictionary<string, object>
+            {
+                { "IdPadre", idPadre },
+                { "IdHijo", idHijo }
+            };
+        }
+
+        private static AuditoriaMemento CrearMementoComponentesUsuario(int idUsuario, List<int> idsComponentes)
+        {
+            return new AuditoriaMemento("UsuarioComponentePermiso", idUsuario, new Dictionary<string, object>
+            {
+                { "IdUsuario", idUsuario },
+                { "IdsComponentes", string.Join(",", (idsComponentes ?? new List<int>()).OrderBy(id => id)) }
+            });
         }
     }
 }

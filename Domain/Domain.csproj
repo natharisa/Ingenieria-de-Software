@@ -33,6 +33,9 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Auditoria\AuditoriaCambio.cs" />
+    <Compile Include="Auditoria\AuditoriaMemento.cs" />
+    <Compile Include="Auditoria\AuditoriaRegistro.cs" />
     <Compile Include="Bitacora\Bitacora.cs" />
     <Compile Include="Bitacora\BitacoraFactory.cs" />
     <Compile Include="Bitacora\BitacoraRegistro.cs" />

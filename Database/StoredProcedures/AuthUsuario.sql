@@ -33,6 +33,20 @@ BEGIN
 END
 GO
 
+IF COL_LENGTH('dbo.Usuario', 'nombre') IS NULL
+BEGIN
+    ALTER TABLE dbo.Usuario
+    ADD nombre NVARCHAR(100) NULL;
+END
+GO
+
+IF COL_LENGTH('dbo.Usuario', 'apellido') IS NULL
+BEGIN
+    ALTER TABLE dbo.Usuario
+    ADD apellido NVARCHAR(100) NULL;
+END
+GO
+
 IF OBJECT_ID('dbo.sp_Usuario_Registrar', 'P') IS NOT NULL
 BEGIN
     DROP PROCEDURE dbo.sp_Usuario_Registrar;
@@ -43,6 +57,8 @@ CREATE PROCEDURE dbo.sp_Usuario_Registrar
     @nombre_usuario NVARCHAR(100),
     @email NVARCHAR(255),
     @password_hash NVARCHAR(255),
+    @nombre NVARCHAR(100) = NULL,
+    @apellido NVARCHAR(100) = NULL,
     @id_usuario_nuevo INT OUTPUT
 AS
 BEGIN
@@ -100,6 +116,8 @@ BEGIN
             nombre_usuario,
             email,
             password_hash,
+            nombre,
+            apellido,
             estado_usuario,
             intentos_login_fallidos,
             fecha_alta
@@ -110,6 +128,8 @@ BEGIN
             @nombre_usuario,
             @email,
             @password_hash,
+            @nombre,
+            @apellido,
             'ACTIVO',
             0,
             GETDATE()
@@ -126,6 +146,8 @@ BEGIN
             u.id_idioma,
             u.nombre_usuario,
             u.email,
+            u.nombre,
+            u.apellido,
             u.estado_usuario,
             u.intentos_login_fallidos,
             u.fecha_alta
@@ -195,6 +217,8 @@ BEGIN
         u.id_idioma,
         u.nombre_usuario,
         u.email,
+        u.nombre,
+        u.apellido,
         u.estado_usuario,
         u.intentos_login_fallidos,
         u.fecha_alta

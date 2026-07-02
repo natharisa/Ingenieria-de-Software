@@ -57,6 +57,7 @@ namespace UI
         private void ConfigurarTraducciones()
         {
             bitacoraToolStripMenuItem.Tag = "MENU_AUDIT";
+            auditoriaCambiosToolStripMenuItem.Tag = "MENU_CHANGE_AUDIT";
             usuariosToolStripMenuItem.Tag = "MENU_USERS";
             rolesToolStripMenuItem.Tag = "MENU_ROLES";
             idiomasToolStripMenuItem.Tag = "MENU_LANGUAGES";
@@ -72,6 +73,16 @@ namespace UI
             }
 
             ShowScreen(new BitacoraView());
+        }
+
+        private void auditoriaCambiosToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!ValidarPermiso(PermisosSistema.AuditoriaCambiosVer))
+            {
+                return;
+            }
+
+            ShowScreen(new AuditoriaCambiosView());
         }
 
         private void rolesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -162,6 +173,7 @@ namespace UI
         private void ConfigurarMenuPorPermisos()
         {
             bitacoraToolStripMenuItem.Visible = _autorizacionService.TienePermiso(PermisosSistema.BitacoraVer);
+            auditoriaCambiosToolStripMenuItem.Visible = _autorizacionService.TienePermiso(PermisosSistema.AuditoriaCambiosVer);
             usuariosToolStripMenuItem.Visible = _autorizacionService.TienePermiso(PermisosSistema.UsuarioVer);
             rolesToolStripMenuItem.Visible = _autorizacionService.TienePermiso(PermisosSistema.RolVer);
             idiomasToolStripMenuItem.Visible = _autorizacionService.TienePermiso(PermisosSistema.IdiomaVer) ||
@@ -173,6 +185,12 @@ namespace UI
             if (bitacoraToolStripMenuItem.Visible)
             {
                 ShowScreen(new BitacoraView());
+                return;
+            }
+
+            if (auditoriaCambiosToolStripMenuItem.Visible)
+            {
+                ShowScreen(new AuditoriaCambiosView());
                 return;
             }
 

@@ -32,8 +32,11 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web.Extensions" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Auditoria\AuditoriaApplicationService.cs" />
+    <Compile Include="Auditoria\AuditoriaCaretaker.cs" />
     <Compile Include="BitacoraApplicationService.cs" />
     <Compile Include="Permisos\PermisoApplicationService.cs" />
     <Compile Include="Seguridad\AutorizacionApplicationService.cs" />

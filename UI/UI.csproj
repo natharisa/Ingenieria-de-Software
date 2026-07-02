@@ -44,6 +44,7 @@
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -60,6 +61,9 @@
     </Compile>
     <Compile Include="Views\Bitacora\BitacoraView.Designer.cs">
       <DependentUpon>BitacoraView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Auditoria\AuditoriaCambiosView.cs">
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Forms\Auth\Login.cs">
       <SubType>Form</SubType>

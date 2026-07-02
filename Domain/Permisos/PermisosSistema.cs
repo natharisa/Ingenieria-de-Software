@@ -3,6 +3,7 @@ namespace Domain
     public static class PermisosSistema
     {
         public const string BitacoraVer = "BITACORA_VER";
+        public const string AuditoriaCambiosVer = "AUDITORIA_CAMBIOS_VER";
 
         public const string UsuarioVer = "USUARIO_VER";
         public const string UsuarioCrear = "USUARIO_CREAR";

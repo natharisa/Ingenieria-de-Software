@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Auditoria\AuditoriaDataMapper.cs" />
     <Compile Include="Bitacora\BitacoraDataMapper.cs" />
     <Compile Include="Idiomas\IdiomaDataMapper.cs" />
     <Compile Include="Idiomas\TraduccionDataMapper.cs" />

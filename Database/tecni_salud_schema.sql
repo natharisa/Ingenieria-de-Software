@@ -42,6 +42,8 @@ CREATE TABLE Usuario (
     nombre_usuario VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
+    nombre VARCHAR(100) NULL,
+    apellido VARCHAR(100) NULL,
     estado_usuario VARCHAR(20) NOT NULL DEFAULT 'ACTIVO',
     fecha_alta DATETIME NOT NULL DEFAULT GETDATE(),
     CONSTRAINT UQ_Usuario_Nombre UNIQUE (nombre_usuario),
@@ -49,6 +51,25 @@ CREATE TABLE Usuario (
     CONSTRAINT CK_Usuario_Estado CHECK (estado_usuario IN ('ACTIVO', 'INACTIVO', 'BLOQUEADO')),
     CONSTRAINT FK_Usuario_Idioma FOREIGN KEY (id_idioma) REFERENCES Idioma(id_idioma)
 );
+GO
+
+CREATE TABLE Auditoria (
+    id_auditoria INT IDENTITY(1,1) PRIMARY KEY,
+    entidad NVARCHAR(100) NOT NULL,
+    id_entidad INT NOT NULL,
+    accion NVARCHAR(50) NOT NULL,
+    id_usuario_actor INT NULL,
+    identificador_usuario_actor NVARCHAR(255) NULL,
+    fecha_evento DATETIME NOT NULL DEFAULT GETDATE(),
+    estado_anterior_json NVARCHAR(MAX) NULL,
+    estado_nuevo_json NVARCHAR(MAX) NULL,
+    cambios_json NVARCHAR(MAX) NOT NULL,
+    CONSTRAINT FK_Auditoria_UsuarioActor FOREIGN KEY (id_usuario_actor) REFERENCES Usuario(id_usuario)
+);
+GO
+
+CREATE INDEX IX_Auditoria_Entidad_IdEntidad_Fecha
+    ON Auditoria(entidad, id_entidad, fecha_evento DESC);
 GO
 
 CREATE TABLE Rol (
@@ -534,6 +555,7 @@ INSERT INTO Etiqueta (clave, descripcion) VALUES
 ('MAIN_USER', 'Usuario autenticado'),
 ('MAIN_NO_SESSION', 'Usuario sin sesion'),
 ('MENU_AUDIT', 'Menu bitacora'),
+('MENU_CHANGE_AUDIT', 'Menu auditoria de cambios'),
 ('MENU_USERS', 'Menu usuarios'),
 ('MENU_PERMISSIONS', 'Menu permisos'),
 ('MENU_ROLES', 'Menu roles'),
@@ -544,6 +566,13 @@ INSERT INTO Etiqueta (clave, descripcion) VALUES
 ('AUDIT_DESCRIPTION', 'Descripcion bitacora'),
 ('AUDIT_EMPTY', 'Bitacora sin eventos'),
 ('AUDIT_COUNT', 'Cantidad de eventos'),
+('CHANGE_AUDIT_TITLE', 'Titulo auditoria de cambios'),
+('CHANGE_AUDIT_DESCRIPTION', 'Descripcion auditoria de cambios'),
+('CHANGE_AUDIT_EMPTY', 'Auditoria de cambios sin eventos'),
+('CHANGE_AUDIT_COUNT', 'Cantidad de cambios auditados'),
+('CHANGE_AUDIT_USER', 'Usuario auditado'),
+('CHANGE_AUDIT_PREVIOUS_STATE', 'Estado anterior'),
+('CHANGE_AUDIT_NEW_STATE', 'Estado nuevo'),
 ('USERS_TITLE', 'Titulo usuarios'),
 ('USERS_DESCRIPTION', 'Descripcion usuarios'),
 ('USERS_DETAIL', 'Detalle usuarios'),
@@ -625,7 +654,12 @@ INSERT INTO Etiqueta (clave, descripcion) VALUES
 ('GRID_ACTION', 'Columna accion'),
 ('GRID_LEVEL', 'Columna nivel'),
 ('GRID_DESCRIPTION', 'Columna descripcion'),
-('GRID_DEVICE', 'Columna equipo');
+('GRID_DEVICE', 'Columna equipo'),
+('GRID_ENTITY', 'Columna entidad'),
+('GRID_ENTITY_ID', 'Columna id entidad'),
+('GRID_FIELD', 'Columna campo'),
+('GRID_OLD_VALUE', 'Columna valor anterior'),
+('GRID_NEW_VALUE', 'Columna valor nuevo');
 GO
 
 DECLARE @es INT = (SELECT id_idioma FROM Idioma WHERE codigo = 'es-AR');
@@ -639,6 +673,7 @@ INNER JOIN (VALUES
 ('MAIN_USER', 'Usuario: {0}'),
 ('MAIN_NO_SESSION', 'Usuario: sin sesion'),
 ('MENU_AUDIT', 'Bitacora'),
+('MENU_CHANGE_AUDIT', 'Auditoria de cambios'),
 ('MENU_USERS', 'Usuarios'),
 ('MENU_PERMISSIONS', 'Permisos'),
 ('MENU_ROLES', 'Roles'),
@@ -649,6 +684,13 @@ INNER JOIN (VALUES
 ('AUDIT_DESCRIPTION', 'Aca vas a poder consultar los eventos del sistema.'),
 ('AUDIT_EMPTY', 'No hay eventos registrados.'),
 ('AUDIT_COUNT', '{0} evento(s) registrados.'),
+('CHANGE_AUDIT_TITLE', 'Auditoria de cambios'),
+('CHANGE_AUDIT_DESCRIPTION', 'Historial de cambios registrados sobre entidades auditadas.'),
+('CHANGE_AUDIT_EMPTY', 'No hay cambios registrados para el usuario seleccionado.'),
+('CHANGE_AUDIT_COUNT', '{0} cambio(s) registrado(s).'),
+('CHANGE_AUDIT_USER', 'Usuario auditado'),
+('CHANGE_AUDIT_PREVIOUS_STATE', 'Estado anterior'),
+('CHANGE_AUDIT_NEW_STATE', 'Estado nuevo'),
 ('USERS_TITLE', 'Usuarios'),
 ('USERS_DESCRIPTION', 'Alta, modificacion e inhabilitacion de usuarios del sistema.'),
 ('USERS_DETAIL', 'Detalle'),
@@ -730,7 +772,12 @@ INNER JOIN (VALUES
 ('GRID_ACTION', 'Accion'),
 ('GRID_LEVEL', 'Nivel'),
 ('GRID_DESCRIPTION', 'Descripcion'),
-('GRID_DEVICE', 'Equipo')
+('GRID_DEVICE', 'Equipo'),
+('GRID_ENTITY', 'Entidad'),
+('GRID_ENTITY_ID', 'Id entidad'),
+('GRID_FIELD', 'Campo'),
+('GRID_OLD_VALUE', 'Valor anterior'),
+('GRID_NEW_VALUE', 'Valor nuevo')
 ) v(clave, texto) ON v.clave = e.clave;
 
 INSERT INTO Traduccion (id_etiqueta, id_idioma, texto)
@@ -741,6 +788,7 @@ INNER JOIN (VALUES
 ('MAIN_USER', 'User: {0}'),
 ('MAIN_NO_SESSION', 'User: no session'),
 ('MENU_AUDIT', 'Audit log'),
+('MENU_CHANGE_AUDIT', 'Change audit'),
 ('MENU_USERS', 'Users'),
 ('MENU_PERMISSIONS', 'Permissions'),
 ('MENU_ROLES', 'Roles'),
@@ -751,6 +799,13 @@ INNER JOIN (VALUES
 ('AUDIT_DESCRIPTION', 'Review system events here.'),
 ('AUDIT_EMPTY', 'No events registered.'),
 ('AUDIT_COUNT', '{0} event(s) registered.'),
+('CHANGE_AUDIT_TITLE', 'Change audit'),
+('CHANGE_AUDIT_DESCRIPTION', 'History of recorded changes on audited entities.'),
+('CHANGE_AUDIT_EMPTY', 'No changes registered for the selected user.'),
+('CHANGE_AUDIT_COUNT', '{0} change(s) registered.'),
+('CHANGE_AUDIT_USER', 'Audited user'),
+('CHANGE_AUDIT_PREVIOUS_STATE', 'Previous state'),
+('CHANGE_AUDIT_NEW_STATE', 'New state'),
 ('USERS_TITLE', 'Users'),
 ('USERS_DESCRIPTION', 'Create, edit and disable system users.'),
 ('USERS_DETAIL', 'Details'),
@@ -832,7 +887,12 @@ INNER JOIN (VALUES
 ('GRID_ACTION', 'Action'),
 ('GRID_LEVEL', 'Level'),
 ('GRID_DESCRIPTION', 'Description'),
-('GRID_DEVICE', 'Device')
+('GRID_DEVICE', 'Device'),
+('GRID_ENTITY', 'Entity'),
+('GRID_ENTITY_ID', 'Entity id'),
+('GRID_FIELD', 'Field'),
+('GRID_OLD_VALUE', 'Old value'),
+('GRID_NEW_VALUE', 'New value')
 ) v(clave, texto) ON v.clave = e.clave;
 GO
 
@@ -857,7 +917,7 @@ GO
 INSERT INTO ComponentePermiso (codigo, nombre, descripcion, tipo) VALUES
 ('ADMINISTRADOR', 'Administrador', 'Familia con acceso total a los modulos actuales', 'FAMILIA'),
 ('SEGURIDAD', 'Seguridad', 'Familia para gestion de roles y permisos', 'FAMILIA'),
-('AUDITORIA', 'Auditoria', 'Familia para consulta de bitacora', 'FAMILIA'),
+('AUDITORIA', 'Auditoria', 'Familia para consulta de bitacora e historial de cambios', 'FAMILIA'),
 ('IDIOMAS_TRADUCCIONES', 'Idiomas y traducciones', 'Familia para gestion de idiomas y traducciones', 'FAMILIA'),
 ('USUARIO_VER', 'Ver usuarios', 'Permite acceder al modulo de usuarios', 'PERMISO'),
 ('USUARIO_CREAR', 'Crear usuarios', 'Permite crear usuarios', 'PERMISO'),
@@ -874,7 +934,8 @@ INSERT INTO ComponentePermiso (codigo, nombre, descripcion, tipo) VALUES
 ('IDIOMA_EDITAR', 'Editar idiomas', 'Permite modificar y activar o desactivar idiomas', 'PERMISO'),
 ('TRADUCCION_VER', 'Ver traducciones', 'Permite ver el arbol de etiquetas y traducciones de UI', 'PERMISO'),
 ('TRADUCCION_EDITAR', 'Editar traducciones', 'Permite crear o modificar traducciones detectadas desde la UI', 'PERMISO'),
-('BITACORA_VER', 'Ver bitacora', 'Permite consultar la bitacora del sistema', 'PERMISO');
+('BITACORA_VER', 'Ver bitacora', 'Permite consultar la bitacora del sistema', 'PERMISO'),
+('AUDITORIA_CAMBIOS_VER', 'Ver auditoria de cambios', 'Permite consultar el historial de cambios de entidades auditadas', 'PERMISO');
 GO
 
 INSERT INTO ComponentePermisoRelacion (id_padre, id_hijo)
@@ -905,7 +966,7 @@ INSERT INTO ComponentePermisoRelacion (id_padre, id_hijo)
 SELECT padre.id_componente, hijo.id_componente
 FROM ComponentePermiso padre
 INNER JOIN ComponentePermiso hijo
-    ON hijo.codigo = 'BITACORA_VER'
+    ON hijo.codigo IN ('BITACORA_VER', 'AUDITORIA_CAMBIOS_VER')
 WHERE padre.codigo = 'AUDITORIA';
 GO
 

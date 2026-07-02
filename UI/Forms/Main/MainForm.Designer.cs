@@ -26,6 +26,7 @@ namespace UI
         {
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.bitacoraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.auditoriaCambiosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.usuariosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rolesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.idiomasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -44,6 +45,7 @@ namespace UI
             this.menuStrip1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(37)))), ((int)(((byte)(41)))));
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.bitacoraToolStripMenuItem,
+            this.auditoriaCambiosToolStripMenuItem,
             this.usuariosToolStripMenuItem,
             this.rolesToolStripMenuItem,
             this.idiomasToolStripMenuItem,
@@ -63,6 +65,15 @@ namespace UI
             this.bitacoraToolStripMenuItem.Size = new System.Drawing.Size(76, 24);
             this.bitacoraToolStripMenuItem.Text = "Bitacora";
             this.bitacoraToolStripMenuItem.Click += new System.EventHandler(this.bitacoraToolStripMenuItem_Click);
+            // 
+            // auditoriaCambiosToolStripMenuItem
+            // 
+            this.auditoriaCambiosToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.auditoriaCambiosToolStripMenuItem.ForeColor = System.Drawing.Color.White;
+            this.auditoriaCambiosToolStripMenuItem.Name = "auditoriaCambiosToolStripMenuItem";
+            this.auditoriaCambiosToolStripMenuItem.Size = new System.Drawing.Size(151, 24);
+            this.auditoriaCambiosToolStripMenuItem.Text = "Auditoria cambios";
+            this.auditoriaCambiosToolStripMenuItem.Click += new System.EventHandler(this.auditoriaCambiosToolStripMenuItem_Click);
             // 
             // usuariosToolStripMenuItem
             // 
@@ -184,6 +195,7 @@ namespace UI
 
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem bitacoraToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem auditoriaCambiosToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem usuariosToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rolesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem idiomasToolStripMenuItem;
