@@ -12,11 +12,12 @@ namespace Application
         private readonly PermisoRepository _permisoRepository;
         private readonly BitacoraRepository _bitacoraRepository;
         private readonly AuditoriaApplicationService _auditoriaService;
+        private readonly DigitoVerificadorApplicationService _digitoVerificadorService;
         private readonly PlainTextPasswordService _passwordService;
         private BitacoraFactory _bitacoraFactory;
 
         public UsuarioApplicationService()
-            : this(new UsuarioRepository(), new PermisoRepository(), new BitacoraRepository(), new AuditoriaApplicationService(), new PlainTextPasswordService())
+            : this(new UsuarioRepository(), new PermisoRepository(), new BitacoraRepository(), new AuditoriaApplicationService(), new DigitoVerificadorApplicationService(), new PlainTextPasswordService())
         {
         }
 
@@ -25,7 +26,7 @@ namespace Application
             PermisoRepository permisoRepository,
             BitacoraRepository bitacoraRepository,
             PlainTextPasswordService passwordService)
-            : this(usuarioRepository, permisoRepository, bitacoraRepository, new AuditoriaApplicationService(), passwordService)
+            : this(usuarioRepository, permisoRepository, bitacoraRepository, new AuditoriaApplicationService(), new DigitoVerificadorApplicationService(), passwordService)
         {
         }
 
@@ -35,11 +36,23 @@ namespace Application
             BitacoraRepository bitacoraRepository,
             AuditoriaApplicationService auditoriaService,
             PlainTextPasswordService passwordService)
+            : this(usuarioRepository, permisoRepository, bitacoraRepository, auditoriaService, new DigitoVerificadorApplicationService(), passwordService)
+        {
+        }
+
+        public UsuarioApplicationService(
+            UsuarioRepository usuarioRepository,
+            PermisoRepository permisoRepository,
+            BitacoraRepository bitacoraRepository,
+            AuditoriaApplicationService auditoriaService,
+            DigitoVerificadorApplicationService digitoVerificadorService,
+            PlainTextPasswordService passwordService)
         {
             _usuarioRepository = usuarioRepository;
             _permisoRepository = permisoRepository;
             _bitacoraRepository = bitacoraRepository;
             _auditoriaService = auditoriaService;
+            _digitoVerificadorService = digitoVerificadorService;
             _passwordService = passwordService;
         }
 
@@ -79,6 +92,7 @@ namespace Application
 
             if (resultado == CodigoRegistroUsuario.Creado)
             {
+                _digitoVerificadorService.RecalcularUsuarios();
                 _auditoriaService.RegistrarAlta(usuarioProtegido.CrearMemento());
             }
 
@@ -104,28 +118,43 @@ namespace Application
 
             string identificador = username.Trim();
             string passwordProtegida = _passwordService.Hash(password);
+            bool integridadUsuariosValida = _digitoVerificadorService.VerificarUsuarios();
             Usuario usuario = _usuarioRepository.ObtenerPorCredenciales(identificador, passwordProtegida);
 
             if (usuario == null)
             {
-                Usuario usuarioExistente = _usuarioRepository.ObtenerActivoPorIdentificador(identificador);
-
-                if (usuarioExistente != null)
+                if (integridadUsuariosValida)
                 {
-                    int intentosFallidos = _usuarioRepository.RegistrarLoginFallidoPorIdentificador(identificador);
-                    this._bitacoraFactory = new LoginFallidoBitacoraFactory();
-                    string descripcion = intentosFallidos >= 3
-                        ? "Intento de login con contrasena incorrecta. Usuario deshabilitado por alcanzar 3 intentos fallidos."
-                        : "Intento de login con contrasena incorrecta.";
+                    Usuario usuarioExistente = _usuarioRepository.ObtenerActivoPorIdentificador(identificador);
 
-                    RegistrarLoginFallido(usuarioExistente, descripcion);
+                    if (usuarioExistente != null)
+                    {
+                        int intentosFallidos = _usuarioRepository.RegistrarLoginFallidoPorIdentificador(identificador);
+                        _digitoVerificadorService.RecalcularUsuarioYDvv(usuarioExistente.Id);
+                        this._bitacoraFactory = new LoginFallidoBitacoraFactory();
+                        string descripcion = intentosFallidos >= 3
+                            ? "Intento de login con contrasena incorrecta. Usuario deshabilitado por alcanzar 3 intentos fallidos."
+                            : "Intento de login con contrasena incorrecta.";
+
+                        RegistrarLoginFallido(usuarioExistente, descripcion);
+                    }
                 }
 
                 return null;
             }
 
-            this._bitacoraFactory = new LoginExitosoBitacoraFactory();
             usuario.ComponentesPermiso = _permisoRepository.ListarAsignadosPorUsuario(usuario.Id);
+
+            if (!integridadUsuariosValida && !EsAdministrador(usuario))
+            {
+                return null;
+            }
+
+            _usuarioRepository.ReiniciarIntentosLoginFallidos(usuario.Id);
+            _digitoVerificadorService.RecalcularUsuarioYDvv(usuario.Id);
+            usuario.IntentosLoginFallidos = 0;
+
+            this._bitacoraFactory = new LoginExitosoBitacoraFactory();
             RegistrarLoginExitoso(usuario, "Login exitoso.");
             return usuario;
         }
@@ -148,6 +177,7 @@ namespace Application
         public void Grabar(Usuario usuario)
         {
             _usuarioRepository.Guardar(usuario);
+            _digitoVerificadorService.RecalcularUsuarios();
         }
 
         public bool ModificarUsuario(Usuario usuario)
@@ -193,6 +223,7 @@ namespace Application
                 return false;
             }
 
+            _digitoVerificadorService.RecalcularUsuarios();
             Usuario usuarioPosterior = _usuarioRepository.ObtenerPorId(usuarioNormalizado.Id);
 
             if (usuarioPosterior != null)
@@ -206,6 +237,7 @@ namespace Application
         public void Borrar(Usuario usuario)
         {
             _usuarioRepository.Borrar(usuario);
+            _digitoVerificadorService.RecalcularUsuarios();
         }
 
         public bool InhabilitarUsuario(Usuario usuario)
@@ -220,6 +252,7 @@ namespace Application
 
             if (inhabilitado)
             {
+                _digitoVerificadorService.RecalcularUsuarios();
                 Usuario usuarioPosterior = _usuarioRepository.ObtenerPorId(usuario.Id);
                 if (usuarioAnterior != null && usuarioPosterior != null)
                 {
@@ -233,6 +266,17 @@ namespace Application
         public List<Usuario> Listar()
         {
             return _usuarioRepository.Listar();
+        }
+
+        public bool RecalcularDigitosVerificadoresUsuarios()
+        {
+            return _digitoVerificadorService.RecalcularUsuarios();
+        }
+
+        public bool HayBloqueoDigitoVerificador()
+        {
+            return !_digitoVerificadorService.VerificarUsuarios() ||
+                   _digitoVerificadorService.HayBloqueoUsuarios();
         }
 
         private void RegistrarLoginFallido(Usuario usuario, string descripcion)
@@ -268,6 +312,47 @@ namespace Application
         private static string NormalizarIdentificador(string username)
         {
             return string.IsNullOrWhiteSpace(username) ? null : username.Trim();
+        }
+
+        private static bool EsAdministrador(Usuario usuario)
+        {
+            if (usuario == null || usuario.ComponentesPermiso == null)
+            {
+                return false;
+            }
+
+            foreach (ComponentePermiso componente in usuario.ComponentesPermiso)
+            {
+                if (EsComponenteAdministrador(componente))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool EsComponenteAdministrador(ComponentePermiso componente)
+        {
+            if (componente == null)
+            {
+                return false;
+            }
+
+            if (componente.Codigo == PermisosSistema.Administrador)
+            {
+                return true;
+            }
+
+            foreach (ComponentePermiso hijo in componente.ObtenerHijos())
+            {
+                if (EsComponenteAdministrador(hijo))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public bool EsEmailValido(string email)

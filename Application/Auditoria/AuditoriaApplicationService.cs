@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web.Script.Serialization;
 using Domain;
 using Repository;
@@ -96,9 +95,17 @@ namespace Application
         private static List<AuditoriaCambio> CalcularCambios(AuditoriaMemento estadoAnterior, AuditoriaMemento estadoNuevo)
         {
             List<AuditoriaCambio> cambios = new List<AuditoriaCambio>();
-            IEnumerable<string> campos = estadoAnterior.Estado.Keys
-                .Union(estadoNuevo.Estado.Keys)
-                .OrderBy(campo => campo);
+            SortedSet<string> campos = new SortedSet<string>(StringComparer.Ordinal);
+
+            foreach (string campo in estadoAnterior.Estado.Keys)
+            {
+                campos.Add(campo);
+            }
+
+            foreach (string campo in estadoNuevo.Estado.Keys)
+            {
+                campos.Add(campo);
+            }
 
             foreach (string campo in campos)
             {

@@ -47,6 +47,33 @@ BEGIN
 END
 GO
 
+IF COL_LENGTH('dbo.Usuario', 'bloqueo_digitoverificador') IS NULL
+BEGIN
+    ALTER TABLE dbo.Usuario
+    ADD bloqueo_digitoverificador BIT NOT NULL
+        CONSTRAINT DF_Usuario_bloqueo_digitoverificador DEFAULT (0);
+END
+GO
+
+IF COL_LENGTH('dbo.Usuario', 'dvh') IS NULL
+BEGIN
+    ALTER TABLE dbo.Usuario
+    ADD dvh VARCHAR(64) NULL;
+END
+GO
+
+IF OBJECT_ID('dbo.DigitoVerificadorVertical', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.DigitoVerificadorVertical (
+        id_digito_verificador_vertical INT IDENTITY(1,1) PRIMARY KEY,
+        entidad VARCHAR(100) NOT NULL,
+        dvv VARCHAR(64) NOT NULL,
+        fecha_calculo DATETIME NOT NULL DEFAULT GETDATE(),
+        CONSTRAINT UQ_DigitoVerificadorVertical_Entidad UNIQUE (entidad)
+    );
+END
+GO
+
 IF OBJECT_ID('dbo.sp_Usuario_Registrar', 'P') IS NOT NULL
 BEGIN
     DROP PROCEDURE dbo.sp_Usuario_Registrar;
@@ -150,6 +177,8 @@ BEGIN
             u.apellido,
             u.estado_usuario,
             u.intentos_login_fallidos,
+            u.bloqueo_digitoverificador,
+            u.dvh,
             u.fecha_alta
         FROM dbo.Usuario u
         WHERE u.id_usuario = @id_usuario_nuevo;
@@ -221,6 +250,8 @@ BEGIN
         u.apellido,
         u.estado_usuario,
         u.intentos_login_fallidos,
+        u.bloqueo_digitoverificador,
+        u.dvh,
         u.fecha_alta
     FROM dbo.Usuario u
     WHERE u.id_usuario = @id_usuario;

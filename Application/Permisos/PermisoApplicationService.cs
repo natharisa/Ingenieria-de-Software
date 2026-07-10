@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Domain;
 using Repository;
@@ -180,8 +179,15 @@ namespace Application
 
         private ComponentePermiso BuscarComponentePorCodigo(string codigo)
         {
-            return _permisoRepository.ListarComponentes()
-                .FirstOrDefault(c => c.Codigo == codigo);
+            foreach (ComponentePermiso componente in _permisoRepository.ListarComponentes())
+            {
+                if (componente.Codigo == codigo)
+                {
+                    return componente;
+                }
+            }
+
+            return null;
         }
 
         private static int CrearIdRelacion(int idPadre, int idHijo)
@@ -200,10 +206,15 @@ namespace Application
 
         private static AuditoriaMemento CrearMementoComponentesUsuario(int idUsuario, List<int> idsComponentes)
         {
+            List<int> idsOrdenados = idsComponentes == null
+                ? new List<int>()
+                : new List<int>(idsComponentes);
+            idsOrdenados.Sort();
+
             return new AuditoriaMemento("UsuarioComponentePermiso", idUsuario, new Dictionary<string, object>
             {
                 { "IdUsuario", idUsuario },
-                { "IdsComponentes", string.Join(",", (idsComponentes ?? new List<int>()).OrderBy(id => id)) }
+                { "IdsComponentes", string.Join(",", idsOrdenados) }
             });
         }
     }

@@ -46,10 +46,21 @@ CREATE TABLE Usuario (
     apellido VARCHAR(100) NULL,
     estado_usuario VARCHAR(20) NOT NULL DEFAULT 'ACTIVO',
     fecha_alta DATETIME NOT NULL DEFAULT GETDATE(),
+    bloqueo_digitoverificador BIT NOT NULL DEFAULT 0,
+    dvh VARCHAR(64) NULL,
     CONSTRAINT UQ_Usuario_Nombre UNIQUE (nombre_usuario),
     CONSTRAINT UQ_Usuario_Email UNIQUE (email),
     CONSTRAINT CK_Usuario_Estado CHECK (estado_usuario IN ('ACTIVO', 'INACTIVO', 'BLOQUEADO')),
     CONSTRAINT FK_Usuario_Idioma FOREIGN KEY (id_idioma) REFERENCES Idioma(id_idioma)
+);
+GO
+
+CREATE TABLE DigitoVerificadorVertical (
+    id_digito_verificador_vertical INT IDENTITY(1,1) PRIMARY KEY,
+    entidad VARCHAR(100) NOT NULL,
+    dvv VARCHAR(64) NOT NULL,
+    fecha_calculo DATETIME NOT NULL DEFAULT GETDATE(),
+    CONSTRAINT UQ_DigitoVerificadorVertical_Entidad UNIQUE (entidad)
 );
 GO
 
@@ -634,6 +645,7 @@ INSERT INTO Etiqueta (clave, descripcion) VALUES
 ('BTN_CREATE', 'Boton crear'),
 ('BTN_DISABLE', 'Boton inhabilitar'),
 ('BTN_REFRESH', 'Boton actualizar'),
+('BTN_RECALCULATE_DV', 'Boton recalcular digitos verificadores'),
 ('BTN_ADD', 'Boton agregar'),
 ('BTN_REMOVE_SELECTED', 'Boton quitar seleccionado'),
 ('BTN_REMOVE_FROM', 'Boton quitar de'),
@@ -648,6 +660,7 @@ INSERT INTO Etiqueta (clave, descripcion) VALUES
 ('GRID_USER', 'Columna usuario'),
 ('GRID_EMAIL', 'Columna email'),
 ('GRID_STATUS', 'Columna estado'),
+('GRID_DV_BLOCK', 'Columna bloqueo digito verificador'),
 ('GRID_DATE', 'Columna fecha'),
 ('GRID_USER_ID', 'Columna id usuario'),
 ('GRID_MODULE', 'Columna modulo'),
@@ -752,6 +765,7 @@ INNER JOIN (VALUES
 ('BTN_CREATE', 'Crear'),
 ('BTN_DISABLE', 'Inhabilitar'),
 ('BTN_REFRESH', 'Actualizar'),
+('BTN_RECALCULATE_DV', 'Recalcular DV'),
 ('BTN_ADD', 'Agregar'),
 ('BTN_REMOVE_SELECTED', 'Quitar seleccionado'),
 ('BTN_REMOVE_FROM', 'Quitar de {0}'),
@@ -766,6 +780,7 @@ INNER JOIN (VALUES
 ('GRID_USER', 'Usuario'),
 ('GRID_EMAIL', 'Email'),
 ('GRID_STATUS', 'Estado'),
+('GRID_DV_BLOCK', 'Bloqueo DV'),
 ('GRID_DATE', 'Fecha'),
 ('GRID_USER_ID', 'Id usuario'),
 ('GRID_MODULE', 'Modulo'),
@@ -867,6 +882,7 @@ INNER JOIN (VALUES
 ('BTN_CREATE', 'Create'),
 ('BTN_DISABLE', 'Disable'),
 ('BTN_REFRESH', 'Refresh'),
+('BTN_RECALCULATE_DV', 'Recalculate DV'),
 ('BTN_ADD', 'Add'),
 ('BTN_REMOVE_SELECTED', 'Remove selected'),
 ('BTN_REMOVE_FROM', 'Remove from {0}'),
@@ -881,6 +897,7 @@ INNER JOIN (VALUES
 ('GRID_USER', 'User'),
 ('GRID_EMAIL', 'Email'),
 ('GRID_STATUS', 'Status'),
+('GRID_DV_BLOCK', 'DV block'),
 ('GRID_DATE', 'Date'),
 ('GRID_USER_ID', 'User id'),
 ('GRID_MODULE', 'Module'),

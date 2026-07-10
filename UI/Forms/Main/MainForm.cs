@@ -11,16 +11,18 @@ namespace UI
     public partial class MainForm : Form, IObserverLanguage
     {
         private readonly AutorizacionApplicationService _autorizacionService;
+        private readonly UsuarioApplicationService _usuarioService;
         private bool _cargandoIdiomas;
 
         public MainForm()
-            : this(new AutorizacionApplicationService())
+            : this(new AutorizacionApplicationService(), new UsuarioApplicationService())
         {
         }
 
-        public MainForm(AutorizacionApplicationService autorizacionService)
+        public MainForm(AutorizacionApplicationService autorizacionService, UsuarioApplicationService usuarioService)
         {
             _autorizacionService = autorizacionService;
+            _usuarioService = usuarioService;
             InitializeComponent();
             ConfigurarTraducciones();
             Load += MainForm_Load;
@@ -119,6 +121,7 @@ namespace UI
 
         private void salirToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            _usuarioService.RecalcularDigitosVerificadoresUsuarios();
             Sesion.ObtenerInstancia().Logout();
             DialogResult = DialogResult.Retry;
             Close();

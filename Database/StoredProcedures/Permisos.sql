@@ -464,6 +464,8 @@ BEGIN
     ('GRID_FIELD', 'Columna campo'),
     ('GRID_OLD_VALUE', 'Columna valor anterior'),
     ('GRID_NEW_VALUE', 'Columna valor nuevo'),
+    ('GRID_DV_BLOCK', 'Columna bloqueo digito verificador'),
+    ('BTN_RECALCULATE_DV', 'Boton recalcular digitos verificadores'),
     ('SECURITY_LANGUAGE_CREATE_DENIED', 'Creacion de idioma denegada'),
     ('SECURITY_LANGUAGE_EDIT_DENIED', 'Edicion de idioma denegada'),
     ('SECURITY_TRANSLATION_EDIT_DENIED', 'Edicion de traduccion denegada');
@@ -497,6 +499,8 @@ BEGIN
     ('es-AR', 'GRID_FIELD', 'Campo'),
     ('es-AR', 'GRID_OLD_VALUE', 'Valor anterior'),
     ('es-AR', 'GRID_NEW_VALUE', 'Valor nuevo'),
+    ('es-AR', 'GRID_DV_BLOCK', 'Bloqueo DV'),
+    ('es-AR', 'BTN_RECALCULATE_DV', 'Recalcular DV'),
     ('es-AR', 'SECURITY_LANGUAGE_CREATE_DENIED', 'No tenes permisos para crear idiomas.'),
     ('es-AR', 'SECURITY_LANGUAGE_EDIT_DENIED', 'No tenes permisos para modificar idiomas.'),
     ('es-AR', 'SECURITY_TRANSLATION_EDIT_DENIED', 'No tenes permisos para modificar traducciones.'),
@@ -514,6 +518,8 @@ BEGIN
     ('en-US', 'GRID_FIELD', 'Field'),
     ('en-US', 'GRID_OLD_VALUE', 'Old value'),
     ('en-US', 'GRID_NEW_VALUE', 'New value'),
+    ('en-US', 'GRID_DV_BLOCK', 'DV block'),
+    ('en-US', 'BTN_RECALCULATE_DV', 'Recalculate DV'),
     ('en-US', 'SECURITY_LANGUAGE_EDIT_DENIED', 'You do not have permission to modify languages.'),
     ('en-US', 'SECURITY_TRANSLATION_EDIT_DENIED', 'You do not have permission to modify translations.');
 

@@ -24,6 +24,7 @@ namespace UI
             this.columnUsuario = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.columnEmail = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.columnEstado = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.columnBloqueoDigitoVerificador = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.groupBoxDetalle = new System.Windows.Forms.GroupBox();
             this.cmbEstado = new System.Windows.Forms.ComboBox();
             this.lblEstado = new System.Windows.Forms.Label();
@@ -79,7 +80,8 @@ namespace UI
             this.columnId,
             this.columnUsuario,
             this.columnEmail,
-            this.columnEstado});
+            this.columnEstado,
+            this.columnBloqueoDigitoVerificador});
             this.dgvUsuarios.Location = new System.Drawing.Point(24, 98);
             this.dgvUsuarios.MultiSelect = false;
             this.dgvUsuarios.Name = "dgvUsuarios";
@@ -121,6 +123,14 @@ namespace UI
             this.columnEstado.Name = "columnEstado";
             this.columnEstado.ReadOnly = true;
             this.columnEstado.Width = 95;
+            // 
+            // columnBloqueoDigitoVerificador
+            // 
+            this.columnBloqueoDigitoVerificador.DataPropertyName = "BloqueoDigitoVerificador";
+            this.columnBloqueoDigitoVerificador.HeaderText = "Bloqueo DV";
+            this.columnBloqueoDigitoVerificador.Name = "columnBloqueoDigitoVerificador";
+            this.columnBloqueoDigitoVerificador.ReadOnly = true;
+            this.columnBloqueoDigitoVerificador.Width = 90;
             // 
             // groupBoxDetalle
             // 
@@ -346,6 +356,7 @@ namespace UI
         private System.Windows.Forms.DataGridViewTextBoxColumn columnUsuario;
         private System.Windows.Forms.DataGridViewTextBoxColumn columnEmail;
         private System.Windows.Forms.DataGridViewTextBoxColumn columnEstado;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn columnBloqueoDigitoVerificador;
         private System.Windows.Forms.GroupBox groupBoxDetalle;
         private System.Windows.Forms.ComboBox cmbEstado;
         private System.Windows.Forms.Label lblEstado;

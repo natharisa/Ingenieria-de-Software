@@ -85,20 +85,34 @@ namespace DAL
                 _databaseContext.CrearParametro("@password_hash", passwordHash)
             };
 
+            const string sql = @"
+                SELECT TOP (1)
+                    id_usuario,
+                    id_idioma,
+                    nombre_usuario,
+                    email,
+                    nombre,
+                    apellido,
+                    estado_usuario,
+                    intentos_login_fallidos,
+                    bloqueo_digitoverificador,
+                    dvh
+                FROM dbo.Usuario
+                WHERE (nombre_usuario = @identificador OR email = @identificador)
+                  AND password_hash = @password_hash
+                  AND estado_usuario = 'ACTIVO'";
+
             try
             {
                 _databaseContext.Abrir();
-                DataTable tabla = _databaseContext.Leer("sp_Usuario_Login", parametros);
+                DataTable tabla = _databaseContext.LeerTexto(sql, parametros);
 
                 if (tabla.Rows.Count == 0)
                 {
                     return null;
                 }
 
-                Usuario usuario = MapearUsuario(tabla.Rows[0]);
-                ReiniciarIntentosLoginFallidosEnConexion(usuario.Id);
-                usuario.IntentosLoginFallidos = 0;
-                return usuario;
+                return MapearUsuario(tabla.Rows[0]);
             }
             finally
             {
@@ -146,7 +160,9 @@ namespace DAL
                     nombre,
                     apellido,
                     estado_usuario,
-                    intentos_login_fallidos
+                    intentos_login_fallidos,
+                    bloqueo_digitoverificador,
+                    dvh
                 FROM dbo.Usuario
                 WHERE (nombre_usuario = @identificador OR email = @identificador)
                   AND estado_usuario = 'ACTIVO'";
@@ -185,7 +201,9 @@ namespace DAL
                     nombre,
                     apellido,
                     estado_usuario,
-                    intentos_login_fallidos
+                    intentos_login_fallidos,
+                    bloqueo_digitoverificador,
+                    dvh
                 FROM dbo.Usuario
                 WHERE id_usuario = @id_usuario";
 
@@ -268,7 +286,7 @@ namespace DAL
             }
         }
 
-        private void ReiniciarIntentosLoginFallidosEnConexion(int idUsuario)
+        public int ReiniciarIntentosLoginFallidos(int idUsuario)
         {
             List<SqlParameter> parametros = new List<SqlParameter>
             {
@@ -280,7 +298,15 @@ namespace DAL
                 SET intentos_login_fallidos = 0
                 WHERE id_usuario = @id_usuario";
 
-            _databaseContext.EscribirTexto(sql, parametros);
+            try
+            {
+                _databaseContext.Abrir();
+                return _databaseContext.EscribirTexto(sql, parametros);
+            }
+            finally
+            {
+                _databaseContext.Cerrar();
+            }
         }
 
         public int Editar(Usuario usuario)
@@ -370,7 +396,9 @@ namespace DAL
                     u.nombre,
                     u.apellido,
                     u.estado_usuario,
-                    u.intentos_login_fallidos
+                    u.intentos_login_fallidos,
+                    u.bloqueo_digitoverificador,
+                    u.dvh
                 FROM dbo.Usuario u
                 ORDER BY u.nombre_usuario";
 
@@ -443,7 +471,13 @@ namespace DAL
                     : null,
                 IntentosLoginFallidos = registro.Table.Columns.Contains("intentos_login_fallidos")
                     ? Convert.ToInt32(registro["intentos_login_fallidos"])
-                    : 0
+                    : 0,
+                BloqueoDigitoVerificador = registro.Table.Columns.Contains("bloqueo_digitoverificador") &&
+                                           registro["bloqueo_digitoverificador"] != DBNull.Value &&
+                                           Convert.ToBoolean(registro["bloqueo_digitoverificador"]),
+                Dvh = registro.Table.Columns.Contains("dvh") && registro["dvh"] != DBNull.Value
+                    ? registro["dvh"].ToString()
+                    : null
             };
         }
 

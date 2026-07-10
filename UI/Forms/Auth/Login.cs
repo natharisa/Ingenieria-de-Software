@@ -45,6 +45,12 @@ namespace UI
                     return;
                 }
 
+                if (_usuarioService.HayBloqueoDigitoVerificador())
+                {
+                    MessageBox.Show("Se detecto una inconsistencia de integridad. Solo un administrador puede iniciar sesion.");
+                    return;
+                }
+
                 MessageBox.Show("Usuario, email o contrasena incorrectos.");
             }
         }

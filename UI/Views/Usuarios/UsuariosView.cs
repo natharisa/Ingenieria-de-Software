@@ -21,6 +21,7 @@ namespace UI
         private Label lblRolesInfo;
         private ComboBox cmbRolUsuario;
         private Button btnGuardarRoles;
+        private Button btnRecalcularDigitos;
 
         public UsuariosView()
             : this(new UsuarioApplicationService())
@@ -59,17 +60,28 @@ namespace UI
             columnUsuario.Tag = "GRID_USER";
             columnEmail.Tag = "GRID_EMAIL";
             columnEstado.Tag = "GRID_STATUS";
+            columnBloqueoDigitoVerificador.Tag = "GRID_DV_BLOCK";
         }
 
         private void ConfigurarGrilla()
         {
             dgvUsuarios.AutoGenerateColumns = false;
+            columnId.Width = 45;
+            columnUsuario.Width = 90;
+            columnEmail.MinimumWidth = 110;
+            columnEstado.Width = 70;
+            columnBloqueoDigitoVerificador.Width = 75;
             cmbEstado.Items.AddRange(new object[] { "ACTIVO", "INACTIVO" });
         }
 
         protected override void ApplyTranslations()
         {
             base.ApplyTranslations();
+            if (btnRecalcularDigitos != null)
+            {
+                btnRecalcularDigitos.Text = LanguageManager.Instance.Translate("BTN_RECALCULATE_DV");
+            }
+
             ActualizarEstadoRolesUsuario();
         }
 
@@ -269,6 +281,7 @@ namespace UI
                                  _autorizacionService.TienePermiso(PermisosSistema.UsuarioEditar);
             btnInhabilitar.Visible = _autorizacionService.TienePermiso(PermisosSistema.UsuarioInhabilitar);
             btnGuardarRoles.Visible = _autorizacionService.TienePermiso(PermisosSistema.UsuarioEditar);
+            btnRecalcularDigitos.Visible = _autorizacionService.TienePermiso(PermisosSistema.UsuarioEditar);
             ActualizarEstadoRolesUsuario();
         }
 
@@ -276,13 +289,27 @@ namespace UI
         {
             dgvUsuarios.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             dgvUsuarios.Location = new Point(24, 98);
-            dgvUsuarios.Size = new Size(350, 390);
+            dgvUsuarios.Size = new Size(390, 390);
+
+            btnRecalcularDigitos = new Button
+            {
+                BackColor = Color.FromArgb(13, 110, 253),
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI Semibold", 8.5F, FontStyle.Bold),
+                ForeColor = Color.White,
+                Location = new Point(424, 54),
+                Size = new Size(120, 31),
+                Tag = "BTN_RECALCULATE_DV",
+                Text = LanguageManager.Instance.Translate("BTN_RECALCULATE_DV"),
+                UseVisualStyleBackColor = false
+            };
+            btnRecalcularDigitos.Click += btnRecalcularDigitos_Click;
 
             groupBoxRolesUsuario = new GroupBox
             {
                 Font = new Font("Segoe UI Semibold", 10F, FontStyle.Bold),
-                Location = new Point(394, 98),
-                Size = new Size(150, 390),
+                Location = new Point(424, 98),
+                Size = new Size(120, 390),
                 Tag = "USER_ROLES",
                 Text = "Roles"
             };
@@ -293,7 +320,7 @@ namespace UI
                 Font = new Font("Segoe UI", 8.5F),
                 ForeColor = Color.FromArgb(108, 117, 125),
                 Location = new Point(10, 24),
-                Size = new Size(130, 68),
+                Size = new Size(100, 82),
                 Tag = "USER_ROLE_SELECT_HELP",
                 Text = "Selecciona un usuario para asignarle un rol."
             };
@@ -302,8 +329,8 @@ namespace UI
             {
                 DropDownStyle = ComboBoxStyle.DropDownList,
                 Font = new Font("Segoe UI", 9F),
-                Location = new Point(10, 112),
-                Size = new Size(130, 23)
+                Location = new Point(10, 126),
+                Size = new Size(100, 23)
             };
 
             btnGuardarRoles = new Button
@@ -313,7 +340,7 @@ namespace UI
                 Font = new Font("Segoe UI Semibold", 9F, FontStyle.Bold),
                 ForeColor = Color.White,
                 Location = new Point(10, 343),
-                Size = new Size(130, 31),
+                Size = new Size(100, 31),
                 Tag = "BTN_SAVE",
                 Text = "Guardar",
                 UseVisualStyleBackColor = false
@@ -323,6 +350,7 @@ namespace UI
             groupBoxRolesUsuario.Controls.Add(lblRolesInfo);
             groupBoxRolesUsuario.Controls.Add(cmbRolUsuario);
             groupBoxRolesUsuario.Controls.Add(btnGuardarRoles);
+            Controls.Add(btnRecalcularDigitos);
             Controls.Add(groupBoxRolesUsuario);
         }
 
@@ -434,6 +462,34 @@ namespace UI
             {
                 CargarRolesUsuario(_usuarioSeleccionado.Id);
             }
+        }
+
+        private void btnRecalcularDigitos_Click(object sender, EventArgs e)
+        {
+            if (!_autorizacionService.TienePermiso(PermisosSistema.UsuarioEditar))
+            {
+                MessageBox.Show("No tenes permisos para recalcular digitos verificadores.");
+                return;
+            }
+
+            DialogResult confirmacion = MessageBox.Show(
+                "Se recalcularan los digitos verificadores de todos los usuarios y se quitaran los bloqueos por DV. Deseas continuar?",
+                "Recalcular digitos verificadores",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (confirmacion != DialogResult.Yes)
+            {
+                return;
+            }
+
+            bool recalculado = _usuarioService.RecalcularDigitosVerificadoresUsuarios();
+            MessageBox.Show(recalculado
+                ? "Digitos verificadores recalculados correctamente."
+                : "No se pudieron recalcular los digitos verificadores.");
+
+            CargarUsuarios();
+            PrepararNuevoUsuario();
         }
 
         private static string ObtenerMensajeRegistro(CodigoRegistroUsuario resultado)

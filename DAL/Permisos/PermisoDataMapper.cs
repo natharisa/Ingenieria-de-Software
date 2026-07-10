@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
 using Domain;
 
 namespace DAL
@@ -30,10 +29,16 @@ namespace DAL
                 CargarRelaciones(componentes);
 
                 List<int> idsAsignados = CargarIdsAsignados(idUsuario);
-                return idsAsignados
-                    .Where(componentes.ContainsKey)
-                    .Select(id => componentes[id])
-                    .ToList();
+                List<ComponentePermiso> asignados = new List<ComponentePermiso>();
+                foreach (int idAsignado in idsAsignados)
+                {
+                    if (componentes.ContainsKey(idAsignado))
+                    {
+                        asignados.Add(componentes[idAsignado]);
+                    }
+                }
+
+                return asignados;
             }
             finally
             {
@@ -48,11 +53,18 @@ namespace DAL
                 _databaseContext.Abrir();
                 Dictionary<int, ComponentePermiso> componentes = CargarComponentes();
                 HashSet<int> idsHijos = CargarRelaciones(componentes);
+                List<ComponentePermiso> raices = new List<ComponentePermiso>();
 
-                return componentes.Values
-                    .Where(c => !idsHijos.Contains(c.Id))
-                    .OrderBy(c => c.Nombre)
-                    .ToList();
+                foreach (ComponentePermiso componente in componentes.Values)
+                {
+                    if (!idsHijos.Contains(componente.Id))
+                    {
+                        raices.Add(componente);
+                    }
+                }
+
+                OrdenarPorNombre(raices);
+                return raices;
             }
             finally
             {
@@ -65,10 +77,9 @@ namespace DAL
             try
             {
                 _databaseContext.Abrir();
-                return CargarComponentes().Values
-                    .OrderBy(c => c.Tipo)
-                    .ThenBy(c => c.Nombre)
-                    .ToList();
+                List<ComponentePermiso> componentes = new List<ComponentePermiso>(CargarComponentes().Values);
+                componentes.Sort(CompararPorTipoYNombre);
+                return componentes;
             }
             finally
             {
@@ -78,10 +89,17 @@ namespace DAL
 
         public List<ComponentePermiso> ListarFamilias()
         {
-            return ListarComponentes()
-                .Where(c => c.Tipo == TipoComponentePermiso.Familia)
-                .OrderBy(c => c.Nombre)
-                .ToList();
+            try
+            {
+                _databaseContext.Abrir();
+                List<ComponentePermiso> familias = new List<ComponentePermiso>(CargarComponentesPorTipo("FAMILIA").Values);
+                OrdenarPorNombre(familias);
+                return familias;
+            }
+            finally
+            {
+                _databaseContext.Cerrar();
+            }
         }
 
         public List<int> ListarIdsComponentesAsignadosPorUsuario(int idUsuario)
@@ -359,6 +377,38 @@ namespace DAL
             return componentes;
         }
 
+        private Dictionary<int, ComponentePermiso> CargarComponentesPorTipo(string tipo)
+        {
+            const string sql = @"
+                SELECT
+                    id_componente,
+                    codigo,
+                    nombre,
+                    descripcion,
+                    tipo,
+                    estado_componente
+                FROM dbo.ComponentePermiso
+                WHERE UPPER(estado_componente) = 'ACTIVO'
+                  AND tipo = @tipo
+                ORDER BY nombre";
+
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                _databaseContext.CrearParametro("@tipo", tipo)
+            };
+
+            DataTable tabla = _databaseContext.LeerTexto(sql, parametros);
+            Dictionary<int, ComponentePermiso> componentes = new Dictionary<int, ComponentePermiso>();
+
+            foreach (DataRow fila in tabla.Rows)
+            {
+                ComponentePermiso componente = CrearComponente(fila);
+                componentes[componente.Id] = componente;
+            }
+
+            return componentes;
+        }
+
         private HashSet<int> CargarRelaciones(Dictionary<int, ComponentePermiso> componentes)
         {
             const string sql = @"
@@ -439,6 +489,25 @@ namespace DAL
             componente.Estado = fila["estado_componente"].ToString();
 
             return componente;
+        }
+
+        private static void OrdenarPorNombre(List<ComponentePermiso> componentes)
+        {
+            componentes.Sort(delegate (ComponentePermiso primero, ComponentePermiso segundo)
+            {
+                return string.Compare(primero.Nombre, segundo.Nombre, StringComparison.OrdinalIgnoreCase);
+            });
+        }
+
+        private static int CompararPorTipoYNombre(ComponentePermiso primero, ComponentePermiso segundo)
+        {
+            int comparacionTipo = primero.Tipo.CompareTo(segundo.Tipo);
+            if (comparacionTipo != 0)
+            {
+                return comparacionTipo;
+            }
+
+            return string.Compare(primero.Nombre, segundo.Nombre, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

@@ -63,6 +63,16 @@ namespace Repository
             return _usuarioDataMapper.RegistrarLoginFallidoPorIdentificador(identificador);
         }
 
+        public bool ReiniciarIntentosLoginFallidos(int idUsuario)
+        {
+            if (idUsuario == 0)
+            {
+                return false;
+            }
+
+            return _usuarioDataMapper.ReiniciarIntentosLoginFallidos(idUsuario) >= 0;
+        }
+
         public void Guardar(Usuario usuario)
         {
             if (usuario == null)
@@ -97,7 +107,14 @@ namespace Repository
                 return false;
             }
 
-            return _usuarioDataMapper.ActualizarIdiomaPreferido(usuarioId, idiomaId) > 0;
+            bool actualizado = _usuarioDataMapper.ActualizarIdiomaPreferido(usuarioId, idiomaId) > 0;
+
+            if (actualizado)
+            {
+                new DigitoVerificadorDataMapper().RecalcularUsuarios();
+            }
+
+            return actualizado;
         }
 
         public void Borrar(Usuario usuario)

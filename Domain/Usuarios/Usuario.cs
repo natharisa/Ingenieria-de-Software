@@ -1,6 +1,5 @@
 using Abstractions;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Domain
 {
@@ -16,6 +15,8 @@ namespace Domain
         public int? IdiomaPreferidoId { get; set; }
         public string Estado { get; set; }
         public int IntentosLoginFallidos { get; set; }
+        public bool BloqueoDigitoVerificador { get; set; }
+        public string Dvh { get; set; }
         public List<ComponentePermiso> ComponentesPermiso { get; set; } = new List<ComponentePermiso>();
 
         public AuditoriaMemento CrearMemento()
@@ -35,7 +36,8 @@ namespace Domain
                 { "Idioma", Idioma },
                 { "IdiomaPreferidoId", IdiomaPreferidoId },
                 { "Estado", Estado },
-                { "IntentosLoginFallidos", IntentosLoginFallidos }
+                { "IntentosLoginFallidos", IntentosLoginFallidos },
+                { "BloqueoDigitoVerificador", BloqueoDigitoVerificador }
             });
         }
 
@@ -56,6 +58,7 @@ namespace Domain
             IdiomaPreferidoId = ObtenerValor<int?>(estado, "IdiomaPreferidoId", IdiomaPreferidoId);
             Estado = ObtenerValor<string>(estado, "Estado", Estado);
             IntentosLoginFallidos = ObtenerValor<int>(estado, "IntentosLoginFallidos", IntentosLoginFallidos);
+            BloqueoDigitoVerificador = ObtenerValor<bool>(estado, "BloqueoDigitoVerificador", BloqueoDigitoVerificador);
         }
 
         public bool TienePermiso(string codigoPermiso)
@@ -65,7 +68,15 @@ namespace Domain
                 return false;
             }
 
-            return ComponentesPermiso.Any(c => c.TienePermiso(codigoPermiso));
+            foreach (ComponentePermiso componente in ComponentesPermiso)
+            {
+                if (componente.TienePermiso(codigoPermiso))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public override string ToString()

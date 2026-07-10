@@ -2,6 +2,8 @@ namespace Domain
 {
     public static class PermisosSistema
     {
+        public const string Administrador = "ADMINISTRADOR";
+
         public const string BitacoraVer = "BITACORA_VER";
         public const string AuditoriaCambiosVer = "AUDITORIA_CAMBIOS_VER";
 

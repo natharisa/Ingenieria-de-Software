@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Domain
 {
@@ -20,8 +19,17 @@ namespace Domain
                 return;
             }
 
-            if (_hijos.Any(h => h.Id == componente.Id && componente.Id != 0))
+            foreach (ComponentePermiso hijo in _hijos)
             {
+                if (hijo.Id == componente.Id && componente.Id != 0)
+                {
+                    return;
+                }
+            }
+
+            if (componente.Id == 0)
+            {
+                _hijos.Add(componente);
                 return;
             }
 
@@ -50,7 +58,15 @@ namespace Domain
                 return false;
             }
 
-            return _hijos.Any(h => h.TienePermiso(codigoPermiso));
+            foreach (ComponentePermiso hijo in _hijos)
+            {
+                if (hijo.TienePermiso(codigoPermiso))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public bool PuedeAgregar(ComponentePermiso candidato)
@@ -80,7 +96,15 @@ namespace Domain
                 return true;
             }
 
-            return componente.ObtenerHijos().Any(h => Contiene(h, idBuscado));
+            foreach (ComponentePermiso hijo in componente.ObtenerHijos())
+            {
+                if (Contiene(hijo, idBuscado))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
