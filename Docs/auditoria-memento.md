@@ -52,7 +52,7 @@ La modificacion de usuarios entra desde `UI\Views\Usuarios\UsuariosView.cs`, lla
 - Fecha de captura.
 - Estado como diccionario clave/valor.
 
-`AuditoriaCaretaker` representa el caretaker del diagrama para administrar mementos en memoria. En el flujo real, `AuditoriaApplicationService` coordina el historial persistente: recibe el memento anterior y posterior, calcula diferencias y delega la persistencia.
+En el flujo real, `AuditoriaApplicationService` coordina el historial persistente: recibe el memento anterior y posterior, calcula diferencias y delega la persistencia.
 
 ### Flujo de auditoria para Usuario
 
