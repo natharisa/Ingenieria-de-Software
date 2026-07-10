@@ -117,6 +117,16 @@ namespace Repository
             return actualizado;
         }
 
+        public bool RestaurarCampo(int idUsuario, string campo, object valor)
+        {
+            if (idUsuario == 0)
+            {
+                return false;
+            }
+
+            return _usuarioDataMapper.RestaurarCampo(idUsuario, campo, valor) > 0;
+        }
+
         public void Borrar(Usuario usuario)
         {
             if (usuario == null)

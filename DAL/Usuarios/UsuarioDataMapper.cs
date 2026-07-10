@@ -445,6 +445,37 @@ namespace DAL
             }
         }
 
+        public int RestaurarCampo(int idUsuario, string campo, object valor)
+        {
+            if (idUsuario == 0 || string.IsNullOrWhiteSpace(campo))
+            {
+                return -1;
+            }
+
+            string columna = ObtenerColumnaRestaurable(campo);
+            if (string.IsNullOrWhiteSpace(columna))
+            {
+                return -1;
+            }
+
+            string sql = "UPDATE dbo.Usuario SET " + columna + " = @valor WHERE id_usuario = @id_usuario";
+            List<SqlParameter> parametros = new List<SqlParameter>
+            {
+                _databaseContext.CrearParametro("@id_usuario", idUsuario),
+                CrearParametroRestauracion("@valor", campo, valor)
+            };
+
+            try
+            {
+                _databaseContext.Abrir();
+                return _databaseContext.EscribirTexto(sql, parametros);
+            }
+            finally
+            {
+                _databaseContext.Cerrar();
+            }
+        }
+
         private static Usuario MapearUsuario(DataRow registro)
         {
             int? idiomaPreferidoId = null;
@@ -523,6 +554,69 @@ namespace DAL
             }
 
             return CodigoRegistroUsuario.ErrorBaseDatos;
+        }
+
+        private static string ObtenerColumnaRestaurable(string campo)
+        {
+            switch (campo)
+            {
+                case "Username":
+                    return "nombre_usuario";
+
+                case "Email":
+                    return "email";
+
+                case "Nombre":
+                    return "nombre";
+
+                case "Apellido":
+                    return "apellido";
+
+                case "IdiomaPreferidoId":
+                    return "id_idioma";
+
+                case "Estado":
+                    return "estado_usuario";
+
+                case "IntentosLoginFallidos":
+                    return "intentos_login_fallidos";
+
+                case "BloqueoDigitoVerificador":
+                    return "bloqueo_digitoverificador";
+
+                default:
+                    return null;
+            }
+        }
+
+        private static SqlParameter CrearParametroRestauracion(string nombre, string campo, object valor)
+        {
+            SqlParameter parametro = new SqlParameter
+            {
+                ParameterName = nombre,
+                Value = valor ?? DBNull.Value
+            };
+
+            switch (campo)
+            {
+                case "IdiomaPreferidoId":
+                case "IntentosLoginFallidos":
+                    parametro.SqlDbType = SqlDbType.Int;
+                    parametro.Value = valor == null ? (object)DBNull.Value : Convert.ToInt32(valor);
+                    break;
+
+                case "BloqueoDigitoVerificador":
+                    parametro.SqlDbType = SqlDbType.Bit;
+                    parametro.Value = valor == null ? (object)DBNull.Value : Convert.ToBoolean(valor);
+                    break;
+
+                default:
+                    parametro.SqlDbType = SqlDbType.NVarChar;
+                    parametro.Value = valor == null ? (object)DBNull.Value : valor.ToString();
+                    break;
+            }
+
+            return parametro;
         }
     }
 }

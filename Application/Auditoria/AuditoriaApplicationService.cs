@@ -34,13 +34,13 @@ namespace Application
 
         public bool RegistrarCambio(AuditoriaMemento estadoAnterior, AuditoriaMemento estadoNuevo, string accion)
         {
+            if (estadoNuevo == null || estadoNuevo.Entidad != "Usuario")
+            {
+                return true;
+            }
+
             if (estadoAnterior == null || estadoNuevo == null)
             {
-                if (estadoNuevo == null)
-                {
-                    return false;
-                }
-
                 estadoAnterior = new AuditoriaMemento(estadoNuevo.Entidad, estadoNuevo.IdEntidad, new Dictionary<string, object>());
             }
 
@@ -84,7 +84,17 @@ namespace Application
 
         public List<AuditoriaRegistro> ListarTodos()
         {
-            return _auditoriaRepository.ListarTodos();
+            List<AuditoriaRegistro> registrosUsuario = new List<AuditoriaRegistro>();
+
+            foreach (AuditoriaRegistro registro in _auditoriaRepository.ListarTodos())
+            {
+                if (registro.Entidad == "Usuario")
+                {
+                    registrosUsuario.Add(registro);
+                }
+            }
+
+            return registrosUsuario;
         }
 
         public List<AuditoriaRegistro> ListarHistorial(string entidad, int idEntidad)

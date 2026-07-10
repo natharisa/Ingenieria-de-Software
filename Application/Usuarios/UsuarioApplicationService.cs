@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Net.Mail;
+using System.Web.Script.Serialization;
 using Domain;
 using Repository;
 using Services;
@@ -14,6 +15,7 @@ namespace Application
         private readonly AuditoriaApplicationService _auditoriaService;
         private readonly DigitoVerificadorApplicationService _digitoVerificadorService;
         private readonly PlainTextPasswordService _passwordService;
+        private readonly JavaScriptSerializer _serializer;
         private BitacoraFactory _bitacoraFactory;
 
         public UsuarioApplicationService()
@@ -54,6 +56,7 @@ namespace Application
             _auditoriaService = auditoriaService;
             _digitoVerificadorService = digitoVerificadorService;
             _passwordService = passwordService;
+            _serializer = new JavaScriptSerializer();
         }
 
         //Registrar el usuario
@@ -279,6 +282,62 @@ namespace Application
                    _digitoVerificadorService.HayBloqueoUsuarios();
         }
 
+        public bool RestaurarCampoDesdeAuditoria(AuditoriaRegistro auditoria, string campo)
+        {
+            if (auditoria == null ||
+                auditoria.Entidad != "Usuario" ||
+                auditoria.IdEntidad == 0 ||
+                string.IsNullOrWhiteSpace(campo) ||
+                string.IsNullOrWhiteSpace(auditoria.EstadoAnteriorJson))
+            {
+                return false;
+            }
+
+            Dictionary<string, object> estadoAnterior;
+            try
+            {
+                estadoAnterior = _serializer.Deserialize<Dictionary<string, object>>(auditoria.EstadoAnteriorJson);
+            }
+            catch
+            {
+                return false;
+            }
+
+            if (estadoAnterior == null || !estadoAnterior.ContainsKey(campo))
+            {
+                return false;
+            }
+
+            object valorAnterior = estadoAnterior[campo];
+            if (!EsCampoRestaurable(campo) || !EsValorRestaurableValido(campo, valorAnterior))
+            {
+                return false;
+            }
+
+            Usuario usuarioAnterior = _usuarioRepository.ObtenerPorId(auditoria.IdEntidad);
+            if (usuarioAnterior == null)
+            {
+                return false;
+            }
+
+            AuditoriaMemento estadoActual = usuarioAnterior.CrearMemento();
+            bool restaurado = _usuarioRepository.RestaurarCampo(auditoria.IdEntidad, campo, valorAnterior);
+            if (!restaurado)
+            {
+                return false;
+            }
+
+            _digitoVerificadorService.RecalcularUsuarios();
+
+            Usuario usuarioRestaurado = _usuarioRepository.ObtenerPorId(auditoria.IdEntidad);
+            if (usuarioRestaurado != null)
+            {
+                _auditoriaService.RegistrarCambio(estadoActual, usuarioRestaurado.CrearMemento(), "RESTORE_FIELD");
+            }
+
+            return true;
+        }
+
         private void RegistrarLoginFallido(Usuario usuario, string descripcion)
         {
             if (usuario == null)
@@ -377,6 +436,44 @@ namespace Application
             catch
             {
                 return false;
+            }
+        }
+
+        private static bool EsCampoRestaurable(string campo)
+        {
+            switch (campo)
+            {
+                case "Username":
+                case "Email":
+                case "Nombre":
+                case "Apellido":
+                case "IdiomaPreferidoId":
+                case "Estado":
+                case "IntentosLoginFallidos":
+                case "BloqueoDigitoVerificador":
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
+        private static bool EsValorRestaurableValido(string campo, object valor)
+        {
+            switch (campo)
+            {
+                case "Username":
+                    return valor != null && !string.IsNullOrWhiteSpace(valor.ToString());
+
+                case "Email":
+                    return valor != null && EsFormatoEmailValido(valor.ToString());
+
+                case "Estado":
+                    string estado = valor == null ? null : valor.ToString();
+                    return estado == "ACTIVO" || estado == "INACTIVO" || estado == "BLOQUEADO";
+
+                default:
+                    return true;
             }
         }
     }

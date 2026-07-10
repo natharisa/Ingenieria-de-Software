@@ -20,6 +20,7 @@ namespace UI
         private Label lblUsuarioAuditado;
         private ComboBox cmbUsuarios;
         private Button btnActualizar;
+        private Button btnRestaurarCampo;
         private ListView listViewCambios;
         private ColumnHeader columnId;
         private ColumnHeader columnFecha;
@@ -107,6 +108,22 @@ namespace UI
             btnActualizar.FlatAppearance.BorderSize = 0;
             btnActualizar.Click += btnActualizar_Click;
 
+            btnRestaurarCampo = new Button
+            {
+                Anchor = AnchorStyles.Top | AnchorStyles.Right,
+                BackColor = Color.FromArgb(25, 135, 84),
+                Enabled = false,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+                ForeColor = Color.White,
+                Location = new Point(604, 92),
+                Size = new Size(138, 32),
+                Text = "Restaurar campo",
+                UseVisualStyleBackColor = false
+            };
+            btnRestaurarCampo.FlatAppearance.BorderSize = 0;
+            btnRestaurarCampo.Click += btnRestaurarCampo_Click;
+
             listViewCambios = new ListView
             {
                 Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom,
@@ -177,6 +194,7 @@ namespace UI
             Controls.Add(lblDescripcion);
             Controls.Add(lblUsuarioAuditado);
             Controls.Add(cmbUsuarios);
+            Controls.Add(btnRestaurarCampo);
             Controls.Add(btnActualizar);
             Controls.Add(listViewCambios);
             Controls.Add(lblEstadoAnterior);
@@ -230,8 +248,8 @@ namespace UI
             _usuarios.Insert(0, new Usuario
             {
                 Id = 0,
-                Username = "Todas las entidades",
-                Nombre = "Todas las entidades"
+                Username = "Todos los usuarios",
+                Nombre = "Todos los usuarios"
             });
 
             cmbUsuarios.DataSource = null;
@@ -290,7 +308,11 @@ namespace UI
                     item.SubItems.Add(cambio.Campo ?? string.Empty);
                     item.SubItems.Add(FormatearValor(cambio.ValorAnterior));
                     item.SubItems.Add(FormatearValor(cambio.ValorNuevo));
-                    item.Tag = registro;
+                    item.Tag = new CambioAuditoriaSeleccionado
+                    {
+                        Registro = registro,
+                        Cambio = cambio
+                    };
                     listViewCambios.Items.Add(item);
                 }
             }
@@ -306,18 +328,63 @@ namespace UI
             if (listViewCambios.SelectedItems.Count == 0)
             {
                 LimpiarDetalle();
+                btnRestaurarCampo.Enabled = false;
                 return;
             }
 
-            AuditoriaRegistro registro = listViewCambios.SelectedItems[0].Tag as AuditoriaRegistro;
-            if (registro == null)
+            CambioAuditoriaSeleccionado seleccion = listViewCambios.SelectedItems[0].Tag as CambioAuditoriaSeleccionado;
+            if (seleccion == null || seleccion.Registro == null)
             {
                 LimpiarDetalle();
+                btnRestaurarCampo.Enabled = false;
                 return;
             }
 
+            AuditoriaRegistro registro = seleccion.Registro;
             txtEstadoAnterior.Text = registro.EstadoAnteriorJson ?? string.Empty;
             txtEstadoNuevo.Text = registro.EstadoNuevoJson ?? string.Empty;
+            btnRestaurarCampo.Enabled = registro.Entidad == "Usuario" &&
+                                        seleccion.Cambio != null &&
+                                        EsCampoRestaurable(seleccion.Cambio.Campo);
+        }
+
+        private void btnRestaurarCampo_Click(object sender, EventArgs e)
+        {
+            if (listViewCambios.SelectedItems.Count == 0)
+            {
+                return;
+            }
+
+            CambioAuditoriaSeleccionado seleccion = listViewCambios.SelectedItems[0].Tag as CambioAuditoriaSeleccionado;
+            if (seleccion == null || seleccion.Registro == null || seleccion.Cambio == null)
+            {
+                return;
+            }
+
+            string campo = seleccion.Cambio.Campo;
+            DialogResult confirmacion = MessageBox.Show(
+                "Se restaurara el campo seleccionado al valor anterior. Deseas continuar?",
+                "Restaurar campo",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (confirmacion != DialogResult.Yes)
+            {
+                return;
+            }
+
+            bool restaurado = _usuarioService.RestaurarCampoDesdeAuditoria(seleccion.Registro, campo);
+            MessageBox.Show(restaurado
+                ? "Campo restaurado correctamente."
+                : "No se pudo restaurar el campo seleccionado.");
+
+            Usuario usuario = cmbUsuarios.SelectedItem as Usuario;
+            CargarUsuarios();
+
+            if (usuario != null)
+            {
+                SeleccionarUsuario(usuario.Id);
+            }
         }
 
         private List<AuditoriaCambio> DeserializarCambios(string cambiosJson)
@@ -355,6 +422,10 @@ namespace UI
         {
             txtEstadoAnterior.Clear();
             txtEstadoNuevo.Clear();
+            if (btnRestaurarCampo != null)
+            {
+                btnRestaurarCampo.Enabled = false;
+            }
         }
 
         private void ActualizarEstado()
@@ -362,6 +433,43 @@ namespace UI
             lblEstado.Text = _cantidadCambios == 0
                 ? LanguageManager.Instance.Translate("CHANGE_AUDIT_EMPTY")
                 : string.Format(LanguageManager.Instance.Translate("CHANGE_AUDIT_COUNT"), _cantidadCambios);
+        }
+
+        private void SeleccionarUsuario(int usuarioId)
+        {
+            foreach (Usuario usuario in cmbUsuarios.Items)
+            {
+                if (usuario.Id == usuarioId)
+                {
+                    cmbUsuarios.SelectedItem = usuario;
+                    return;
+                }
+            }
+        }
+
+        private static bool EsCampoRestaurable(string campo)
+        {
+            switch (campo)
+            {
+                case "Username":
+                case "Email":
+                case "Nombre":
+                case "Apellido":
+                case "IdiomaPreferidoId":
+                case "Estado":
+                case "IntentosLoginFallidos":
+                case "BloqueoDigitoVerificador":
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
+        private class CambioAuditoriaSeleccionado
+        {
+            public AuditoriaRegistro Registro { get; set; }
+            public AuditoriaCambio Cambio { get; set; }
         }
     }
 }
